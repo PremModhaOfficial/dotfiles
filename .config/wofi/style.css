@@ -1,0 +1,75 @@
+
+:root {
+--fav0: #041B23;
+--fav1: #191966;
+--fav2: #1C1B6E;
+--fav3: #661953;
+--fav4: #621A6A;
+--fav5: #231E7A;
+--fav6: #6E1B50;
+--fav7: #777788;
+--fav8: #53535F;
+--fav9: #1C1B6E;
+--fav10: #1E1D76;
+--fav11: #6A1A5E;
+--fav12: #651B6E;
+--fav13: #252187;
+--fav14: #721C53;
+--fav15: #777788;
+
+}
+
+
+
+window {
+  font-family: "JetBrainsMono NFM", "Font Awesome 5 Free";
+  margin: 0px;
+  border: 1px solid var(--fav3);
+  background-color: var(--fav3);
+  border-radius: 10px;
+  font-size: 20px;
+}
+
+#input {
+  margin: 5px;
+  border: none;
+  color: var(--fav3);
+  background-color: var(--fav3);
+}
+
+#inner-box {
+  margin: 5px;
+  border: none;
+  background-color: transparent;
+}
+
+#outer-box {
+  margin: 5px;
+  border: none;
+  background-color: transparent;
+}
+
+#scroll {
+  margin: 0px;
+  border: none;
+}
+
+#text {
+  margin: 5px;
+  border: none;
+  color: var(--fav3);
+}
+
+#entry {
+  border: none;
+}
+
+#entry:focus {
+  border: none;
+}
+
+#entry:selected {
+  background-color: var(--fav3);
+  border-radius: 5px;
+  border: none;
+}

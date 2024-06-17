@@ -1,0 +1,58 @@
+-- I am helpers.lua and I should live in ~/.config/wezterm/helpers.lua
+
+local wezterm = require("wezterm")
+
+-- This is the module table that we will export
+local module = {}
+
+-- This function is private to this module and is not visible
+-- outside.
+local function private_helper()
+	wezterm.log_error("hello!")
+end
+
+-- define a function in the module table.
+-- Only functions defined in `module` will be exported to
+-- code that imports this module.
+-- The suggested convention for making modules that update
+-- the config is for them to export an `apply_to_config`
+-- function that accepts the config object, like this:
+function module.apply_to_config(config)
+	private_helper()
+
+	config.colors = {
+		-- Default colors
+		foreground = "{foreground}",
+		background = "#000000",
+
+		-- Cursor colors
+		cursor_bg = "#dcdfe4",
+		cursor_fg = "#1e1e1e",
+
+		-- ANSI colors
+		ansi = {{ { }}
+			"{{color8}}",
+			"{{color9}}",
+			"{{color10}}",
+			"{{color11}}",
+			"{{color12}}",
+			"{{color13}}",
+			"{{color14}}",
+			"{{color15}}",
+			{{ } }},
+
+		-- Bright colors
+		brights = {{ { }}
+			"{{color0}}",
+			"{{color1}}",
+			"{{color2}}",
+			"{{color3}}",
+			"{{color4}}",
+			"{{color5}}",
+			"{{color6}}",
+			"{{color7}}",
+			{{ } }},
+	}
+end
+
+return module
