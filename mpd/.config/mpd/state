@@ -1,9 +1,9 @@
-sw_volume: 94
+sw_volume: 38
 audio_device_state:1:pulse
 audio_device_state:1:Visualizer feed
-state: play
-current: 3
-time: 120.081000
+state: pause
+current: 8
+time: 138.809000
 random: 0
 repeat: 0
 single: 0
@@ -16,4 +16,9 @@ playlist_begin
 1:Past Lives.mp3
 2:Excuses.mp3
 3:Excuses.mp3
+4:295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus
+5:aj we mahiya.mp3
+6:Right Now (Na Na Na).mp3
+7:Bewafa.mp3
+8:Bewafa.mp3
 playlist_end

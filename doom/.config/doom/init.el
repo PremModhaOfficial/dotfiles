@@ -129,7 +129,9 @@
        ;;dhall
        ;;elixir            ; erlang done right
        ;;elm               ; care for a cup of TEA?
-       (emacs-lisp +tree-sitter)        ; drown in parentheses
+       (emacs-lisp
+        +lsp
+        +tree-sitter)        ; drown in parentheses
        ;;erlang            ; an elegant language for a more civilized age
        ;;ess               ; emacs speaks statistics
        ;;factor

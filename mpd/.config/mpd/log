@@ -42,3 +42,25 @@ Jun 19 19:46 : exception: Failed to open /home/prm/.local/share/mpd/playlists: N
 Jun 19 19:49 : player: played "Excuses.mp3"
 Jun 19 19:52 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
 Jun 19 19:52 : player: played "Past Lives.mp3"
+Jun 19 20:00 : player: played "Excuses.mp3"
+Jun 19 20:26 : client: [14] malformed command "GET / HTTP/1.1"
+Jun 19 20:26 : client: [15] malformed command "GET /favicon.ico HTTP/1.1"
+Jun 19 20:28 : client: [16] malformed command "GET / HTTP/1.1"
+Jun 19 20:28 : client: [17] malformed command "GET /favicon.ico HTTP/1.1"
+Jun 19 21:11 : player: played "aj we mahiya.mp3"
+Jun 19 21:29 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Jun 19 21:34 : player: played "Excuses.mp3"
+Jun 19 21:37 : player: played "Excuses.mp3"
+Jun 19 21:39 : client: [10] malformed command "GET / HTTP/1.1"
+Jun 19 21:39 : client: [11] malformed command "GET /favicon.ico HTTP/1.1"
+Jun 19 21:41 : player: played "295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus"
+Jun 19 21:41 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Jun 19 22:17 : player: played "aj we mahiya.mp3"
+Jun 19 22:25 : client: [1] malformed command "GET / HTTP/1.1"
+Jun 19 22:25 : client: [2] malformed command "GET /favicon.ico HTTP/1.1"
+Jun 20 00:02 : player: played "Excuses.mp3"
+Jun 20 00:04 : player: played "Past Lives.mp3"
+Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory

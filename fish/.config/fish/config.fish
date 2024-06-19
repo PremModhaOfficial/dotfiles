@@ -248,6 +248,8 @@ zoxide init fish | source
 
 
 alias wi='wimi && exit'
+alias ta='tmux a || tmux'
+alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
 
 
 # function starship_transient_rprompt_func

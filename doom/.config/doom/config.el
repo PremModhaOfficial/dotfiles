@@ -14,7 +14,7 @@
 
 (setq +lookup-open-url-fn #'eww)
 (setq! scroll-margin 30)
-(setq! shell-file-name '/bin/fish)
+;; (setq! shell-file-name '/bin/zsh)
 
 (set-frame-parameter nil 'alpha-background 90)
 (add-to-list 'default-frame-alist '(alpha-background . 90))

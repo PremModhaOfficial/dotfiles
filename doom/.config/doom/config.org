@@ -79,8 +79,10 @@
 #+begin_src emacs-lisp
 (setq +lookup-open-url-fn #'eww)
 (setq! scroll-margin 30)
-(setq! shell-file-name '/bin/fish)
+;; (setq! shell-file-name '/bin/zsh)
 #+end_src
+
+#+RESULTS:
 
 ** docs
 *** docs
