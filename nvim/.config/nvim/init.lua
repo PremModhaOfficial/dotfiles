@@ -93,6 +93,7 @@ vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
+vim.opt.conceallevel = 2
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -594,3 +595,13 @@ require("lazy").setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
+-- make nvim transparent
+function ColorMyPrncils(color)
+	color = color or "tokyonight"
+	vim.cmd.colorscheme(color)
+	vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+	vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+end
+
+ColorMyPrncils()
