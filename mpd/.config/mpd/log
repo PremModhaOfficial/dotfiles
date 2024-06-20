@@ -64,3 +64,8 @@ Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: N
 Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
 Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
 Jun 20 00:05 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Jun 20 00:32 : player: played "Bewafa.mp3"
+Jun 20 09:14 : player: played "brown rang honey sing.mp3"
+Jun 20 10:00 : player: played "Past Lives.mp3"
+Jun 20 10:03 : player: played "Excuses.mp3"
+Jun 20 10:05 : player: played "Excuses.mp3"
