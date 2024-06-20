@@ -1,0 +1,25 @@
+sw_volume: 38
+audio_device_state:1:pulse
+audio_device_state:1:Visualizer feed
+state: pause
+current: 3
+time: 109.964000
+random: 0
+repeat: 0
+single: 0
+consume: 0
+crossfade: 0
+mixrampdb: 0.000000
+mixrampdelay: -1.000000
+playlist_begin
+0:Excuses.mp3
+1:Past Lives.mp3
+2:Excuses.mp3
+3:Excuses.mp3
+4:295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus
+5:aj we mahiya.mp3
+6:Right Now (Na Na Na).mp3
+7:Bewafa.mp3
+8:Bewafa.mp3
+9:brown rang honey sing.mp3
+playlist_end
