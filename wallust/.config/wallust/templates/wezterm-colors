@@ -1,0 +1,43 @@
+local module = {}
+		--------
+function module.apply_colors(config)
+		--------
+	config.colors = {
+		--------
+		foreground = "{foreground}",
+		background = "#000000",
+---		cursor_bg = "{color5}",
+---		cursor_fg = "{cursor}",
+---		cursor_border = "{color7}",
+		--------
+		brights = {
+		--------
+			"{color0}",
+			"{color1}",
+			"{color2}",
+			"{color3}",
+			"{color4}",
+			"{color5}",
+			"{color6}",
+			"{color7}",
+		--------
+		},
+		--------
+		ansi = {
+		--------
+			"{color8}",
+			"{color9}",
+			"{color10}",
+			"{color11}",
+			"{color12}",
+			"{color13}",
+			"{color14}",
+			"{color15}",
+		--------
+		},
+		--------
+	}
+end
+
+return module
+
