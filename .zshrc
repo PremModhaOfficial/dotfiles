@@ -319,4 +319,7 @@ alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/mas
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-JUPYTERLAB_DIR=/home/prm/.local/share/jupyter/lab
+
+eval "$(ssh-agent)"
+ssh-add ~/.ssh/GitHub_id_ed25519
+
