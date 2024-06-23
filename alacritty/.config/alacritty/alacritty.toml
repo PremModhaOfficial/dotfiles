@@ -1,3 +1,8 @@
+
+import = [
+	"/home/prm/.config/alacritty/dark_pride.toml",
+]
+
 live_config_reload = true
 
 [colors]
