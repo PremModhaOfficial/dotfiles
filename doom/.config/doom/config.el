@@ -16,5 +16,5 @@
 (setq! scroll-margin 30)
 ;; (setq! shell-file-name '/bin/zsh)
 
-(set-frame-parameter nil 'alpha-background 90)
+(set-frame-parameter nil 'alpha-background 75)
 (add-to-list 'default-frame-alist '(alpha-background . 90))
