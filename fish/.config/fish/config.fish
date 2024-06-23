@@ -247,7 +247,7 @@ enable_transience
 zoxide init fish | source
 
 
-alias wi='wimi && exit'
+alias wi='wimi -1 1 && exit'
 alias ta='tmux a || tmux'
 alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
 
