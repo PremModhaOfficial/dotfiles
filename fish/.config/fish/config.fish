@@ -233,7 +233,7 @@ alias mocp="bash -c mocp"
 ### RANDOM COLOR SCRIPT ###
 # Get this script from my GitLab: gitlab.com/dwt1/shell-color-scripts
 # Or install it from the Arch User Repository: shell-color-scripts
-colorscript random
+# colorscript random
 
 ### SETTING THE STARSHIP PROMPT ###
 # starship init fish | source
@@ -245,6 +245,7 @@ enable_transience
 
 ### SETUP ZOXIDE ###
 zoxide init fish | source
+eww shell-completions --shell fish | source
 
 
 alias wi='wimi -1 1 && exit'
