@@ -1,2 +1,8 @@
-mpd/database
-wezterm/colors
+
+
+
+./mpd/.config/mpd/log
+./mpd/.config/mpd/state
+./mpd/.config/mpd/database
+
+./wezterm/.config/wezterm/colors.lua
