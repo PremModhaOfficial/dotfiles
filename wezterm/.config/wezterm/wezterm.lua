@@ -4,6 +4,8 @@ local colors = require("colors")
 -- disable tabs
 local config = wezterm.config_builder()
 
+-- config.CloseOnCleanExit = true
+
 config.enable_wayland = false
 config.enable_tab_bar = false
 config.font = wezterm.font("JetBrainsMono NFM", { weight = "Regular" })
