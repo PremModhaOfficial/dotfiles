@@ -10,7 +10,8 @@ visualizer_data_source = "/tmp/mpd.fifo"
 visualizer_output_name = "my_fifo"
 visualizer_in_stereo = "yes"
 visualizer_type = "spectrum"
-visualizer_look = "P"
+visualizer_look = "󰥛󰥛"
+# visualizer_look = "P"
 
 # appearance
 startup_screen = "media_library"
@@ -24,7 +25,7 @@ selected_item_suffix = "$9"
 playlist_display_mode = "columns" # (classic/columns)
 browser_display_mode = "columns" #(classic/columns)
 autocenter_mode = "yes"
-progressbar_look = "_)~"
+progressbar_look = "󰥛󰥛"
 user_interface = "classic" #(classic/alternative)
 header_visibility = "no"
 statusbar_visibility = "yes"
@@ -35,8 +36,7 @@ display_volume_level = "no"
 display_bitrate = "yes"
 display_remaining_time = "no"
 
-# # colors
-# colors_enabled = "yes"
+# # colors colors_enabled = "yes"
 # header_window_color = "blue"
 # volume_color = "blue"
 # state_line_color = "green"
