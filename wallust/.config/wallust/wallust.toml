@@ -10,7 +10,7 @@
 #  * fastresize - A much faster resize algo that uses SIMD. For some reason it
 #                  fails on some images where `resized` doesn't, for this reason
 #                  it does not *replace* but rather it's a new option.
-backend = "full"
+backend = "resized"
 # What color space to use to produce and select the most prominent colors:
 #  * lab      - Uses Cie L*a*b color space
 #  * labmixed - Variant of `lab` that mixes the colors gathered, if not enough
@@ -18,7 +18,7 @@ backend = "full"
 #  * labfast  - Variant of `lab` that avoids floating arithmetic, thus, faster
 #                operations but not that much precise result. Images that work on
 #                lab/labmixed could not have "enough colors" for labfast.
-color_space = "labmixed"
+color_space = "labfast"
 
 # Difference between similar colors, used by the colorspace:
 #  1          Not perceptible by human eyes.
@@ -27,6 +27,7 @@ color_space = "labmixed"
 #  11 - 49    Colors are more similar than opposite
 #  100        Colors are exact opposite
 threshold = 10
+# fav threshold = 39
 
 # NOTE: All filters will fill 16 colors (from color0 to color15), 16 color
 #       variations are the 'ilusion' of more colors by opaquing color1 to color5.
@@ -77,6 +78,10 @@ target = "~/.config/kitty/current-theme.conf"
 [[entry]]
 template = "templates/wezterm-colors"
 target = "~/.config/wezterm/colors.lua"
+
+[[entry]]
+template = "templates/hypr"
+target = "~/dotfiles/hypr/.config/hypr/hyprland_colors.conf"
 
 # REMINDER Variables and methods that can be used with templating:
 #  wallpaper:  The full path to the current wallpaper.

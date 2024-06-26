@@ -5,7 +5,7 @@ function module.apply_colors(config)
 	config.colors = {
 		--------
 		foreground = "{foreground}",
-		background = "#000000",
+		background = "{background}",
 ---		cursor_bg = "{color5}",
 ---		cursor_fg = "{cursor}",
 ---		cursor_border = "{color7}",
