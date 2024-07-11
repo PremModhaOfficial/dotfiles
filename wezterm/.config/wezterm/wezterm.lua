@@ -10,6 +10,15 @@ config.enable_wayland = false
 config.enable_tab_bar = false
 config.font = wezterm.font("JetBrainsMono NFM", { weight = "Regular" })
 
+config.keys = {
+	-- Turn off the default CMD-m Hide action, allowing CMD-m to
+	-- be potentially recognized and handled by the tab
+	{
+		key = "Enter",
+		mods = "ALT",
+		action = wezterm.action.DisableDefaultAssignment,
+	},
+}
 config.font_size = 18
 config.window_padding = {
 	left = 0,
@@ -17,7 +26,7 @@ config.window_padding = {
 	top = 0,
 	bottom = 0,
 }
-config.window_background_opacity = 0.75
+config.window_background_opacity = 0.69
 -- config.dpi = 192
 config.adjust_window_size_when_changing_font_size = false
 
