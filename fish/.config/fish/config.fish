@@ -15,7 +15,7 @@ set -U fish_user_paths $HOME/.bin  $HOME/.local/bin $HOME/.config/emacs/bin $HOM
 ### EXPORT ###
 set fish_greeting                                 # Supresses fish's intro message
 set TERM "xterm-256color"                         # Sets the terminal type
-set EDITOR "emacsclient -t -a ''"                 # $EDITOR use Emacs in terminal
+set EDITOR "nvim"                 # $EDITOR use Emacs in terminal
 set VISUAL "emacsclient -c -a emacs"              # $VISUAL use Emacs in GUI mode
 
 ### SET MANPAGER
@@ -147,6 +147,7 @@ alias .3='cd ../../..'
 alias .4='cd ../../../..'
 alias .5='cd ../../../../..'
 
+
 # vim and emacs
 alias vim='nvim'
 alias emacs="emacsclient -c -a 'emacs'"
@@ -246,12 +247,13 @@ enable_transience
 ### SETUP ZOXIDE ###
 zoxide init fish | source
 eww shell-completions --shell fish | source
+fzf --fish | source
 
 
 alias wi='wimi -1 1 && exit'
 alias ta='tmux a || tmux'
 alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
-
+alias ob='obsidian --disable-gpu'
 
 # function starship_transient_rprompt_func
 #   starship module time
