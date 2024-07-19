@@ -320,6 +320,6 @@ alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/mas
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-eval "$(ssh-agent)"
-ssh-add ~/.ssh/GitHub_id_ed25519
+# eval "$(ssh-agent)"
+# ssh-add ~/.ssh/GitHub_id_ed25519
 
