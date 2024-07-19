@@ -1,9 +1,9 @@
-sw_volume: 38
+sw_volume: 32
 audio_device_state:1:pulse
 audio_device_state:1:Visualizer feed
 state: pause
-current: 3
-time: 109.964000
+current: 18
+time: 69.815000
 random: 0
 repeat: 0
 single: 0
@@ -12,14 +12,42 @@ crossfade: 0
 mixrampdb: 0.000000
 mixrampdelay: -1.000000
 playlist_begin
-0:Excuses.mp3
-1:Past Lives.mp3
-2:Excuses.mp3
-3:Excuses.mp3
-4:295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus
-5:aj we mahiya.mp3
-6:Right Now (Na Na Na).mp3
-7:Bewafa.mp3
-8:Bewafa.mp3
-9:brown rang honey sing.mp3
+0:Blinding Lights.mp3
+1:295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus
+2:Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus
+3:Starboy.mp3
+4:Mr.Kitty - After Dark [sVx1mJDeUjY].opus
+5:Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus
+6:So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus
+7:THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus
+8:The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus
+9:The Last Of us - Theme song [pfA5UqEU_80].opus
+10:aj we mahiya.mp3
+11:Excuses.mp3
+12:Excuses.mp3
+13:Bewafa.mp3
+14:Past Lives.mp3
+15:Right Now (Na Na Na).mp3
+16:57. DOOM Eternal.mp3
+17:One More Time.mp3
+18:Kina Chir.mp3
+19:295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus
+20:BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus
+21:Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus
+22:Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus
+23:King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus
+24:Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus
+25:Mr.Kitty - After Dark [sVx1mJDeUjY].opus
+26:Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus
+27:So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus
+28:THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus
+29:The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus
+30:The Last Of us - Theme song [pfA5UqEU_80].opus
+31:aj we mahiya.mp3
+32:akon - you already know.mp3
+33:brown rang honey sing.mp3
+34:ye kangna tera ni.mp3
+35:young-malay.mp3
+36:brown rang honey sing.mp3
+37:Amplifire.mp3
 playlist_end
