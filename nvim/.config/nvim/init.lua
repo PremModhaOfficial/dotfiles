@@ -295,6 +295,7 @@ require("lazy").setup({
 				["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
 				["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
 			})
+
 			-- visual mode
 			require("which-key").register({
 				["<leader>h"] = { "Git [H]unk" },
@@ -381,6 +382,9 @@ require("lazy").setup({
 			--  into multiple repos for maintenance purposes.
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-path",
+			"tzachar/cmp-fuzzy-path",
+			"tzachar/fuzzy.nvim",
+			"tzachar/cmp-fuzzy-buffer",
 		},
 		config = function()
 			-- See `:help cmp`
@@ -401,6 +405,12 @@ require("lazy").setup({
 				--
 				-- No, but seriously. Please read `:help ins-completion`, it is really good!
 				mapping = cmp.mapping.preset.insert({
+					-- disallow_fuzzy_matching = false,
+					-- disallow_fullfuzzy_matching = false,
+					-- disallow_partial_fuzzy_matching = false,
+					-- disallow_partial_matching = true,
+					-- disallow_prefix_unmatching = false,
+
 					-- Select the [n]ext item
 					["<C-n>"] = cmp.mapping.select_next_item(),
 					-- Select the [p]revious item
@@ -449,9 +459,11 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
+					-- { name = "fuzzy_buffer" },
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
-					{ name = "path" },
+					{ name = "cmp_path" },
+					{ name = "fuzzy_path" },
 				},
 			})
 		end,
