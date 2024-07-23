@@ -255,6 +255,7 @@ alias ta='tmux a || tmux'
 alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
 alias ob='obsidian --disable-gpu'
 alias pi="ping google.com"
+alias sds='sdn s'
 
 # function starship_transient_rprompt_func
 #   starship module time
