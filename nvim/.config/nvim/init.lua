@@ -393,6 +393,14 @@ require("lazy").setup({
 			luasnip.config.setup({})
 
 			cmp.setup({
+				matching = {
+					disallow_fuzzy_matching = false,
+					disallow_fullfuzzy_matching = false,
+					disallow_partial_fuzzy_matching = false,
+					disallow_partial_matching = false,
+					disallow_prefix_unmatching = false,
+					disallow_symbol_nonprefix_matching = false,
+				},
 				snippet = {
 					expand = function(args)
 						luasnip.lsp_expand(args.body)
@@ -405,11 +413,6 @@ require("lazy").setup({
 				--
 				-- No, but seriously. Please read `:help ins-completion`, it is really good!
 				mapping = cmp.mapping.preset.insert({
-					-- disallow_fuzzy_matching = false,
-					-- disallow_fullfuzzy_matching = false,
-					-- disallow_partial_fuzzy_matching = false,
-					-- disallow_partial_matching = true,
-					-- disallow_prefix_unmatching = false,
 
 					-- Select the [n]ext item
 					["<C-n>"] = cmp.mapping.select_next_item(),
@@ -459,11 +462,11 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
-					-- { name = "fuzzy_buffer" },
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
-					{ name = "cmp_path" },
+					-- { name = "cmp_path" },
 					{ name = "fuzzy_path" },
+					-- { name = "fuzzy_buffer" },
 				},
 			})
 		end,
