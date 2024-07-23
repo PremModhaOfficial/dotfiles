@@ -8,7 +8,7 @@ local config = wezterm.config_builder()
 
 config.enable_wayland = false
 config.enable_tab_bar = false
-config.font = wezterm.font("JetBrainsMono NFM", { weight = "Regular" })
+config.font = wezterm.font("JetBrainsMono NF", { weight = "Regular" })
 
 config.keys = {
 	-- Turn off the default CMD-m Hide action, allowing CMD-m to
