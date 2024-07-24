@@ -1,4 +1,4 @@
-$active_border=rgba({color3.strip}ff) rgba({color4.strip}ff) rgba({color5.strip}ff) rgba({color6.strip}ff) rgba({color7.strip}ff)
+$active_border=rgba({color12.strip}ff) rgba({color3.strip}ff) rgba({color5.strip}ff) rgba({color8.strip}ff) rgba({color9.strip}ff)
 $inactive_color=rgba({color10.strip}ff)
 
 $color0=rgba({color0.strip}ff)

@@ -29,4 +29,4 @@ SETUVAR fish_pager_color_description:yellow\x1e\x2di
 SETUVAR fish_pager_color_prefix:normal\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
 SETUVAR fish_pager_color_selected_background:\x2dr
-SETUVAR fish_user_paths:/home/prm/\x2ebin\x1e/home/prm/\x2elocal/bin\x1e/home/prm/\x2econfig/emacs/bin\x1e/home/prm/Applications\x1e/var/lib/flatpak/exports/bin/
+SETUVAR fish_user_paths:/home/prm/\x2ebin\x1e/home/prm/\x2elocal/bin\x1e/home/prm/\x2econfig/emacs/bin\x1e/home/prm/Applications\x1e/var/lib/flatpak/exports/bin/\x1e/home/prm/projects/hyprdots/Configs/\x2elocal/share/bin
