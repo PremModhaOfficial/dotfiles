@@ -178,7 +178,8 @@ return {
 				end
 				return msg
 			end,
-			icon = " LSP:",
+			icon = "  ",
+			-- icon = " LSP:",
 			color = { fg = "#ffffff", gui = "bold" },
 		})
 
