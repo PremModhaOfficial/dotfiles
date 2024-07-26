@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+
+swww init & swww restore &
+dunst &
+/usr/bin/emacs --daemon &
+# mpd --verbose --stdout >> "$HOME"/mylogs/premlog &
+# mpc update &
+mpDris2 &
+# notify-send "Welcome Master, $USER" -a "Welcome" -i /usr/share/icons/Papirus/64x64/apps/emacs.svg
+
+
+# connect and export blutooth devices
+#
+
+
+
+"$HOME"/.local/bin/blueme 
+# spd-say "3, 2, 1."
+spd-say "Welcome Back, Master Prem! This is Mark 2! today is $(date +%A" "%d)."
+~/.local/bin/wimi 5 10 &

@@ -1,0 +1,38 @@
+#!/bin/env bash
+
+takemeout () {
+	if [ -z "$1" ]; then
+		dunstify -u critical -t 5000 "No internet connection"
+		exit 1
+	else
+		dunstify -u critical -t 5000 "$1"
+		
+	fi
+	exit 0
+}
+
+if [ -z "$1" ]; then
+	count=-1
+else
+	count=$1
+fi
+max=$count
+if [ -z "$2" ]; then
+	seconds=5
+else
+	seconds=$2
+fi
+while true; do
+	printf "\r%s" "Trying to connect to PREM in every ${seconds} seconds attempt reamining [$(( max - count ))]" &
+	# printf "\r%s" "Next Wallpaper: ${Wallpaper_array[((cnt + 1))]} in $sleepr"
+	nmcli d wifi connect PREM password 12345678 >/dev/null && takemeout "Connected to PREM"
+	nmcli d wifi rescan
+	if [ "$count" -eq 0 ]; then
+		takemeout 
+	fi
+	((count--))
+	# echo "$count"
+	sleep "$seconds"
+done
+
+

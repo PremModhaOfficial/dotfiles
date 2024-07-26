@@ -1,0 +1,11 @@
+#!/bin/env bash
+
+# if there is args, then use that as the wallpaper
+if [ -n "$1" ]; then
+    ~/.local/bin/rust_wal "$1" > ~/mylogs/rwals.css
+    exit 0
+fi
+
+~/.local/bin/rust_wal ~/Downloads/wallpapers/"$(command ls ~/Downloads/wallpapers/ | wofi -d )" > ~/mylogs/rwals.css
+
+

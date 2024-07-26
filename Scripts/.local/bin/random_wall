@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# secs="$(date +%s)"
+
+
+wallpaper=$(eza ~/Downloads/wallpapers/* | shuf -n 1) 
+
+# total_pics=${#arr[@]}
+#
+# number=$(( ( ${secs:6:4} ) % total_pics  )) 
+#
+# echo wallpaper '#:'$number "${arr[$number]:31}"
+#
+# "$HOME"/.local/bin/make_wall "${arr[$number]}"
+#
+
+"$HOME"/.local/bin/make_wall "$wallpaper"

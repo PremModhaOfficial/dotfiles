@@ -1,0 +1,30 @@
+#!/bin/env bash
+#
+sleepr=4
+## array that stores all ther scripts to run from options
+declare -a arr
+while getopts :s:x: option; do
+	case $option  in
+		s ) sleepr="$OPTARG" ;;
+		x ) arr=("$OPTARG") ;;
+		*) ;;
+	esac
+done
+
+itr=$(( 0 ))
+
+while [[ $1 ]]; do
+sleep "$sleepr";
+clear
+(( itr++ ))
+echo $itr "start ---------------------------------"
+echo
+
+for sx in "${arr[@]}" ; do
+	 "$HOME"/.local/bin/"$sx"
+done
+
+echo
+echo $itr "END ----------------------------------"
+done
+

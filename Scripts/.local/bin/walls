@@ -1,0 +1,20 @@
+#!/bin/env bash
+
+
+pic=$(command ls ~/Downloads/wallpapers/ | wofi -I -d -i -M fuzzy) 
+
+if [ -z "$pic" ]; then
+	~/.local/bin/random_wall
+    exit 0
+fi
+
+echo "wallpaper: $pic"
+# wal  --cols16 --backend wal --saturate 0.85 -i ~/Downloads/wallpapers/"$pic"
+#
+# cat ~/.cache/wal/hyprland_colors.conf | sed -e s/#//g > ~/.config/hypr/hyprland_colors.conf
+# cat ~/.cache/wal/colors-kitty.conf > ~/.config/kitty/current-theme.conf
+#
+# swww img ~/Downloads/wallpapers/"$pic"
+#
+"$HOME"/.local/bin/make_wall ~/Downloads/wallpapers/"$pic"
+

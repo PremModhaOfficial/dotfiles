@@ -1,0 +1,7 @@
+#!/bin/env bash
+
+ffmpeg -y -f pulse -i default -acodec pcm_s16le -ac 1 -ar 44100 -t 5 ~/.cache/audi.wav
+ audi.wav
+vosk-transcriber -i ~/.cache/audi.wav -o ~/.cache/audi.txt
+bat ~/.cache/audi.txt
+

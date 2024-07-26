@@ -1,0 +1,6 @@
+#!/bin/env bash
+
+duration=$(( $2 * 60 ))
+sleep "$duration"
+
+eval "($1)"

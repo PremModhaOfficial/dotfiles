@@ -1,0 +1,38 @@
+#!/bin/env bash
+
+
+
+
+if [[ -f ~/mylogs/periodicwallpapers.lock ]]; then # check if the lock file exists
+	echo "Another instance is running"
+	dunstify -u critical -t 10000 "Already running"
+	exit 1
+fi
+date +%H" "%M > ~/mylogs/periodicwallpapers.lock
+
+
+declare -a Wallpaper_array
+
+while IFS= read -r line; do
+    Wallpaper_array+=("$line")
+done < <(find /home/prm/Downloads/wallpapers | shuf)
+
+
+cnt=0
+while [[ $cnt != "${#Wallpaper_array[@]}" ]]; do
+	((cnt++))
+	~/.local/bin/make_wall "${Wallpaper_array[$cnt]}"
+	sleepr=120
+	while [[ $sleepr != 0 ]] ; do
+		((sleepr--))
+		printf "\r%s" "Next Wallpaper: ${Wallpaper_array[((cnt + 1))]} in $sleepr"
+		sleep 1
+	done
+done
+
+
+dunstify -u critical -t 10000 "Wallpapers finished stopped"
+
+rm ~/mylogs/periodicwallpapers.lock
+
+

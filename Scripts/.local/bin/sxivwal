@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+name=$(nsxiv ~/Downloads/wallpapers/ -o -t | tail -n 1)
+
+# wal --cols16 --backend wal --saturate 0.85 -i "$name"
+# cat ~/.cache/wal/hyprland_colors.conf | sed -e s/#//g > ~/.config/hypr/hyprland_colors.conf
+# cat ~/.cache/wal/colors-kitty.conf > ~/.config/kitty/current-theme.conf
+# swww img $name
+
+~/.local/bin/make_wall "$name"

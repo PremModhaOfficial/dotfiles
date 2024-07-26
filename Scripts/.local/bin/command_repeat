@@ -1,0 +1,46 @@
+#!/bin/env bash
+
+interval_in_seconds=5
+command=""
+
+error_me_daddy() {
+	dunstify "Error" "$1"
+}
+
+## take bash args to set delay with opt args
+
+while getopts "c:hr:" opt; do
+	case $opt in
+		c)
+			command="$OPTARG"
+			;;
+		h)
+			echo "Usage: $0 <command> [interval_in_seconds]"
+			exit 0
+			;;
+		r)
+			interval_in_seconds="$OPTARG"
+			;;
+		\?)
+			echo "Invalid option: $OPTARG" 1>&2
+			exit 1
+			;;
+		:)
+			echo "Option -$OPTARG requires an argument." 1>&2
+			exit 1
+			;;
+	esac
+done
+
+
+if [ -z "$command" ]; then
+	echo "Usage: $0 <command> [interval_in_seconds]"
+	exit 1
+fi
+	dunstify "Repeating command: $command" "per $interval_in_seconds seconds"
+
+while true ; do
+	eval "$command" || error_me_daddy "Command failed: $command"
+	sleep "$interval_in_seconds" || error_me_daddy "Sleep failed"
+done
+

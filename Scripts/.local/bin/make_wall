@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+echo "Setting wallpaper to $1"
+
+wallust -w "$1" 
+dunstify -a "Wallust" -u low -t 2000 "Calculating Colors" &
+dunstify -a "SWWW" -u low -t 2000 "Setting Image" &
+swww img "$1" -t random
+# kitten @ set-colors --all ~/.cache/wallust/colors.txt
