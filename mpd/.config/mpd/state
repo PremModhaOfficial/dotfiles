@@ -1,9 +1,9 @@
-sw_volume: 54
+sw_volume: 40
 audio_device_state:1:pulse
 audio_device_state:1:Visualizer feed
 state: pause
-current: 1
-time: 110.785000
+current: 9
+time: 13.208000
 random: 0
 repeat: 0
 single: 0
@@ -14,4 +14,33 @@ mixrampdelay: -1.000000
 playlist_begin
 0:Save Your Tears.mp3
 1:death bed (coffee for your head).mp3
+2:death bed (coffee for your head).mp3
+3:death bed (coffee for your head).mp3
+4:Right Now (Na Na Na).mp3
+5:young-malay.mp3
+6:King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus
+7:Blinding Lights.mp3
+8:Save Your Tears.mp3
+9:Starboy.mp3
+10:295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus
+11:BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus
+12:Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus
+13:Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus
+14:King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus
+15:Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus
+16:Mr.Kitty - After Dark [sVx1mJDeUjY].opus
+17:Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus
+18:So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus
+19:THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus
+20:The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus
+21:The Last Of us - Theme song [pfA5UqEU_80].opus
+22:aj we mahiya.mp3
+23:akon - you already know.mp3
+24:brown rang honey sing.mp3
+25:ye kangna tera ni.mp3
+26:young-malay.mp3
+27:Espresso.mp3
+28:Blinding Lights.mp3
+29:Save Your Tears.mp3
+30:Starboy.mp3
 playlist_end
