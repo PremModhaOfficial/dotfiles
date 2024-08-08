@@ -158,3 +158,439 @@ Jul 26 09:08 : player: played "King - Tu Aake Dekhle ｜ The Carnival ｜ The La
 Jul 26 10:32 : update: added /Espresso.mp3
 Jul 26 10:34 : update: removing Espresso.mp3
 Jul 26 10:34 : update: added /Espresso.mp3
+Aug 06 17:27 : exception: Failed to decode /home/prm/Music/Starboy.mp3; Failed to open '/home/prm/Music/Starboy.mp3': No such file or directory
+Aug 06 17:27 : player: played "Starboy.mp3"
+Aug 06 17:27 : exception: Failed to decode /home/prm/Music/295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus; Failed to open '/home/prm/Music/295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus': No such file or directory
+Aug 06 17:27 : player: played "295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus"
+Aug 06 17:27 : exception: inotify_add_watch() has failed: No such file or directory
+Aug 06 17:27 : exception: Failed to decode /home/prm/Music/Excuses.mp3; Failed to open '/home/prm/Music/Excuses.mp3': No such file or directory
+Aug 06 17:27 : player: played "Excuses.mp3"
+Aug 06 17:27 : exception: Failed to decode /home/prm/Music/Excuses.mp3; Failed to open '/home/prm/Music/Excuses.mp3': No such file or directory
+Aug 06 17:27 : exception: Failed to decode /home/prm/Music/Excuses.mp3; Failed to open '/home/prm/Music/Excuses.mp3': No such file or directory
+Aug 06 17:27 : player: played "Excuses.mp3"
+Aug 06 17:27 : exception: Failed to decode /home/prm/Music/Excuses.mp3; Failed to open '/home/prm/Music/Excuses.mp3': No such file or directory
+Aug 06 17:43 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:43 : player: played "Blinding Lights.mp3"
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:48 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus; Failed to open '/home/prm/Music/295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus': No such file or directory
+Aug 06 17:52 : player: played "295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus; Failed to open '/home/prm/Music/295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus; Failed to open '/home/prm/Music/BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus': No such file or directory
+Aug 06 17:52 : player: played "BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus; Failed to open '/home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus': No such file or directory
+Aug 06 17:52 : player: played "Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus; Failed to open '/home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : player: played "Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : player: played "King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : player: played "Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Mr.Kitty - After Dark [sVx1mJDeUjY].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus; Failed to open '/home/prm/Music/BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus': No such file or directory
+Aug 06 17:52 : player: played "BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus; Failed to open '/home/prm/Music/BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus; Failed to open '/home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus': No such file or directory
+Aug 06 17:52 : player: played "Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus; Failed to open '/home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus': No such file or directory
+Aug 06 17:52 : player: played "Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : player: played "King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : player: played "Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : player: played "Mr.Kitty - After Dark [sVx1mJDeUjY].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus; Failed to open '/home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus': No such file or directory
+Aug 06 17:52 : player: played "Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus; Failed to open '/home/prm/Music/Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus; Failed to open '/home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus': No such file or directory
+Aug 06 17:52 : player: played "Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : player: played "King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : player: played "Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Mr.Kitty - After Dark [sVx1mJDeUjY].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus; Failed to open '/home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus': No such file or directory
+Aug 06 17:52 : player: played "Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus; Failed to open '/home/prm/Music/Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : player: played "King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : player: played "Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : player: played "Mr.Kitty - After Dark [sVx1mJDeUjY].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : player: played "King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus; Failed to open '/home/prm/Music/King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : player: played "Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus; Failed to open '/home/prm/Music/Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : player: played "Mr.Kitty - After Dark [sVx1mJDeUjY].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : player: played "Mr.Kitty - After Dark [sVx1mJDeUjY].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus; Failed to open '/home/prm/Music/Mr.Kitty - After Dark [sVx1mJDeUjY].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : player: played "Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus; Failed to open '/home/prm/Music/Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : player: played "So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus; Failed to open '/home/prm/Music/So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : player: played "THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus; Failed to open '/home/prm/Music/THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus; Failed to open '/home/prm/Music/The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus': No such file or directory
+Aug 06 17:52 : player: played "The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus; Failed to open '/home/prm/Music/The Last Of us - Theme song [pfA5UqEU_80].opus': No such file or directory
+Aug 06 17:52 : player: played "The Last Of us - Theme song [pfA5UqEU_80].opus"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/aj we mahiya.mp3; Failed to open '/home/prm/Music/aj we mahiya.mp3': No such file or directory
+Aug 06 17:52 : player: played "aj we mahiya.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/akon - you already know.mp3; Failed to open '/home/prm/Music/akon - you already know.mp3': No such file or directory
+Aug 06 17:52 : player: played "akon - you already know.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/brown rang honey sing.mp3; Failed to open '/home/prm/Music/brown rang honey sing.mp3': No such file or directory
+Aug 06 17:52 : player: played "brown rang honey sing.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/ye kangna tera ni.mp3; Failed to open '/home/prm/Music/ye kangna tera ni.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : player: played "ye kangna tera ni.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/young-malay.mp3; Failed to open '/home/prm/Music/young-malay.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : player: played "young-malay.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Espresso.mp3; Failed to open '/home/prm/Music/Espresso.mp3': No such file or directory
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Espresso.mp3"
+Aug 06 17:52 : exception: Failed to decode /home/prm/Music/Blinding Lights.mp3; Failed to open '/home/prm/Music/Blinding Lights.mp3': No such file or directory
+Aug 06 17:52 : player: played "Blinding Lights.mp3"
+Aug 06 17:54 : update: removing brown rang honey sing.mp3
+Aug 06 17:54 : update: removing BROWN MUNDE - AP DHILLON ｜ GURINDER GILL ｜ SHINDA KAHLON (Official Music Video) [VNs_cCtdbPc].opus
+Aug 06 17:54 : update: removing akon - you already know.mp3
+Aug 06 17:54 : update: removing aj we mahiya.mp3
+Aug 06 17:54 : update: removing 295 (Official Audio) ｜ Sidhu Moose Wala ｜ The Kidd ｜ Moosetape [n_FCrCQ6-bA].opus
+Aug 06 17:54 : update: removing Kina Chir.mp3
+Aug 06 17:54 : update: removing Blinding Lights.mp3
+Aug 06 17:54 : update: removing death bed (coffee for your head).mp3
+Aug 06 17:54 : update: updating /Starboy.mp3
+Aug 06 17:54 : update: removing Hethens.mp3
+Aug 06 17:54 : update: removing Señorita.mp3
+Aug 06 17:54 : update: removing One More Time.mp3
+Aug 06 17:54 : update: removing Amplifire.mp3
+Aug 06 17:54 : update: removing Ye Tune Kya Kiya.mp3
+Aug 06 17:54 : update: removing Right Now (Na Na Na).mp3
+Aug 06 17:54 : update: removing Excuses.mp3
+Aug 06 17:54 : update: removing Espresso.mp3
+Aug 06 17:54 : update: removing Past Lives.mp3
+Aug 06 17:54 : update: removing 57. DOOM Eternal.mp3
+Aug 06 17:54 : update: removing young-malay.mp3
+Aug 06 17:54 : update: removing ye kangna tera ni.mp3
+Aug 06 17:54 : update: removing THE LAST RIDE - Offical Video ｜  Sidhu Moose Wala ｜ Wazir Patar [6xoB4ZiKKn0].opus
+Aug 06 17:54 : update: removing The Last Of us - Theme song [pfA5UqEU_80].opus
+Aug 06 17:54 : update: removing The Batman ｜ Michael Giacchino ｜ WaterTower [Cwcinb2OxUo].opus
+Aug 06 17:54 : update: removing So High ｜ Official Music Video ｜ Sidhu Moose Wala ft. BYG BYRD ｜ Humble Music [GgmFC8y8q3k].opus
+Aug 06 17:54 : update: removing Same Beef Song ｜ BOHEMIA ｜ Ft. Sidhu Moose Wala ｜ Byg Byrd ｜ Punjabi Song #sidhumoosewala #bohemia [qarwDKZQVjo].opus
+Aug 06 17:54 : update: removing Mr.Kitty - After Dark [sVx1mJDeUjY].opus
+Aug 06 17:54 : update: removing Mareux - The Perfect Girl (Official Music Video) [q7qdpyjHyNk].opus
+Aug 06 17:54 : update: removing King - Tu Aake Dekhle ｜ The Carnival ｜ The Last Ride ｜ Prod. by Shahbeatz ｜ Latest Hit Songs 2020 [A66TYFdz8YA].opus
+Aug 06 17:54 : update: removing Indila - Tourner Dans Le Vide [vtNJMAyeP0s].opus
+Aug 06 17:54 : update: removing Doom Eternal OST - The Only Thing They Fear Is You (Mick Gordon) [Doom Eternal Theme] [kpnW68Q8ltc].opus
+Aug 06 17:54 : update: removing You Spin Me Right Round.mp3
+Aug 06 17:54 : update: removing Bewafa.mp3
+Aug 06 17:54 : update: removing Maria Maria (feat. The Product G-B).mp3
+Aug 06 17:54 : update: updating /Save Your Tears.mp3
+Aug 06 17:54 : update: added /aja we mahie.mp3
+Aug 06 17:54 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 06 17:58 : player: played "aja we mahie.mp3"
+Aug 06 17:59 : exception: Failed to open /home/prm/.local/share/mpd/playlists: No such file or directory
+Aug 07 09:48 : player: played "aja we mahie.mp3"
