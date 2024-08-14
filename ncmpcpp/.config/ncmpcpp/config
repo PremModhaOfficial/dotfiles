@@ -58,6 +58,7 @@ display_remaining_time = "no"
 #
 # more stuff
 playlist_disable_highlight_delay = "3"
+visualizer_spectrum_smooth_look = "yes"
 message_delay_time = "4"
 default_find_mode = "wrapped" #(wrapped/normal)
 follow_now_playing_lyrics = "yes"
