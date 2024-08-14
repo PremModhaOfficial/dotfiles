@@ -1,7 +1,6 @@
-
-
-
-./mpd/.config/mpd/log
-./mpd/.config/mpd/state
-./mpd/.config/mpd/database
 ./wezterm/.config/wezterm/colors.lua
+nvim/.config/nvim/lazy-lock.json
+mpd/.config/mpd/log
+mpd/.config/mpd/database
+ncmpcpp/.config/ncmpcpp/error.log
+kitty/.config/kitty/theme.conf
