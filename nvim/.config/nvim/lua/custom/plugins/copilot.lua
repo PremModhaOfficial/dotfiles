@@ -3,14 +3,14 @@ return {
 	config = function()
 		require("copilot").setup({
 			panel = {
-				enabled = true,
+				enabled = false,
 				auto_refresh = true,
 				keymap = {
 					jump_prev = "[[",
 					jump_next = "]]",
 					accept = "<CR>",
 					refresh = "gr",
-					open = "<M-CR>",
+					open = "<M-=>",
 				},
 				layout = {
 					position = "right", -- | top | left | right
@@ -18,7 +18,7 @@ return {
 				},
 			},
 			suggestion = {
-				enabled = true,
+				enabled = false,
 				auto_trigger = true,
 				hide_during_completion = true,
 				debounce = 75,

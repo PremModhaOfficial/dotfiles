@@ -364,12 +364,12 @@ require("lazy").setup({
 					-- `friendly-snippets` contains a variety of premade snippets.
 					--    See the README about individual language/framework/plugin snippets:
 					--    https://github.com/rafamadriz/friendly-snippets
-					-- {
-					--   'rafamadriz/friendly-snippets',
-					--   config = function()
-					--     require('luasnip.loaders.from_vscode').lazy_load()
-					--   end,
-					-- },
+					{
+						"rafamadriz/friendly-snippets",
+						config = function()
+							require("luasnip.loaders.from_vscode").lazy_load()
+						end,
+					},
 				},
 			},
 			"saadparwaiz1/cmp_luasnip",
@@ -382,6 +382,12 @@ require("lazy").setup({
 			"tzachar/cmp-fuzzy-path",
 			"tzachar/fuzzy.nvim",
 			"tzachar/cmp-fuzzy-buffer",
+			{
+				"zbirenbaum/copilot-cmp",
+				config = function()
+					require("copilot_cmp").setup()
+				end,
+			},
 		},
 		config = function()
 			-- See `:help cmp`
@@ -459,11 +465,12 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
+					{ name = "nvim_lsp", group_index = 1, priority = 100 },
+					{ name = "luasnip", group_index = 1, priority = 1 },
+					{ name = "fuzzy_path", group_index = 1 },
+					{ name = "copilot", group_index = 3 },
+					{ name = "fuzzy_buffer", group_index = 3 },
 					-- { name = "cmp_path" },
-					{ name = "fuzzy_path" },
-					-- { name = "fuzzy_buffer" },
 				},
 			})
 		end,
