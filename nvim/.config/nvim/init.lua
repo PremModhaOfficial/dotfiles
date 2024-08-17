@@ -50,8 +50,6 @@ Kickstart Guide:
       - :
       - Tutor
       - <enter key>
-
-
     (If you already know the Neovim basics, you can skip this step.)
 
   Once you've completed that, you can continue working through **AND READING** the rest
@@ -85,6 +83,7 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+--
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -108,6 +107,7 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
+
 vim.opt.mouse = "a"
 
 -- Don't show the mode, since it's already in the status line
@@ -140,7 +140,6 @@ vim.opt.updatetime = 250
 -- Decrease mapped sequence wait time
 -- Displays which-key popup sooner
 vim.opt.timeoutlen = 300
-
 -- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
@@ -231,6 +230,19 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
+local function border(hl_name)
+	return {
+		{ "┌", hl_name },
+		{ "─", hl_name },
+		{ "┐", hl_name },
+		{ "│", hl_name },
+		{ "┘", hl_name },
+		{ "─", hl_name },
+		{ "└", hl_name },
+		{ "│", hl_name },
+	}
+end
+
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
 	-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -396,6 +408,16 @@ require("lazy").setup({
 			luasnip.config.setup({})
 
 			cmp.setup({
+				window = {
+					completion = {
+						border = border("CmpMenuBorder"),
+						winhighlight = "Normal:CmpMenu,CursorLine:CmpMenuSel,Search:Red",
+					},
+					documentation = {
+						border = border("CmpDocBorder"),
+						winhighlight = "Normal:CmpDoc",
+					},
+				},
 				matching = {
 					disallow_fuzzy_matching = false,
 					disallow_fullfuzzy_matching = false,
@@ -465,12 +487,12 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
-					{ name = "nvim_lsp", group_index = 1, priority = 100 },
-					{ name = "luasnip", group_index = 1, priority = 1 },
-					{ name = "fuzzy_path", group_index = 1 },
-					{ name = "copilot", group_index = 3 },
-					{ name = "fuzzy_buffer", group_index = 3 },
-					-- { name = "cmp_path" },
+					{ name = "nvim_lsp", priority = 1000 },
+					{ name = "luasnip", priority = 1000 },
+					{ name = "fuzzy_path", priority = 500 },
+					{ name = "copilot", proiority = 499 },
+					{ name = "fuzzy_buffer", priority = 498 },
+					-- { name = "cmp_path", priority = 501 },
 				},
 			})
 		end,
@@ -573,13 +595,13 @@ require("lazy").setup({
 --
 -- make nvim transparent
 function ColorMyPrncils(color)
-	color = color or "gruvbox" or "tokyonight-night"
+	color = color or "tokyonight-night"
 	vim.cmd.colorscheme(color)
 	vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 	vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 end
 
-ColorMyPrncils()
+-- ColorMyPrncils()
 vim.filetype.add({
 	pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
 })
