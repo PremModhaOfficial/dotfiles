@@ -7,6 +7,7 @@ return {
 		-- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
 		"folke/tokyonight.nvim",
 		priority = 1000, -- Make sure to load this before all the other start plugins.
+		--[[
 		init = function()
 			-- Load the colorscheme here.
 			-- Like many other themes, this one has different styles, and you could load
@@ -16,6 +17,7 @@ return {
 			-- You can configure highlights by doing something like:
 			vim.cmd.hi("Comment gui=none")
 		end,
+		--]]
 	},
 
 	{
@@ -37,15 +39,19 @@ return {
 				strikethrough = true,
 				invert_selection = false,
 				invert_signs = false,
-				invert_tabline = false,
+				invert_tabline = true,
 				invert_intend_guides = false,
-				inverse = false, -- invert background for search, diffs, statuslines and errors
+				inverse = true, -- invert background for search, diffs, statuslines and errors
 				contrast = "hard", -- can be "hard", "soft" or empty string
 				palette_overrides = {},
 				overrides = {},
-				dim_inactive = false,
+				dim_inactive = true,
 				transparent_mode = true,
 			})
+		end,
+		init = function()
+			vim.cmd.colorscheme("gruvbox")
+			-- vim.cmd.hi("Comment gui=none")
 		end,
 	},
 }
