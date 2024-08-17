@@ -1,6 +1,8 @@
 ./wezterm/.config/wezterm/colors.lua
-nvim/.config/nvim/lazy-lock.json
-mpd/.config/mpd/log
-mpd/.config/mpd/database
-ncmpcpp/.config/ncmpcpp/error.log
 kitty/.config/kitty/theme.conf
+mpd/.config/mpd/database
+mpd/.config/mpd/log
+mpd/.config/mpd/pid
+mpd/.config/mpd/state
+ncmpcpp/.config/ncmpcpp/error.log
+nvim/.config/nvim/lazy-lock.json
