@@ -23,6 +23,7 @@
 What is Kickstart?
 
   Kickstart.nvim is *not* a distribution.
+  
 
   Kickstart.nvim is a starting point for your own configuration.
     The goal is that you can read every line of code, top-to-bottom, understand
@@ -487,11 +488,11 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
-					{ name = "nvim_lsp", priority = 1000 },
-					{ name = "luasnip", priority = 1000 },
-					{ name = "fuzzy_path", priority = 500 },
-					{ name = "copilot", proiority = 499 },
-					{ name = "fuzzy_buffer", priority = 498 },
+					{ name = "nvim_lsp", priority = 100, group_index = 1 },
+					{ name = "luasnip", priority = 1, group_index = 2 },
+					{ name = "fuzzy_path", priority = 50, group_index = 3 },
+					{ name = "copilot", proiority = 499, group_index = 5 },
+					-- { name = "fuzzy_buffer", priority = 489, group_index = 3 },
 					-- { name = "cmp_path", priority = 501 },
 				},
 			})
