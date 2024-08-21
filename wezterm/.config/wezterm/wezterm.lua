@@ -1,10 +1,10 @@
 local wezterm = require("wezterm")
-local colors = require("colors")
---
+local colors = require("theme")
 -- disable tabs
 local config = wezterm.config_builder()
-
 -- config.CloseOnCleanExit = true
+-- apply colors
+colors.apply_colors(config)
 
 config.enable_wayland = false
 config.enable_tab_bar = false
@@ -30,7 +30,6 @@ config.window_background_opacity = 0.69
 -- config.dpi = 192
 config.adjust_window_size_when_changing_font_size = false
 
-colors.apply_colors(config)
 -- Spawn a fish shell in login mode
 config.default_prog = { "/bin/fish", "-l" }
 
