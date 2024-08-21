@@ -1,5 +1,4 @@
 return { -- LSP Configuration & Plugins
-
 	"neovim/nvim-lspconfig",
 	dependencies = {
 		-- Automatically install LSPs and related tools to stdpath for Neovim
@@ -177,8 +176,11 @@ return { -- LSP Configuration & Plugins
 		local servers = {
 			-- clangd = {},
 			-- gopls = {},
-			-- pyright = {},
+			pyright = {},
 			-- rust_analyzer = {},
+			nil_ls = {
+				cmd = { "nil", "--stdio" },
+			},
 			-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 			--
 			-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -221,6 +223,7 @@ return { -- LSP Configuration & Plugins
 		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 		require("mason-lspconfig").setup({
+			automatic_installation = false,
 			handlers = {
 				function(server_name)
 					local server = servers[server_name] or {}
