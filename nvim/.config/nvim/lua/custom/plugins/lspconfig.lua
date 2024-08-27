@@ -32,7 +32,6 @@ return { -- LSP Configuration & Plugins
 			end
 			return l.util.open_floating_preview(markdown_lines, "markdown", config)
 		end
-
 		-- Brief aside: **What is LSP?**
 		--
 		-- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -180,6 +179,9 @@ return { -- LSP Configuration & Plugins
 			-- rust_analyzer = {},
 			nil_ls = {
 				cmd = { "nil", "--stdio" },
+				flake = {
+					autoArchive = "true",
+				},
 			},
 			-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 			--

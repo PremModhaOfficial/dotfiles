@@ -28,9 +28,9 @@ return {
 				name = "prem",
 				path = "~/Notes/second_brain/",
 				-- Optional, override certain settings.
-				-- overrides = {
-				-- 	notes_subdir = "notes",
-				-- },
+				overrides = {
+					notes_subdir = "notes",
+				},
 			},
 		},
 
@@ -47,7 +47,7 @@ return {
 
 		daily_notes = {
 			-- Optional, if you keep daily notes in a separate directory.
-			folder = "notes/dailies",
+			folder = "notes/",
 			-- Optional, if you want to change the date format for the ID of daily notes.
 			date_format = "%Y-%m-%d",
 			-- Optional, if you want to change the date format of the default alias of daily notes.
@@ -88,12 +88,30 @@ return {
 				end,
 				opts = { buffer = true, expr = true },
 			},
+			["<leader>sf"] = {
+				action = function()
+					vim.cmd("ObsidianSearch")
+				end,
+				desc = "Search for notes",
+			},
+			["<leader>od"] = {
+				action = function()
+					vim.cmd("ObsidianDailies")
+				end,
+				opts = { noremap = true },
+			},
+			["<leader>on"] = {
+				action = function()
+					vim.cmd("ObsidianNew")
+				end,
+				opts = { noremap = true },
+			},
 		},
 
 		-- Where to put new notes. Valid options are
 		--  * "current_dir" - put new notes in same directory as the current buffer.
 		--  * "notes_subdir" - put new notes in the default notes subdirectory.
-		new_notes_location = "stack",
+		new_notes_location = "notes_subdir",
 
 		-- Optional, customize how note IDs are generated given an optional title.
 		---@param title string|?

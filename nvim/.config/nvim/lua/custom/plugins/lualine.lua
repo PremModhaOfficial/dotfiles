@@ -95,6 +95,9 @@ return {
 		ins_left({
 			-- mode component
 			function()
+				-- return "󰽬"
+				-- return ""
+				-- return "󰣇"
 				return ""
 			end,
 			color = function()
