@@ -8,7 +8,10 @@ colors.apply_colors(config)
 
 config.enable_wayland = false
 config.enable_tab_bar = false
-config.font = wezterm.font("JetBrainsMono NF", { weight = "Regular" })
+config.font = wezterm.font_with_fallback({
+	"JetBrainsMono NF",
+	"Noto Color Emoji", -- Add fallback for emojis
+})
 
 config.keys = {
 	-- Turn off the default CMD-m Hide action, allowing CMD-m to
@@ -21,10 +24,10 @@ config.keys = {
 }
 config.font_size = 18
 config.window_padding = {
-	left = 0,
-	right = 0,
-	top = 0,
-	bottom = 0,
+	left = 1,
+	right = 1,
+	top = 1,
+	bottom = 1,
 }
 config.window_background_opacity = 0.69
 -- config.dpi = 192
