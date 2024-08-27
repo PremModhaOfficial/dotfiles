@@ -37,6 +37,9 @@ style = "Italic"
 family = "JetBrainsMono NF"
 style = "Regular"
 
+# [font.fallback]
+# family = "Noto Color Emoji"
+
 # [font.offset]
 # x = 0
 # y = 0
