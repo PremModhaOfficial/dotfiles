@@ -22,6 +22,8 @@
 
 What is Kickstart?
 
+
+
   Kickstart.nvim is *not* a distribution.
   
 
@@ -158,7 +160,7 @@ vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 19
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -298,7 +300,9 @@ require("lazy").setup({
 		"folke/which-key.nvim",
 		event = "VimEnter", -- Sets the loading event to 'VimEnter'
 		config = function() -- This is the function that runs, AFTER loading
-			require("which-key").setup()
+			require("which-key").setup({
+				win = { border = border("WhichKeyBorder") },
+			})
 
 			-- Document existing key chains
 			require("which-key").add({
@@ -395,6 +399,7 @@ require("lazy").setup({
 			"tzachar/cmp-fuzzy-path",
 			"tzachar/fuzzy.nvim",
 			"tzachar/cmp-fuzzy-buffer",
+			"onsails/lspkind.nvim",
 			{
 				"zbirenbaum/copilot-cmp",
 				config = function()
@@ -407,6 +412,8 @@ require("lazy").setup({
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 			luasnip.config.setup({})
+			local lspkind = require("lspkind")
+			lspkind.init()
 
 			cmp.setup({
 				window = {
@@ -488,12 +495,26 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
-					{ name = "nvim_lsp", priority = 100, group_index = 1 },
-					{ name = "luasnip", priority = 1, group_index = 2 },
-					{ name = "fuzzy_path", priority = 50, group_index = 3 },
-					{ name = "copilot", proiority = 499, group_index = 5 },
+					{ name = "nvim_lsp", priority = 1000, group_index = 3 },
+					{ name = "luasnip", group_index = 3 },
+					{ name = "fuzzy_path", priority = 50, group_index = 1 },
+					{ name = "copilot", proiority = 200, group_index = 3 },
 					-- { name = "fuzzy_buffer", priority = 489, group_index = 3 },
 					-- { name = "cmp_path", priority = 501 },
+				},
+				formatting = {
+					expandable_indicator = true,
+					fields = { "abbr", "kind", "menu" },
+					format = lspkind.cmp_format({
+						mode = "symbol_text", -- show only symbol annotations
+						maxwidth = 50,
+						preset = "codicons",
+						ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+						show_labelDetails = true, -- show labelDetails in menu. Disabled by default
+						symbol_map = {
+							Copilot = "",
+						},
+					}),
 				},
 			})
 		end,
