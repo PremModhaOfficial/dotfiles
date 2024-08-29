@@ -1,4 +1,4 @@
-ColorScheme = "tokyodark"
+ColorScheme = "cyberdream"
 return {
 	{
 		"scottmckendry/cyberdream.nvim",
@@ -81,9 +81,10 @@ return {
 				comments = { italic = true }, -- style for comments
 				keywords = { italic = true }, -- style for keywords
 				identifiers = { italic = true }, -- style for identifiers
-				functions = {}, -- style for functions
+				functions = { bold = true }, -- style for functions
 				variables = {}, -- style for variables
-				folds = { bold = true, italic = true }, -- style for folds
+				strings = { italic = true }, -- style for strings
+				-- folds = { bold = true, italic = true }, -- style for folds
 			},
 			---@diagnostic disable-next-line: unused-local
 			custom_highlights = {} or function(highlights, palette)
