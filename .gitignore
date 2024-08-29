@@ -7,3 +7,5 @@ mpd/.config/mpd/state
 ncmpcpp/.config/ncmpcpp/error.log
 nvim/.config/nvim/lazy-lock.json
 wezterm/.config/wezterm/theme.lua
+tmux/.config/tmux/plugins/tmux-open
+tmux/.config/tmux/plugins/tmux-sessionx
