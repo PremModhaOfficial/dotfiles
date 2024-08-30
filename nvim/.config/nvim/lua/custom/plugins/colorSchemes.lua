@@ -1,4 +1,4 @@
-ColorScheme = "cyberdream"
+ColorScheme = "fluoromachine"
 return {
 	{
 		"scottmckendry/cyberdream.nvim",
@@ -60,7 +60,7 @@ return {
 
 			fm.setup({
 				glow = false,
-				theme = "fluoromachine",
+				theme = "retrowave",
 				transparent = true,
 				brightness = 0.05,
 				true_colors = true,

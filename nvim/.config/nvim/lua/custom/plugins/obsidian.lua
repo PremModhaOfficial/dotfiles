@@ -1,3 +1,4 @@
+---@diagnostic disable: unused-local
 return {
 	"epwalsh/obsidian.nvim",
 	version = "*", -- recommended, use latest release instead of latest commit
@@ -249,11 +250,13 @@ return {
 		callbacks = {
 			-- Runs at the end of `require("obsidian").setup()`.
 			---@param client obsidian.Client
+			---@diagnostic disable-next-line: unused-local
 			post_setup = function(client) end,
 
 			-- Runs anytime you enter the buffer for a note.
 			---@param client obsidian.Client
 			---@param note obsidian.Note
+			---@diagnostic disable-next-line: unused-local
 			enter_note = function(client, note) end,
 
 			-- Runs anytime you leave the buffer for a note.
