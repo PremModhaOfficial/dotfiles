@@ -36,4 +36,9 @@ config.adjust_window_size_when_changing_font_size = false
 -- Spawn a fish shell in login mode
 config.default_prog = { "/bin/fish", "-l" }
 
+if require("overrides") then
+	local overrides = require("overrides")
+	overrides.override(config)
+end
+
 return config
