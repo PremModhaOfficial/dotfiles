@@ -1,4 +1,5 @@
-{ description = "Home Manager configuration using Nix Flakes";
+{
+  description = "Home Manager configuration using Nix Flakes";
 
   inputs = {
     # Home Manager Flake
@@ -6,7 +7,7 @@
     # Nixpkgs for package management
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # You can choose a different branch or version
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    emacs-overlay.url = "github:nix-community/emacs-overlay"; 
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
 
   outputs = { self, nixpkgs, home-manager, ... }:
@@ -15,10 +16,10 @@
       system = "x86_64-linux";  # Adjust this for your architecture
       # Import the overlay directly
       # Import Nixpkgs
-      pkgs = import nixpkgs { 
+      pkgs = import nixpkgs {
         inherit system;
-        config = { 
-          allowUnfree = true;  # Enable unfree packages 
+        config = {
+          allowUnfree = true; # Enable unfree packages 
         };
       };
 
@@ -29,15 +30,17 @@
         modules = [
           {
             # Specify the state version
-            home.stateVersion = "23.05";  # Use the latest stable version or the version you are targeting
-            home.homeDirectory = "/home/prm";  # Replace 'yourusername' with your actual username
+            home.stateVersion = "23.05"; # Use the latest stable version or the version you are targeting
+            home.homeDirectory = "/home/prm"; # Replace 'yourusername' with your actual username
             # Specify the username
-            home.username = "prm";  # Replace with your actual username
+            home.username = "prm"; # Replace with your actual username
 
             home.packages = with pkgs; [
               nh
               nom
               mongoose
+              cowsay
+              jujutsu
             ];
 
             programs.git = {
@@ -62,7 +65,7 @@
         ];
       };
     in
-      {
+    {
       nixpkgs.config = { allowUnfree = true; };
       # Expose the homeConfigurations attribute
       homeConfigurations = {
