@@ -42,7 +42,6 @@
               jujutsu
               nh
               nix-output-monitor
-              zed-editor
             ];
 
             programs.git = {
