@@ -36,11 +36,13 @@
             home.username = "prm"; # Replace with your actual username
 
             home.packages = with pkgs; [
-              nh
-              nom
-              mongoose
               cowsay
+              direnv
+              jp2a
               jujutsu
+              nh
+              nix-output-monitor
+              zed-editor
             ];
 
             programs.git = {
