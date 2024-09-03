@@ -144,6 +144,31 @@ return { -- LSP Configuration & Plugins
 					})
 				end
 
+				local function check_codelens_support()
+					local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+					for _, c in ipairs(clients) do
+						if c.server_capabilities.codeLensProvider then
+							return true
+						end
+					end
+					return false
+				end
+
+				vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach", "BufEnter" }, {
+					buffer = event.bufnr,
+					callback = function()
+						if check_codelens_support() then
+							vim.lsp.codelens.refresh({ bufnr = 0 })
+							map("<leader>cA", function()
+								vim.lsp.codelens.refresh()
+								vim.lsp.codelens.run()
+							end, "[C]ode Lense [A]ction")
+						end
+					end,
+				})
+				-- trigger codelens refresh
+				vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
+
 				-- The following autocommand is used to enable inlay hints in your
 				-- code, if the language server you are using supports them
 				--

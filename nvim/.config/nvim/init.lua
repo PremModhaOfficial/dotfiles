@@ -151,7 +151,7 @@ vim.opt.splitbelow = true
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.listchars = { tab = "»·", trail = "·", nbsp = "␣", extends = "…", precedes = "…" }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"
@@ -495,7 +495,17 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
-					{ name = "nvim_lsp", priority = 1000, group_index = 3 },
+					{
+						name = "nvim_lsp",
+						priority = 1000,
+						group_index = 3,
+						option = {
+							show_guides = true,
+							markdown_oxide = {
+								keyword_pattern = [[\(\k\| \|\/\|#\)\+]],
+							},
+						},
+					},
 					{ name = "luasnip", group_index = 3 },
 					{ name = "fuzzy_path", priority = 50, group_index = 1 },
 					{ name = "copilot", proiority = 200, group_index = 3 },

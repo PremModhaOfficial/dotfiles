@@ -1,21 +1,93 @@
 ColorScheme = "fluoromachine"
 return {
 	{
+		"maxmx03/fluoromachine.nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			local fm = require("fluoromachine")
+
+			fm.setup({
+				theme = "fluoromachine",
+				glow = false,
+				transparent = true,
+				brightness = 1.0,
+				true_colors = true,
+				styles = {
+					types = { italic = true, bold = false },
+					functions = { italic = true, bold = true },
+					comments = { italic = true },
+					keywords = { italic = true, bold = true },
+					constants = { italic = false, bold = true },
+					variables = { italic = true },
+					fields = { italic = true },
+					parameters = { italic = true },
+				},
+			})
+		end,
+		init = function()
+			if ColorScheme == "fluoromachine" then
+				vim.cmd([[colorscheme fluoromachine]])
+			end
+		end,
+	},
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		priority = 1000,
+		config = function()
+			require("catppuccin").setup({
+				flavour = "macchiato", -- latte, frappe, macchiato, mocha
+				-- background = { -- :h background light = "latte", dark = "mocha", },
+				transparent_background = false, -- disables setting the background color.
+				show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
+				term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
+				styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
+					comments = { "italic" }, -- Change the style of comments
+					conditionals = { "italic" },
+					loops = {},
+					functions = {},
+					keywords = {},
+					strings = {},
+					variables = {},
+					numbers = {},
+					booleans = {},
+					properties = {},
+					types = {},
+					operators = {},
+					-- miscs = {}, -- Uncomment to turn off hard-coded styles
+				},
+			})
+
+			-- setup must be called before loading
+		end,
+		init = function()
+			if ColorScheme == "catppuccin" then
+				vim.cmd([[colorscheme catppuccin]])
+			end
+		end,
+	},
+	{
+		"Tsuzat/NeoSolarized.nvim",
+		lazy = false, -- make sure we load this during startup if it is your main colorscheme
+		priority = 1000, -- make sure to load this before all the other start plugins
+		config = function()
+			if ColorScheme == "solarized" then
+				vim.cmd([[ colorscheme NeoSolarized ]])
+			end
+		end,
+	},
+	{
 		"scottmckendry/cyberdream.nvim",
 		lazy = false,
 		priority = 1000,
 		config = function()
 			vim.cmd([[ set background=dark ]])
 			require("cyberdream").setup({
-				-- Enable transparent background
 				transparent = true,
-				-- Enable italics comments
 				italic_comments = true,
-				-- Replace all fillchars with ' ' for the ultimate clean look
 				hide_fillchars = true,
-				-- Modern borderless telescope theme - also applies to fzf-lua
 				borderless_telescope = false,
-				-- Set terminal colors used in `:terminal`
 				terminal_colors = true,
 				-- Use caching to improve performance - WARNING: experimental feature - expect the unexpected!
 				-- Early testing shows a 60-70% improvement in startup time. YMMV. Disables dynamic light/dark theme switching.
@@ -48,27 +120,6 @@ return {
 				colorscheme cyberdream
 				CyberdreamBuildCache
 				]])
-			end
-		end,
-	},
-	{
-		"maxmx03/fluoromachine.nvim",
-		lazy = false,
-		priority = 1000,
-		config = function()
-			local fm = require("fluoromachine")
-
-			fm.setup({
-				glow = false,
-				theme = "retrowave",
-				transparent = true,
-				brightness = 0.05,
-				true_colors = true,
-			})
-		end,
-		init = function()
-			if ColorScheme == "fluoromachine" then
-				vim.cmd([[colorscheme fluoromachine]])
 			end
 		end,
 	},

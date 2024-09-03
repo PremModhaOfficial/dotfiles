@@ -1,4 +1,4 @@
----@diagnostic disable: unused-local
+--@diagnostic disable: unused-local
 return {
 	"epwalsh/obsidian.nvim",
 	version = "*", -- recommended, use latest release instead of latest commit
@@ -89,6 +89,12 @@ return {
 				end,
 				opts = { buffer = true, expr = true },
 			},
+			["<leader>b"] = {
+				action = function()
+					vim.cmd("wall")
+				end,
+				desc = "Search for notes",
+			},
 			["<leader>sf"] = {
 				action = function()
 					vim.cmd("ObsidianSearch")
@@ -98,6 +104,13 @@ return {
 			["<leader>od"] = {
 				action = function()
 					vim.cmd("ObsidianDailies")
+				end,
+				describe = "Dailies",
+				opts = { noremap = true },
+			},
+			["<leader>oo"] = {
+				action = function()
+					vim.cmd("ObsidianOpen")
 				end,
 				opts = { noremap = true },
 			},
