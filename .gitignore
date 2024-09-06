@@ -10,3 +10,5 @@ wezterm/.config/wezterm/theme.lua
 tmux/.config/tmux/plugins/tmux-open
 tmux/.config/tmux/plugins/tmux-sessionx
 wezterm/.config/wezterm/overrides.lua
+nix/.config/nixpkgs/flake.lock
+nvim/.config/nvim/lazy-lock.json

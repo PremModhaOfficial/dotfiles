@@ -10,13 +10,13 @@ visualizer_data_source = "/tmp/mpd.fifo"
 visualizer_output_name = "my_fifo"
 visualizer_in_stereo = "yes"
 visualizer_type = "spectrum"
-visualizer_look = "󱑻"
+visualizer_look = "󱑻󰥛"
 # visualizer_look = "P"
-#   
-# 󱑺 󱑺󱑺
-# 󰥛 󰥛󰥛
-# 󱑽 󱑽󱑽
-# 󱑻 󱑻󱑻
+#   
+# 󱑺 󱑺󱑺󱑺󱑺󱑺󱑺󱑺󱑺󱑺󱑺󱑺
+# 󰥛 󰥛󰥛󰥛󰥛󰥛󰥛󰥛󰥛󰥛󰥛󰥛
+# 󱑽 󱑽󱑽󱑽󱑽󱑽󱑽󱑽󱑽󱑽󱑽󱑽
+# 󱑻 󱑻󱑻󱑻󱑻󱑻󱑻󱑻󱑻󱑻󱑻󱑻
 
 # appearance
 startup_screen = "media_library"
@@ -30,7 +30,7 @@ selected_item_suffix = "$9"
 playlist_display_mode = "columns" # (classic/columns)
 browser_display_mode = "columns" #(classic/columns)
 autocenter_mode = "yes"
-progressbar_look = "󰥛"
+progressbar_look = "󱑻"
 user_interface = "classic" #(classic/alternative)
 header_visibility = "no"
 statusbar_visibility = "yes"
@@ -55,12 +55,12 @@ display_remaining_time = "no"
 # visualizer_color = "blue"
 # window_border_color = "magenta"
 # active_window_border = "blue"
-#
+
 # more stuff
 playlist_disable_highlight_delay = "3"
 visualizer_spectrum_smooth_look = "yes"
 message_delay_time = "4"
-default_find_mode = "wrapped" #(wrapped/normal)
+default_find_mode = "normal" #(wrapped/normal)
 follow_now_playing_lyrics = "yes"
 store_lyrics_in_song_dir = "yes"
 jump_to_now_playing_song_at_start = "yes"

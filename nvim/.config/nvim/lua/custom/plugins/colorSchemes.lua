@@ -1,4 +1,4 @@
-ColorScheme = "fluoromachine"
+ColorSheme = "fluoromachine"
 return {
 	{
 		"maxmx03/fluoromachine.nvim",
@@ -14,19 +14,19 @@ return {
 				brightness = 1.0,
 				true_colors = true,
 				styles = {
-					types = { italic = true, bold = false },
-					functions = { italic = true, bold = true },
+					types = { bold = false, italic = true },
+					functions = { bold = true },
 					comments = { italic = true },
 					keywords = { italic = true, bold = true },
-					constants = { italic = false, bold = true },
-					variables = { italic = true },
-					fields = { italic = true },
-					parameters = { italic = true },
+					constants = { bold = true, italic = true },
+					variables = {},
+					fields = {},
+					parameters = {},
 				},
 			})
 		end,
 		init = function()
-			if ColorScheme == "fluoromachine" then
+			if ColorSheme == "fluoromachine" then
 				vim.cmd([[colorscheme fluoromachine]])
 			end
 		end,
@@ -45,9 +45,9 @@ return {
 				styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
 					comments = { "italic" }, -- Change the style of comments
 					conditionals = { "italic" },
-					loops = {},
-					functions = {},
-					keywords = {},
+					loops = { "italic" },
+					functions = { "bold" },
+					keywords = { "bold", "italic" },
 					strings = {},
 					variables = {},
 					numbers = {},
@@ -62,7 +62,7 @@ return {
 			-- setup must be called before loading
 		end,
 		init = function()
-			if ColorScheme == "catppuccin" then
+			if ColorSheme == "catppuccin" then
 				vim.cmd([[colorscheme catppuccin]])
 			end
 		end,
@@ -72,7 +72,7 @@ return {
 		lazy = false, -- make sure we load this during startup if it is your main colorscheme
 		priority = 1000, -- make sure to load this before all the other start plugins
 		config = function()
-			if ColorScheme == "solarized" then
+			if ColorSheme == "solarized" then
 				vim.cmd([[ colorscheme NeoSolarized ]])
 			end
 		end,
@@ -115,7 +115,7 @@ return {
 			})
 		end,
 		init = function()
-			if ColorScheme == "cyberdream" then
+			if ColorSheme == "cyberdream" then
 				vim.cmd([[
 				colorscheme cyberdream
 				CyberdreamBuildCache
@@ -151,7 +151,7 @@ return {
 			require("tokyodark").setup(opts) -- calling setup is optional
 		end,
 		init = function()
-			if ColorScheme == "tokyodark" then
+			if ColorSheme == "tokyodark" then
 				vim.cmd([[colorscheme tokyodark]])
 			end
 		end,
@@ -167,7 +167,7 @@ return {
 			require("tokyonight").setup()
 		end,
 		init = function()
-			if ColorScheme == "tokyonight" then
+			if ColorSheme == "tokyonight" then
 				-- Load the colorscheme here.
 				-- Like many other themes, this one has different styles, and you could load
 				-- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
@@ -209,7 +209,7 @@ return {
 			})
 		end,
 		init = function()
-			if ColorScheme == "gruvbox" then
+			if ColorSheme == "gruvbox" then
 				vim.cmd([[colorscheme gruvbox]])
 				vim.cmd.hi("Comment gui=none")
 			end

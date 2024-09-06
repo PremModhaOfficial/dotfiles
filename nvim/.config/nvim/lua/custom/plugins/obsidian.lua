@@ -95,7 +95,7 @@ return {
 				end,
 				desc = "Search for notes",
 			},
-			["<leader>sf"] = {
+			["<leader><leader>"] = {
 				action = function()
 					vim.cmd("ObsidianSearch")
 				end,

@@ -12,7 +12,6 @@ return { -- LSP Configuration & Plugins
 
 		-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
 		-- used for completion, annotations and signatures of Neovim apis
-		{ "folke/neodev.nvim", opts = {} },
 	},
 	config = function()
 		local l = vim.lsp
@@ -100,7 +99,13 @@ return { -- LSP Configuration & Plugins
 
 				-- Rename the variable under your cursor.
 				--  Most Language Servers support renaming across files, etc.
-				map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+				-- map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+				map("<leader>rN", function()
+					vim.cmd("Lspsaga rename ++project")
+				end, "[R]e[n]ame (project)")
+				map("<leader>rn", function()
+					vim.cmd("Lspsaga rename")
+				end, "[R]e[n]ame")
 
 				-- Execute a code action, usually your cursor needs to be on top of an error
 				-- or a suggestion from your LSP for this to activate.
@@ -109,7 +114,10 @@ return { -- LSP Configuration & Plugins
 
 				-- Opens a popup that displays documentation about the word under your cursor
 				--  See `:help K` for why this keymap.
-				map("K", vim.lsp.buf.hover, "Hover Documentation")
+				-- map("K", vim.lsp.buf.hover, "Hover Documentation")
+				map("K", function()
+					vim.cmd("Lspsaga hover_doc")
+				end, "Hover Documentation")
 
 				-- WARN: This is not Goto Definition, this is Goto Declaration.
 				--  For example, in C this would take you to the header.
@@ -143,29 +151,29 @@ return { -- LSP Configuration & Plugins
 						end,
 					})
 				end
+				--
+				-- local function check_codelens_support()
+				-- 	local clients = vim.lsp.get_clients({ bufnr = 0 })
+				-- 	for _, c in ipairs(clients) do
+				-- 		if c.server_capabilities.codeLensProvider then
+				-- 			return true
+				-- 		end
+				-- 	end
+				-- 	return false
+				-- end
 
-				local function check_codelens_support()
-					local clients = vim.lsp.get_active_clients({ bufnr = 0 })
-					for _, c in ipairs(clients) do
-						if c.server_capabilities.codeLensProvider then
-							return true
-						end
-					end
-					return false
-				end
-
-				vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach", "BufEnter" }, {
-					buffer = event.bufnr,
-					callback = function()
-						if check_codelens_support() then
-							vim.lsp.codelens.refresh({ bufnr = 0 })
-							map("<leader>cA", function()
-								vim.lsp.codelens.refresh()
-								vim.lsp.codelens.run()
-							end, "[C]ode Lense [A]ction")
-						end
-					end,
-				})
+				-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach", "BufEnter" }, {
+				-- 	buffer = event.bufnr,
+				-- 	callback = function()
+				-- 		if check_codelens_support() then
+				-- 			vim.lsp.codelens.refresh({ bufnr = 0 })
+				-- 			map("<leader>cA", function()
+				-- 				vim.lsp.codelens.refresh()
+				-- 				vim.lsp.codelens.run()
+				-- 			end, "[C]ode Lense [A]ction")
+				-- 		end
+				-- 	end,
+				-- })
 				-- trigger codelens refresh
 				vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 
@@ -206,6 +214,23 @@ return { -- LSP Configuration & Plugins
 				cmd = { "nil", "--stdio" },
 				flake = {
 					autoArchive = "true",
+				},
+			},
+			pylsp = {
+				plugins = {
+					autopep8 = {
+						enabled = true,
+					},
+					mypy = {
+						enabled = true,
+					},
+					isort = {
+						enabled = true,
+					},
+					flake8 = {
+						enabled = true,
+						executable = ".venv/bin/flake8",
+					},
 				},
 			},
 			-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs

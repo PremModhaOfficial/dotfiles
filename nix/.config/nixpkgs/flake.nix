@@ -8,9 +8,14 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # You can choose a different branch or version
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
+
+    firefox-addons = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
     let
       # Define the system architecture
       system = "x86_64-linux";  # Adjust this for your architecture
@@ -24,7 +29,7 @@
       };
 
       # Define the Home Manager configuration
-
+      lib = home-manager.lib;
       homeConfig = home-manager.lib.homeManagerConfiguration {
         pkgs = pkgs; # Pass the pkgs variable here
         modules = [
@@ -36,13 +41,45 @@
             home.username = "prm"; # Replace with your actual username
 
             home.packages = with pkgs; [
-              cowsay
               direnv
               jp2a
               jujutsu
-              nh
               nix-output-monitor
+              pass-wayland
+              proton-pass
+              telegram-desktop
+              whatsapp-for-linux
+              zathura
+
+              (writeShellScriptBin
+                "ShyFoxHook.sh" ''
+                mkdir -p ~/.mozilla/shyfox
+                rm -rfv ~/.mozilla/shyfox
+                git clone https://github.com/Naezr/ShyFox.git ~/.mozilla/shyfox
+                rm -vrf ~/.mozilla/firefox/prm-dev/chrome
+                rm -vrf ~/.mozilla/firefox/prm-dev/user.js*
+                mv -v ~/.mozilla/shyfox/chrome ~/.mozilla/firefox/prm-dev
+                mv -v ~/.mozilla/shyfox/user.js ~/.mozilla/firefox/prm-dev
+                rm -rfv ~/.mozilla/shyfox
+                sudo chmod +w ~/.mozilla/firefox/profiles.ini
+              '')
             ];
+            home.activation.copyNilPackage = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+              dest="/home/prm/.local/share/nvim/mason/packages/nil/bin"
+              destln="/home/prm/.local/share/nvim/mason/bin/nil"
+  
+              # Create destination directory if it doesn't exist
+              mkdir -p "$dest"
+  
+              # Copy the derivation to the destination
+              echo "Copying nil to $dest"
+              cp -rfv ${pkgs.nil}/bin/nil "$dest"
+              rm -v $destln
+              echo "linking nil to $destln"
+              ln -sv "$dest/nil" $destln
+            '';
+
+
 
             programs.git = {
               enable = true;
@@ -55,13 +92,49 @@
                 l = "log --oneline --graph";
               };
             };
-            # postInstall = ''
-            #   # Run post-install tasks here
-            # '';
 
-            home.file.".bashrc".text = ''
-              export PATH=$HOME/.local/bin:$PATH
-            '';
+            programs.firefox = {
+              enable = true;
+              profiles = {
+                "prm-dev" = {
+                  settings = {
+                    "browser.startup.homepage" = "about:home";
+                  };
+
+                  search.engines = {
+                    "Nix Packages" = {
+                      urls = [{
+                        template = "https://search.nixos.org/packages";
+                        params = [
+                          { name = "type"; value = "packages"; }
+                          { name = "query"; value = "{searchTerms}"; }
+                        ];
+                      }];
+
+                      icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                      definedAliases = [ "@np" ];
+                    };
+                  };
+                  search.force = true;
+                  extraConfig = ''
+                    user_pref("browser.startup.homepage", "about:blank");
+                  '';
+
+                  extensions = with inputs.firefox-addons.packages."x86_64-linux"; [
+                    # tridactyl # vimmode
+                    darkreader
+                    sidebery
+                    sponsorblock
+                    surfingkeys
+                    ublock-origin
+                    userchrome-toggle-extended
+                    youtube-shorts-block
+                  ];
+                };
+              };
+            };
+
+
           }
         ];
       };
@@ -72,7 +145,9 @@
       homeConfigurations = {
         # Replace 'yourusername' with your actual username
         prm = homeConfig;
+        home-manager.backupFileExtension = "home-backup";
       };
     };
 }
+
 
