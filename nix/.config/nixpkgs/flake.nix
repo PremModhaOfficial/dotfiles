@@ -41,15 +41,11 @@
             home.username = "prm"; # Replace with your actual username
 
             home.packages = with pkgs; [
-              direnv
-              jp2a
               jujutsu
               nix-output-monitor
               pass-wayland
               proton-pass
-              telegram-desktop
               whatsapp-for-linux
-              zathura
 
               (writeShellScriptBin
                 "ShyFoxHook.sh" ''
