@@ -9,7 +9,8 @@ colors.apply_colors(config)
 config.enable_wayland = false
 config.enable_tab_bar = false
 config.font = wezterm.font_with_fallback({
-	{ family = "JetBrainsMono Nerd Font Propo", weight = "Regular" },
+	{ family = "Iosevka NF", weight = "Regular" },
+	{ family = "JetBrainsMono NF", weight = "Light" },
 	-- "JetBrainsMono NF",
 	"Noto Color Emoji", -- Add fallback for emojis
 })
