@@ -60,10 +60,9 @@
             home.activation.copyNilPackage = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
               dest="/home/prm/.local/share/nvim/mason/packages/nil/bin"
               destln="/home/prm/.local/share/nvim/mason/bin/nil"
-  
               # Create destination directory if it doesn't exist
               mkdir -p "$dest"
-  
+
               # Copy the derivation to the destination
               echo "Copying nil to $dest"
               cp -rfv ${pkgs.nil}/bin/nil "$dest"
