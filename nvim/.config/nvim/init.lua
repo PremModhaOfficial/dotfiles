@@ -27,6 +27,8 @@ What is Kickstart?
   Kickstart.nvim is *not* a distribution.
   
 
+	this is my neovim configuration
+
   Kickstart.nvim is a starting point for your own configuration.
     The goal is that you can read every line of code, top-to-bottom, understand
     what your configuration is doing, and modify it to suit your needs.
@@ -162,6 +164,8 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 19
+-- for fat cursur
+-- guicursur = "block"
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -512,14 +516,10 @@ require("lazy").setup({
 					--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 				}),
 				sources = {
-					{
-						name = "lazydev",
-						-- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
-						group_index = 0,
-					},
+					{ name = "lazydev", group_index = 0 },
 					{
 						name = "nvim_lsp",
-						priority = 10,
+						priority = 200,
 						group_index = 3,
 						option = {
 							show_guides = true,
@@ -528,11 +528,11 @@ require("lazy").setup({
 							},
 						},
 					},
-					{ name = "luasnip", group_index = 3 },
-					{ name = "fuzzy_path", priority = 50, group_index = 1 },
+					{ name = "luasnip", priority = 201, group_index = 3 },
+					-- { name = "fuzzy_path", priority = 50, group_index = 1 },
 					{ name = "copilot", proiority = 200, group_index = 3 },
 					-- { name = "fuzzy_buffer", priority = 489, group_index = 3 },
-					-- { name = "cmp_path", priority = 501 },
+					{ name = "cmp_path", priority = 501, group_index = 3 },
 				},
 				formatting = {
 					expandable_indicator = true,

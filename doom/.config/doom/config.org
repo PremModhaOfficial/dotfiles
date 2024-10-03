@@ -36,7 +36,7 @@
 ;;
 ** Font
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Iosevka NF" :size 24 :weight 'regular :scalable 't)
+(setq doom-font (font-spec :family "Iosevkaterm NF" :size 24 :weight 'regular :scalable 't)
      doom-variable-pitch-font (font-spec :family "JetBrainsMono Nerd Font Propo" :size 20))
 #+end_src
 

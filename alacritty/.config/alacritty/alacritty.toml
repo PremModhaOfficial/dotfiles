@@ -19,23 +19,23 @@ size = 18.0
 
 
 [font.bold]
-family = "Iosevka Nerd Font"
+family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "SemiBold"
 
 [font.bold_italic]
-family = "Iosevka Nerd Font"
+family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "SemiBold Italic"
 #
 
 [font.italic]
-family = "Iosevka Nerd Font"
+family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "Italic"
 
 [font.normal]
-family = "Iosevka Nerd Font"
+family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "Regular"
 

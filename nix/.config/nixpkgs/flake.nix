@@ -41,11 +41,8 @@
             home.username = "prm"; # Replace with your actual username
 
             home.packages = with pkgs; [
-              jujutsu
+              jp2a
               nix-output-monitor
-              pass-wayland
-              proton-pass
-              whatsapp-for-linux
 
               (writeShellScriptBin
                 "ShyFoxHook.sh" ''
