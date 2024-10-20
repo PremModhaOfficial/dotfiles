@@ -11,6 +11,38 @@
 # your path gets massive and fish becomes very slow.
 set -e fish_user_paths
 set -U fish_user_paths $HOME/.bin  $HOME/.local/bin $HOME/.config/emacs/bin $HOME/Applications /var/lib/flatpak/exports/bin/ $fish_user_paths $HOME/projects/hyprdots/Configs/.local/share/bin
+set -g fish_greeting
+
+if status is-interactive
+    starship init fish | source
+end
+
+# List Directory
+# alias l='eza -lh  --icons=auto' # long list
+# alias ls='eza -1   --icons=auto' # short list
+# alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
+# alias ld='eza -lhD --icons=auto' # long list dirs
+# alias lt='eza --icons=auto --tree' # list folder as tree
+# Changing "ls" to "eza"
+alias ls='eza -al --color=always --group-directories-first' # my preferred listing
+alias la='eza -a --color=always --group-directories-first'  # all files and dirs
+alias ll='eza -l --color=always --group-directories-first'  # long format
+alias lt='eza -aT --color=always --group-directories-first' # tree listing
+alias l.='eza -a | egrep "^\."'
+alias l.='eza -al --color=always --group-directories-first ../' # ls on the PARENT directory
+alias l..='eza -al --color=always --group-directories-first ../../' # ls on directory 2 levels up
+alias l...='eza -al --color=always --group-directories-first ../../../' # ls on directory 3 levels up
+# Handy change dir shortcuts
+abbr .. 'cd ..'
+abbr ... 'cd ../..'
+abbr .3 'cd ../../..'
+abbr .4 'cd ../../../..'
+abbr .5 'cd ../../../../..'
+
+abbr ta 'tmux a'
+abbr e 'nvim'
+# Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+abbr mkdir 'mkdir -p'
 
 ### EXPORT ###
 set fish_greeting                                 # Supresses fish's intro message
@@ -140,12 +172,6 @@ end
 
 
 ### ALIASES ###
-# navigation
-alias ..='cd ..'
-alias ...='cd ../..'
-alias .3='cd ../../..'
-alias .4='cd ../../../..'
-alias .5='cd ../../../../..'
 
 
 # vim and emacs
@@ -154,15 +180,6 @@ alias emacs="emacsclient -c -a 'emacs'"
 alias em='/usr/bin/emacs -nw'
 alias rem="killall emacs || echo 'Emacs server not running'; /usr/bin/emacs --daemon" # Kill Emacs and restart daemon..
 
-# Changing "ls" to "eza"
-alias ls='eza -al --color=always --group-directories-first' # my preferred listing
-alias la='eza -a --color=always --group-directories-first'  # all files and dirs
-alias ll='eza -l --color=always --group-directories-first'  # long format
-alias lt='eza -aT --color=always --group-directories-first' # tree listing
-alias l.='eza -a | egrep "^\."'
-alias l.='eza -al --color=always --group-directories-first ../' # ls on the PARENT directory
-alias l..='eza -al --color=always --group-directories-first ../../' # ls on directory 2 levels up
-alias l...='eza -al --color=always --group-directories-first ../../../' # ls on directory 3 levels up
 
 # pacman and yay
 alias pacsyu='sudo pacman -Syu'                  # update only standard pkgs
