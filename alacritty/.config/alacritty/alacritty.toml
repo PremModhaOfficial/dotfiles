@@ -1,10 +1,4 @@
 
-import = [
-	"/home/prm/.config/alacritty/dark_pride.toml",
-]
-
-live_config_reload = true
-
 [colors]
 draw_bold_text_with_bright_colors = true
 
@@ -19,24 +13,24 @@ size = 18.0
 
 
 [font.bold]
-family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
+# family = "Iosevkaterm Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "SemiBold"
 
 [font.bold_italic]
-family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
+# family = "Iosevkaterm Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "SemiBold Italic"
 #
 
 [font.italic]
-family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
+# family = "Iosevkaterm Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "Italic"
 
 [font.normal]
-family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
+# family = "Iosevkaterm Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
 # [font.fallback]
@@ -143,7 +137,7 @@ history = 5000
 save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-[shell]
+[terminal.shell]
 program = "/bin/fish"
 
 # [visual_bell]
@@ -163,3 +157,13 @@ instance = "Alacritty"
 [window.padding]
 x = 0
 y = 0
+
+[general]
+
+live_config_reload = true
+
+import = [
+	"/home/prm/.config/alacritty/dark_pride.toml",
+]
+
+[terminal]
