@@ -15,10 +15,10 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { nixpkgs, home-manager, ... }:
     let
       # Define the system architecture
-      system = "x86_64-linux";  # Adjust this for your architecture
+      system = "x86_64-linux"; # Adjust this for your architecture
       # Import the overlay directly
       # Import Nixpkgs
       pkgs = import nixpkgs {
@@ -41,23 +41,42 @@
             home.username = "prm"; # Replace with your actual username
 
             home.packages = with pkgs; [
-              jp2a
               nix-output-monitor
+              nixd
+              telegram-desktop
+              thunderbird
 
-              (writeShellScriptBin
-                "ShyFoxHook.sh" ''
-                mkdir -p ~/.mozilla/shyfox
-                rm -rfv ~/.mozilla/shyfox
-                git clone https://github.com/Naezr/ShyFox.git ~/.mozilla/shyfox
-                rm -vrf ~/.mozilla/firefox/prm-dev/chrome
-                rm -vrf ~/.mozilla/firefox/prm-dev/user.js*
-                mv -v ~/.mozilla/shyfox/chrome ~/.mozilla/firefox/prm-dev
-                mv -v ~/.mozilla/shyfox/user.js ~/.mozilla/firefox/prm-dev
-                rm -rfv ~/.mozilla/shyfox
-                sudo chmod +w ~/.mozilla/firefox/profiles.ini
-              '')
+
+
+              # (writeShellScriptBin
+              #   "ShyFoxHook.sh" ''
+              #   mkdir -p ~/.mozilla/shyfox
+              #   rm -rfv ~/.mozilla/shyfox
+              #   git clone https://github.com/Naezr/ShyFox.git ~/.mozilla/shyfox
+              #   rm -vrf ~/.mozilla/firefox/prm-dev/chrome
+              #   rm -vrf ~/.mozilla/firefox/prm-dev/user.js*
+              #   mv -v ~/.mozilla/shyfox/chrome ~/.mozilla/firefox/prm-dev
+              #   mv -v ~/.mozilla/shyfox/user.js ~/.mozilla/firefox/prm-dev
+              #   rm -rfv ~/.mozilla/shyfox
+              #   sudo chmod +w ~/.mozilla/firefox/profiles.ini
+              # '')
             ];
+            home.activation.copyNixdPackage = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+              echo  nixdL is nixdllin | ${pkgs.cowsay}/bin/cowsay
+              dest="/home/prm/.local/share/nvim/mason/packages/nixd/bin"
+              destln="/home/prm/.local/share/nvim/mason/bin/nixd"
+              # Create destination directory if it doesn't exist
+              mkdir -p "$dest"
+
+              # Copy the derivation to the destination
+              echo "Copying nixd to $dest"
+              cp -rfv ${pkgs.nixd}/bin/nixd "$dest"
+              rm -v $destln
+              echo "linking nixd to $destln"
+              ln -sv "$dest/nixd" $destln
+            '';
             home.activation.copyNilPackage = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+              echo  NILL is nilllin | ${pkgs.cowsay}/bin/cowsay
               dest="/home/prm/.local/share/nvim/mason/packages/nil/bin"
               destln="/home/prm/.local/share/nvim/mason/bin/nil"
               # Create destination directory if it doesn't exist
@@ -85,46 +104,46 @@
               };
             };
 
-            programs.firefox = {
-              enable = true;
-              profiles = {
-                "prm-dev" = {
-                  settings = {
-                    "browser.startup.homepage" = "about:home";
-                  };
-
-                  search.engines = {
-                    "Nix Packages" = {
-                      urls = [{
-                        template = "https://search.nixos.org/packages";
-                        params = [
-                          { name = "type"; value = "packages"; }
-                          { name = "query"; value = "{searchTerms}"; }
-                        ];
-                      }];
-
-                      icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                      definedAliases = [ "@np" ];
-                    };
-                  };
-                  search.force = true;
-                  extraConfig = ''
-                    user_pref("browser.startup.homepage", "about:blank");
-                  '';
-
-                  extensions = with inputs.firefox-addons.packages."x86_64-linux"; [
-                    # tridactyl # vimmode
-                    darkreader
-                    sidebery
-                    sponsorblock
-                    surfingkeys
-                    ublock-origin
-                    userchrome-toggle-extended
-                    youtube-shorts-block
-                  ];
-                };
-              };
-            };
+            # programs.firefox = {
+            #   enable = true;
+            #   profiles = {
+            #     "prm-dev" = {
+            #       settings = {
+            #         "browser.startup.homepage" = "about:home";
+            #       };
+            #
+            #       search.engines = {
+            #         "Nix Packages" = {
+            #           urls = [{
+            #             template = "https://search.nixos.org/packages";
+            #             params = [
+            #               { name = "type"; value = "packages"; }
+            #               { name = "query"; value = "{searchTerms}"; }
+            #             ];
+            #           }];
+            #
+            #           icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+            #           definedAliases = [ "@np" ];
+            #         };
+            #       };
+            #       search.force = true;
+            #       extraConfig = ''
+            #         user_pref("browser.startup.homepage", "about:blank");
+            #       '';
+            #
+            #       extensions = with inputs.firefox-addons.packages."x86_64-linux"; [
+            #         # tridactyl # vimmode
+            #         darkreader
+            #         sidebery
+            #         sponsorblock
+            #         surfingkeys
+            #         ublock-origin
+            #         userchrome-toggle-extended
+            #         youtube-shorts-block
+            #       ];
+            #     };
+            #   };
+            # };
 
 
           }
