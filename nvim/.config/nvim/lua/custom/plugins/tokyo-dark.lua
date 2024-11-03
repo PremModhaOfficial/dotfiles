@@ -26,8 +26,6 @@ return {
 		require("tokyodark").setup(opts) -- calling setup is optional
 	end,
 	init = function()
-		if ColorSheme == "tokyodark" then
-			vim.cmd([[colorscheme tokyodark]])
-		end
+		-- vim.cmd([[colorscheme tokyodark]])
 	end,
 }

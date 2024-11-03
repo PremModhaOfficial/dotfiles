@@ -241,6 +241,25 @@ return { -- LSP Configuration & Plugins
 			-- But for many setups, the LSP (`tsserver`) will work just fine
 			-- tsserver = {},
 			--
+			-- nixd = {
+			-- 	cmd = { "nixd" },
+			-- 	filetypes = { "nix" },
+			-- 	settings = {
+			-- 		nixd = {
+			-- 			nixpkgs = {
+			-- 				expr = "import <nixpkgs> { }",
+			-- 			},
+			-- 			formatting = {
+			-- 				command = { "nixpkgs-fmt" },
+			-- 			},
+			-- 			options = {
+			-- 				home_manager = {
+			-- 					expr = '(builtins.getFlake "~/.config/nixpkgs/").homeConfigurations."prm".options',
+			-- 				},
+			-- 			},
+			-- 		},
+			-- 	},
+			-- },
 
 			lua_ls = {
 				-- cmd = {...},
@@ -264,6 +283,25 @@ return { -- LSP Configuration & Plugins
 		--    :Mason
 		--
 		--  You can press `g?` for help in this menu.
+		require("lspconfig").nixd.setup({
+			cmd = { "nixd" },
+			filetypes = { "nix" },
+			settings = {
+				nixd = {
+					nixpkgs = {
+						expr = "import <nixpkgs> { }",
+					},
+					formatting = {
+						command = { "nixpkgs-fmt" },
+					},
+					options = {
+						home_manager = {
+							expr = '(builtins.getFlake "~/.config/nixpkgs/").homeConfigurations."prm".options',
+						},
+					},
+				},
+			},
+		})
 		require("mason").setup()
 
 		-- You can add other tools here that you want Mason to install

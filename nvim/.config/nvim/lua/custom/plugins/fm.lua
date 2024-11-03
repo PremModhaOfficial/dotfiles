@@ -23,9 +23,7 @@ return {
 			},
 		})
 	end,
-	-- init = function()
-	-- 	if ColorSheme == "fluoromachine" then
-	-- 		vim.cmd([[colorscheme fluoromachine]])
-	-- 	end
-	-- end,
+	init = function()
+		vim.cmd([[colorscheme fluoromachine]])
+	end,
 }

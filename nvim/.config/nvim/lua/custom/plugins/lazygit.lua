@@ -9,7 +9,7 @@ return {
 			"nvim-telescope/telescope.nvim", -- optional
 		},
 		config = function()
-			require("neogit").setup()
+			require("neogit").setup({})
 			require("which-key").add({
 				{
 					"<leader>gm",
@@ -44,5 +44,9 @@ return {
 				desc = "Gitsigns toggle current line blame",
 			},
 		},
+	},
+	{
+		"tpope/vim-fugitive",
+		config = function() end,
 	},
 }

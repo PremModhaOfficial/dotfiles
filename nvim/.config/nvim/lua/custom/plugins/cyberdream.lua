@@ -41,11 +41,9 @@ return {
 		})
 	end,
 	-- init = function()
-	-- 	if ColorSheme == "cyberdream" then
-	-- 		vim.cmd([[
+	-- 	vim.cmd([[
 	-- 			colorscheme cyberdream
 	-- 			CyberdreamBuildCache
 	-- 			]])
-	-- 	end
 	-- end,
 }

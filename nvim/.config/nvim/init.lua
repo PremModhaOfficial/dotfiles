@@ -173,7 +173,7 @@ vim.opt.scrolloff = 19
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set("n", "<leader>b", "<cmd>:w<CR>")
+vim.keymap.set("n", "<leader>fs", "<cmd>:w<CR>")
 vim.keymap.set("n", "<M-1>", "<cmd>Exp<CR>")
 
 -- Diagnostic keymaps
@@ -346,7 +346,7 @@ require("lazy").setup({
 		lazy = false,
 		keys = {
 			{
-				"<leader>f",
+				"<leader>ff",
 				function()
 					require("conform").format({ async = true, lsp_fallback = true })
 				end,
@@ -437,6 +437,7 @@ require("lazy").setup({
 			lspkind.init()
 
 			cmp.setup({
+				preselect = cmp.PreselectMode.None,
 				window = {
 					completion = {
 						border = border("CmpMenuBorder"),
