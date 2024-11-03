@@ -25,15 +25,19 @@
        (corfu
         +orderless
         +icons
-        +dabbrev
-        )  ; complete with cap(f), cape and a flying feather!
-       (helm              ; the *other* search engine for love and life
-        +childframe
-        +fuzzy
-        +icons)
+        +dabbrev)  ; complete with cap(f), cape and a flying feather!
+
+       ;; (helm              ; the *other* search engine for love and life
+       ;;  +childframe
+       ;;  +fuzzy
+       ;;  +icons)
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
-       vertico           ; the search engine of the future
+
+       (vertico             ; the search engine of the future
+        +childframe
+        +icons)
+
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -89,14 +93,16 @@
 
        :checkers
        syntax              ; tasing you for every semicolon you forget
-       ;;(spell +flyspell) ; tasing you for misspelling mispelling
+       (spell
+        +everywhere
+        +flyspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
        :tools
        ;;ansible
        ;;biblio            ; Writes a PhD for you (citation needed)
        ;;collab            ; buffers with friends
-       ;;debugger          ; FIXME stepping through code, to help you add bugs
+       debugger            ; FIXME stepping through code, to help you add bugs
        ;;direnv
        ;;docker
        ;;editorconfig      ; let someone else argue about tabs vs spaces
@@ -105,13 +111,14 @@
        (lookup
         +dictionary
         +offline)      ; navigate your code and its documentation
-       lsp               ; M-x vscode
+       (lsp
+        +eglot)               ; M-x vscode
        magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
        pdf               ; pdf enhancements
        ;;prodigy           ; FIXME managing external services & code builders
-       rgb               ; creating color strings
+       ;; rgb               ; creating color strings
        ;;taskrunner        ; taskrunner for all your projects
        ;;terraform         ; infrastructure as code
        tmux              ; an API for interacting with tmux
@@ -136,7 +143,7 @@
        ;;dhall
        ;;elixir            ; erlang done right
        ;;elm               ; care for a cup of TEA?
-       (emacs-lisp +lsp +tree-sitter)        ; drown in parentheses
+       emacs-lisp        ; drown in parentheses
        ;;erlang            ; an elegant language for a more civilized age
        ;;ess               ; emacs speaks statistics
        ;;factor
@@ -161,7 +168,9 @@
        ;;lua               ; one-based indices? one-based indices
        ;; markdown          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
-       ;;nix               ; I hereby declare "nix geht mehr!"
+       (nix
+        +tree-sitter
+        +lsp)               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        (org
         +roam2
@@ -179,7 +188,7 @@
        (rust +tree-sitter +lsp)       ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
        ;;(scheme +guile)   ; a fully conniving family of lisps
-       sh                ; she sells {ba,z,fi}sh shells on the C xor
+       ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
        ;;swift             ; who asked for emoji variables?
