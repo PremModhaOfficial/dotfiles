@@ -6,7 +6,7 @@ return {
 		local fm = require("fluoromachine")
 
 		fm.setup({
-			theme = "fluoromachine",
+			theme = "delta",
 			glow = false,
 			transparent = true,
 			brightness = 100.0,
@@ -23,7 +23,5 @@ return {
 			},
 		})
 	end,
-	init = function()
-		vim.cmd([[colorscheme fluoromachine]])
-	end,
+	-- init = function() vim.cmd([[colorscheme fluoromachine]]) end,
 }
