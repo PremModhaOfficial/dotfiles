@@ -21,7 +21,7 @@ return {
 			},
 
 			groups = {
-				border = "muted",
+				border = "pine",
 				link = "iris",
 				panel = "surface",
 
@@ -64,6 +64,7 @@ return {
 				-- VertSplit = { fg = "muted", bg = "muted" },
 			},
 
+			---@diagnostic disable-next-line: unused-local
 			before_highlight = function(group, highlight, palette)
 				-- Disable all undercurls
 				-- if highlight.undercurl then
@@ -77,10 +78,10 @@ return {
 			end,
 		})
 	end,
-	-- init = function()
-	-- vim.cmd("colorscheme rose-pine")
-	-- vim.cmd("colorscheme rose-pine-main")
-	------------------vim.cmd("colorscheme rose-pine-moon")
-	-- vim.cmd("colorscheme rose-pine-dawn")
-	-- end,
+	init = function()
+		-- vim.cmd("colorscheme rose-pine")
+		-- vim.cmd("colorscheme rose-pine-main")
+		vim.cmd("colorscheme rose-pine-moon")
+		-- vim.cmd("colorscheme rose-pine-dawn")
+	end,
 }

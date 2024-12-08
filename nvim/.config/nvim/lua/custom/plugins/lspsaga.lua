@@ -4,6 +4,7 @@ return {
 		ui = {
 			beacon = {
 				enable = true,
+				devicon = true,
 			},
 		},
 	},

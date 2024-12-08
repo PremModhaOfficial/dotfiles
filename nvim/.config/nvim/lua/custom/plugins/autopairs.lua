@@ -2,7 +2,6 @@ return {
 	"windwp/nvim-autopairs",
 	event = "InsertEnter",
 	config = function()
-		print("Loading nvim-autopairs")
 		local status, npairs = pcall(require, "nvim-autopairs")
 		if not status then
 			print("Failed to load nvim-autopairs")
@@ -28,6 +27,5 @@ return {
 				highlight_grey = "LineNr",
 			},
 		})
-		print("nvim-autopairs loaded successfully")
 	end,
 }

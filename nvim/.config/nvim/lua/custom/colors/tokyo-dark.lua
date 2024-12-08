@@ -25,7 +25,5 @@ return {
 	config = function(_, opts)
 		require("tokyodark").setup(opts) -- calling setup is optional
 	end,
-	init = function()
-		vim.cmd([[colorscheme tokyodark]])
-	end,
+	-- init = function() vim.cmd([[colorscheme tokyodark]]) end,
 }
