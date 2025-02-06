@@ -1,6 +1,8 @@
 {
     "diagnostics.disable": [
-        "missing-fields"
+        "missing-fields",
+        "unused-local",
+        "unused-function"
     ],
     "diagnostics.globals": [
         "Snacks"

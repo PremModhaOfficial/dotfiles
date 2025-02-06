@@ -7,7 +7,7 @@
     # Nixpkgs for package management
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # You can choose a different branch or version
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    # emacs-overlay.url = "github:nix-community/emacs-overlay";
 
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
@@ -43,10 +43,9 @@
             home.packages = with pkgs; [
               nix-output-monitor
               nixd
-              telegram-desktop
-              thunderbird
-
-
+              nushell
+              python313Packages.aider-chat
+              chafa
 
               # (writeShellScriptBin
               #   "ShyFoxHook.sh" ''
@@ -89,8 +88,6 @@
               echo "linking nil to $destln"
               ln -sv "$dest/nil" $destln
             '';
-
-
 
             programs.git = {
               enable = true;

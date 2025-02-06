@@ -6,32 +6,33 @@ return { -- LSP Configuration & Plugins
 		"williamboman/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		"nvimdev/lspsaga.nvim",
+		"saghen/blink.cmp",
 
 		-- Useful status updates for LSP.
 		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-		{ "j-hui/fidget.nvim", opts = {} },
+		-- Artifact its GONE
+		-- { "j-hui/fidget.nvim", opts = {} },
 
 		-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
 		-- used for completion, annotations and signatures of Neovim apis
 	},
 	config = function()
-		local l = vim.lsp
-
-		l.handlers["textDocument/hover"] = function(_, result, ctx, config)
-			config = config or { border = "rounded", focusable = true }
-			config.focus_id = ctx.method
-			if not (result and result.contents) then
-				return
-			end
-			local markdown_lines = l.util.convert_input_to_markdown_lines(result.contents)
-			markdown_lines = vim.tbl_filter(function(line)
-				return line ~= ""
-			end, markdown_lines)
-			if vim.tbl_isempty(markdown_lines) then
-				return
-			end
-			return l.util.open_floating_preview(markdown_lines, "markdown", config)
-		end
+		-- local l = vim.lsp
+		-- l.handlers["textDocument/hover"] = function(_, result, ctx, config)
+		-- 	config = config or { border = "rounded", focusable = true }
+		-- 	config.focus_id = ctx.method
+		-- 	if not (result and result.contents) then
+		-- 		return
+		-- 	end
+		-- 	local markdown_lines = l.util.convert_input_to_markdown_lines(result.contents)
+		-- 	markdown_lines = vim.tbl_filter(function(line)
+		-- 		return line ~= ""
+		-- 	end, markdown_lines)
+		-- 	if vim.tbl_isempty(markdown_lines) then
+		-- 		return
+		-- 	end
+		-- 	return l.util.open_floating_preview(markdown_lines, "markdown", config)
+		-- end
 		-- Brief aside: **What is LSP?**
 		--
 		-- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -109,6 +110,17 @@ return { -- LSP Configuration & Plugins
 					vim.cmd("Lspsaga rename")
 				end, "[R]e[n]ame")
 
+				map("<leader>co", function()
+					vim.cmd("Lspsaga outline")
+				end, "[C]ode [O]utline")
+
+				map("<leader>p", function()
+					vim.cmd("Lspsaga peek_definition")
+				end, "[P]eek definition from lsp saga")
+
+				map("<leader>P", function()
+					vim.cmd("Lspsaga peek_type_definition")
+				end, "[P]eek TYPE definition from lsp saga")
 				-- Execute a code action, usually your cursor needs to be on top of an error
 				-- or a suggestion from your LSP for this to activate.
 				map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
@@ -214,7 +226,15 @@ return { -- LSP Configuration & Plugins
 		local servers = {
 			-- clangd = {},
 			-- gopls = {},
-			pyright = {},
+			pyright = {
+				python = {
+					analysis = {
+						autoSearchPaths = true,
+						diagnosticMode = "openFilesOnly",
+						useLibraryCodeForTypes = true,
+					},
+				},
+			},
 			-- rust_analyzer = {},
 			nil_ls = {
 				cmd = { "nil", "--stdio" },
@@ -224,8 +244,9 @@ return { -- LSP Configuration & Plugins
 			},
 			pylsp = {
 				plugins = {
-					autopep8 = {
-						enabled = true,
+					pycodestyle = {
+						ignore = { "W391" },
+						maxLineLength = 100,
 					},
 					mypy = {
 						enabled = true,
@@ -282,13 +303,15 @@ return { -- LSP Configuration & Plugins
 				},
 			},
 		}
-
 		-- TODO: blink
 		local lspconfig = require("lspconfig")
-		for server, config in pairs(servers or {}) do
+		for server, config in pairs(servers) do
+			-- passing config.capabilities to blink.cmp merges with the capabilities in your
+			-- `opts[server].capabilities, if you've defined it
 			config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
 			lspconfig[server].setup(config)
 		end
+
 		-- Ensure the servers and tools above are installed
 		--  To check the current status of installed tools and/or manually install
 		--  other tools, you can run
@@ -315,7 +338,6 @@ return { -- LSP Configuration & Plugins
 			},
 		})
 		require("mason").setup()
-
 		-- You can add other tools here that you want Mason to install
 		-- for you, so that they are available from within Neovim.
 		local ensure_installed = vim.tbl_keys(servers or {})

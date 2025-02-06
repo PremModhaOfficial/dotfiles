@@ -36,7 +36,7 @@
 ;;
 ** Font
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "JetBrainsMono NF" :size 22 :weight 'regular :scalable 't)
+(setq doom-font (font-spec :family "Iosevka NF" :size 22 :weight 'regular :scalable 't)
      doom-variable-pitch-font (font-spec :family "JetBrainsMono Nerd Font Propo" :size 20))
 #+end_src
 
@@ -82,6 +82,10 @@
          "%?"
          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
          :unnarrowed t)
+        ("f" "fleating" plain
+         (file "~/org/roam/templates/fleating.org")
+         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
         ("t" "daily" plain
          (file "~/org/roam/templates/todo-daily.org")
          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
@@ -103,7 +107,7 @@
 ** lookup in EWW
 
 #+begin_src emacs-lisp
-(setq +lookup-open-url-fn #'eww)
+;; (setq +lookup-open-url-fn #'eww)
 (setq! scroll-margin 30)
 ;; (setq! shell-file-name '/bin/zsh)
 #+end_src
@@ -145,9 +149,10 @@
 ;; they are implemented.
 ** Transparency
 #+begin_src emacs-lisp
-(set-frame-parameter nil 'alpha-background 66)
-(add-to-list 'default-frame-alist '(alpha-background . 90))
+(set-frame-parameter nil 'alpha-background 60)
+(add-to-list 'default-frame-alist '(alpha-background . 60))
 #+end_src
+
 ** latex
 
 #+begin_src emacs-lisp
@@ -155,6 +160,7 @@
   (setq org-latex-compiler "xelatex"))  ;; Use XeLaTeX as default compiler
 
 #+end_src
+
 ** Obsidian
 #+begin_src emacs-lisp
 (use-package! obsidian
@@ -184,3 +190,89 @@
   ;; If you prefer you can use `obsidian-insert-link'
   ("C-c C-l" . obsidian-insert-wikilink)))
 #+end_src
+* Theme Configuration
+# ** Dark Pride Theme
+# #+begin_src emacs-lisp
+# ;; Set theme and related options
+# (setq doom-theme 'dark-pride
+#       doom-themes-enable-bold t    ; if nil, bold is disabled
+#       doom-themes-enable-italic t) ; if nil, italics is disabled
+
+# ;; Enable custom neotree theme (all-the-icons must be installed!)
+# (after! doom-themes
+#   (setq doom-themes-neotree-file-icons t)
+#   (doom-themes-neotree-config))
+
+# ;; Corrects (and improves) org-mode's native fontification
+# (after! doom-themes
+#   (doom-themes-org-config))
+
+# ;; Set custom colors for specific faces
+# (custom-set-faces!
+#   '(default :background "#0d0d1b")
+#   '(region :background "#002a3a" :foreground "#0d0f18")
+#   '(cursor :background "#ff0017")
+#   '(line-number :foreground "#789aba")
+#   '(line-number-current-line :foreground "#cb6fa1" :weight bold))
+
+# ;; Make comments and documentation italic
+# (after! doom-themes
+#   (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+#   (set-face-attribute 'font-lock-doc-face nil :slant 'italic))
+
+# ;; Set modeline colors
+# (after! doom-modeline
+#   (setq doom-modeline-height 25
+#         doom-modeline-bar-width 3
+#         doom-modeline-major-mode-icon t))
+
+# ;; Enable rainbow delimiters
+# (add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)
+
+# #+end_src
+* Theme
+# ** Dark Pride Theme Definition
+# #+begin_src emacs-lisp
+# (custom-theme-set-faces! 'doom-one
+#   `(default :background "#0d0d1b" :foreground "#ccccce")
+#   `(cursor :background "#ff0017")
+#   `(region :background "#002a3a" :foreground "#0d0f18")
+#   `(hl-line :background ,(doom-darken "#0d0d1b" 0.1))
+
+#   ;; Basic colors
+#   `(doom-color-black :foreground "#282828")
+#   `(doom-color-red :foreground "#ca1444")
+#   `(doom-color-green :foreground "#789aba")
+#   `(doom-color-yellow :foreground "#b3879f")
+#   `(doom-color-blue :foreground "#94469b")
+#   `(doom-color-magenta :foreground "#cb6fa1")
+#   `(doom-color-cyan :foreground "#fb6e93")
+#   `(doom-color-white :foreground "#cf98c1")
+
+#   ;; Bright colors
+#   `(doom-color-bright-black :foreground "#98218e")
+#   `(doom-color-bright-red :foreground "#cb515d")
+#   `(doom-color-bright-green :foreground "#5a87b1")
+#   `(doom-color-bright-yellow :foreground "#9c61ab")
+#   `(doom-color-bright-blue :foreground "#9a77b1")
+#   `(doom-color-bright-magenta :foreground "#f2a297")
+#   `(doom-color-bright-cyan :foreground "#f4436f")
+#   `(doom-color-bright-white :foreground "#ebdbb2"))
+
+# ;; Apply syntax highlighting colors
+# (custom-theme-set-faces! 'doom-one
+#   `(font-lock-comment-face :foreground "#789aba" :slant italic)
+#   `(font-lock-string-face :foreground "#cb6fa1")
+#   `(font-lock-keyword-face :foreground "#94469b")
+#   `(font-lock-function-name-face :foreground "#fb6e93")
+#   `(font-lock-variable-name-face :foreground "#9a77b1")
+#   `(font-lock-type-face :foreground "#f4436f")
+#   `(font-lock-constant-face :foreground "#b3879f"))
+# #+end_src
+
+# ** Enable Theme
+# #+begin_src emacs-lisp
+# (setq doom-theme 'doom-one)  ; Use doom-one as base theme with our custom colors
+# (doom-themes-org-config)     ; Improve org-mode native fontification
+# #+end_src
+* ER diag

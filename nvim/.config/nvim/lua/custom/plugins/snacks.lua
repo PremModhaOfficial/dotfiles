@@ -1,7 +1,9 @@
 return {
 	"folke/snacks.nvim",
+	-- enabled = false,
 	priority = 1000,
 	lazy = false,
+	---@module "snacks"
 	---@type snacks.Config
 	opts = {
 		bigfile = { enabled = true },
@@ -9,7 +11,7 @@ return {
 			sections = {
 				{
 					section = "terminal",
-					cmd = "chafa $(swww query | awk -F ': ' '{print $5}') --format symbols --symbols vhalf --size 60x17 --stretch; sleep .1",
+					cmd = "chafa (swww query | awk -F ': ' '{print $5}') --format symbols --symbols vhalf --size 60x17 --stretch; sleep 1",
 					height = 17,
 					padding = 1,
 				},
@@ -20,20 +22,116 @@ return {
 				},
 			},
 		},
+		-- indent = {
+		-- 	char = "]",
+		-- 	-- debug = true,
+		-- 	only_current = true,
+		-- 	only_scope = false,
+		-- 	scope = {
+		-- 		char = " ",
+		-- 		enabled = true,
+		-- 		underline = true,
+		-- 		only_current = true,
+		-- 		only_scope = true,
+		-- 	},
+		-- 	blank = {
+		-- 		char = "0",
+		-- 		hl = "None",
+		-- 	},
+		-- 	chunk = {
+		-- 		enabled = true,
+		-- 		only_current = true,
+		-- 		char = {
+		-- 			-- corner_top = "┌",
+		-- 			-- corner_bottom = "└",
+		-- 			corner_top = "╭",
+		-- 			corner_bottom = "╰",
+		-- 			horizontal = "─",
+		-- 			vertical = "│",
+		-- 			arrow = ">",
+		-- 		},
+		-- 	},
+		-- },
+		input = {
+			enabled = true,
+			icon_hl = "SnacksInputIcon",
+			icon = "-> ",
+			icon_pos = "left",
+			prompt_pos = "title",
+			win = { style = "input" },
+			expand = true,
+			debug = true,
+		},
 		notifier = {
 			enabled = true,
 			timeout = 3000,
 		},
 		quickfile = { enabled = true },
-		statuscolumn = { enabled = false },
+		scroll = { enabled = false },
+		statuscolumn = { enabled = true },
+		win = {
+			show = true,
+			relative = "win",
+			position = "float",
+		},
 		words = { enabled = true },
+		scope = {
+			enabled = true,
+		},
 		styles = {
 			notification = {
-				wo = { wrap = true }, -- Wrap notifications
+				-- wo = { wrap = true } -- Wrap notifications
+			},
+			input = {
+				backdrop = 69,
+				position = "float",
+				border = "rounded",
+				title_pos = "center",
+				height = 1,
+				width = 60,
+				relative = "editor",
+				noautocmd = true,
+				row = 2,
+				-- relative = "cursor",
+				-- row = -3,
+				-- col = 0,
+				wo = {
+					winhighlight = "NormalFloat:SnacksInputNormal,FloatBorder:SnacksInputBorder,FloatTitle:SnacksInputTitle",
+					cursorline = false,
+				},
+				bo = {
+					filetype = "snacks_input",
+					buftype = "prompt",
+				},
+				--- buffer local variables
+				b = {
+					completion = false, -- disable blink completions in input
+				},
+				keys = {
+					n_esc = { "<esc>", { "cmp_close", "cancel" }, mode = "n" },
+					i_esc = { "<esc>", { "cmp_close", "stopinsert" }, mode = "i" },
+					i_cr = { "<cr>", { "cmp_accept", "confirm" }, mode = "i" },
+					i_tab = { "<tab>", { "cmp_select_next", "cmp" }, mode = "i" },
+					q = "cancel",
+				},
 			},
 		},
 	},
 	keys = {
+		{
+			"<leader>z",
+			function()
+				Snacks.zen()
+			end,
+			desc = "Toggle Zen Mode",
+		},
+		{
+			"<leader>Z",
+			function()
+				Snacks.zen.zoom()
+			end,
+			desc = "Toggle Zoom",
+		},
 		{
 			"<leader>.",
 			function()
@@ -173,6 +271,7 @@ return {
 				end
 				vim.print = _G.dd -- Override print to use snacks for `:=` command
 
+				Snacks.input.enable()
 				-- Create some toggle mappings
 				Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
 				Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
@@ -187,6 +286,8 @@ return {
 					.option("background", { off = "light", on = "dark", name = "Dark Background" })
 					:map("<leader>ub")
 				Snacks.toggle.inlay_hints():map("<leader>uh")
+				Snacks.toggle.indent():map("<leader>ug")
+				Snacks.toggle.dim():map("<leader>uD")
 			end,
 		})
 	end,

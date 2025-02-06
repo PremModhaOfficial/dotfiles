@@ -1,5 +1,5 @@
 --[[
-  
+
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -247,205 +247,181 @@ end
 
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
-	-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-	"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
+	rocks = {
+		hererocks = true, -- you should enable this to get hererocks support
+	},
+	spec = {
+		-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+		"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
 
-	-- NOTE: Plugins can also be added by using a table,
-	-- with the first argument being the link and the following
-	-- keys can be used to configure plugin behavior/loading/etc.
-	--
-	-- Use `opts = {}` to force a plugin to be loaded.
-	--
-	--  This is equivalent to:
-	--    require('Comment').setup({})
+		-- NOTE: Plugins can also be added by using a table,
+		-- with the first argument being the link and the following
+		-- keys can be used to configure plugin behavior/loading/etc.
+		--
+		-- Use `opts = {}` to force a plugin to be loaded.
+		--
+		--  This is equivalent to:
+		--    require('Comment').setup({})
 
-	-- "gc" to comment visual regions/lines
-	{ "numToStr/Comment.nvim", opts = {} },
-	{
-		-- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-		-- used for completion, annotations and signatures of Neovim apis
-		"folke/lazydev.nvim",
-		ft = "lua",
-		opts = {
-			library = {
-				-- Load luvit types when the `vim.uv` word is found
-				{ path = "luvit-meta/library", words = { "vim%.uv" } },
+		-- "gc" to comment visual regions/lines
+		{ "numToStr/Comment.nvim", opts = {} },
+		{
+			-- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+			-- used for completion, annotations and signatures of Neovim apis
+			"folke/lazydev.nvim",
+			ft = "lua",
+			cmd = "LazyDev",
+			opts = {
+				library = {
+					-- Load luvit types when the `vim.uv` word is found
+					{ path = "luvit-meta/library", words = { "vim%.uv" } },
+					{ path = "LazyVim", words = { "LazyVim" } },
+					{ path = "snacks.nvim", words = { "Snacks" } },
+					{ path = "lazy.nvim", words = { "LazyVim" } },
+				},
 			},
 		},
-	},
-	{ "Bilal2453/luvit-meta", lazy = true },
-	-- Here is a more advanced example where we pass configuration
-	-- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-	--    require('gitsigns').setup({ ... })
-	--
-	-- See `:help gitsigns` to understand what the configuration keys do
-	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
-		"lewis6991/gitsigns.nvim",
-		opts = {
-			signs = {
-				add = { text = "+" },
-				change = { text = "~" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
+		{ "Bilal2453/luvit-meta", lazy = true },
+		-- Here is a more advanced example where we pass configuration
+		-- options to `gitsigns.nvim`. This is equivalent to the following Lua:
+		--    require('gitsigns').setup({ ... })
+		--
+		-- See `:help gitsigns` to understand what the configuration keys do
+		{ -- Adds git related signs to the gutter, as well as utilities for managing changes
+			"lewis6991/gitsigns.nvim",
+			opts = {
+				signs = {
+					add = { text = "+" },
+					change = { text = "~" },
+					delete = { text = "_" },
+					topdelete = { text = "‾" },
+					changedelete = { text = "~" },
+				},
 			},
 		},
-	},
 
-	-- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-	--
-	-- This is often very useful to both group configuration, as well as handle
-	-- lazy loading plugins that don't need to be loaded immediately at startup.
-	--
-	-- For example, in the following configuration, we use:
-	--  event = 'VimEnter'
-	--
-	-- which loads which-key before all the UI elements are loaded. Events can be
-	-- normal autocommands events (`:help autocmd-events`).
-	--
-	-- Then, because we use the `config` key, the configuration only runs
-	-- after the plugin has been loaded:
-	--  config = function() ... end
+		-- NOTE: Plugins can also be configured to run Lua code when they are loaded.
+		--
+		-- This is often very useful to both group configuration, as well as handle
+		-- lazy loading plugins that don't need to be loaded immediately at startup.
+		--
+		-- For example, in the following configuration, we use:
+		--  event = 'VimEnter'
+		--
+		-- which loads which-key before all the UI elements are loaded. Events can be
+		-- normal autocommands events (`:help autocmd-events`).
+		--
+		-- Then, because we use the `config` key, the configuration only runs
+		-- after the plugin has been loaded:
+		--  config = function() ... end
 
-	{ -- Useful plugin to show you pending keybinds.
-		"folke/which-key.nvim",
-		event = "VimEnter", -- Sets the loading event to 'VimEnter'
-		config = function() -- This is the function that runs, AFTER loading
-			require("which-key").setup({
-				win = { border = border("WhichKeyBorder") },
-			})
+		{ -- Useful plugin to show you pending keybinds.
+			"folke/which-key.nvim",
+			event = "VimEnter", -- Sets the loading event to 'VimEnter'
+			config = function() -- This is the function that runs, AFTER loading
+				require("which-key").setup({
+					win = { border = border("WhichKeyBorder") },
+				})
 
-			-- Document existing key chains
-			require("which-key").add({
-				{ "<leader>c", "[C]ode" },
-				{ "<leader>d", "[D]ocument" },
-				{ "<leader>r", "[R]ename" },
-				{ "<leader>s", "[S]earch" },
-				{ "<leader>w", "[W]orkspace" },
-				{ "<leader>t", "[T]oggle" },
-				{ "<leader>h", "Git [H]unk", mode = { "n", "v" } },
-			})
-		end,
-	},
-
-	-- NOTE: Plugins can specify dependencies.
-	--
-	-- The dependencies are proper plugin specifications as well - anything
-	-- you do for a plugin at the top level, you can do for a dependency.
-	--
-	-- Use the `dependencies` key to specify the dependencies of a particular plugin
-
-	{ -- Autoformat
-		"stevearc/conform.nvim",
-		lazy = false,
-		keys = {
-			{
-				"<leader>ff",
-				function()
-					require("conform").format({ async = true, lsp_fallback = true })
-				end,
-				mode = "",
-				desc = "[F]ormat buffer",
-			},
-		},
-		opts = {
-			notify_on_error = true,
-			format_on_save = function(bufnr)
-				-- Disable "format_on_save lsp_fallback" for languages that don't
-				-- have a well standardized coding style. You can add additional
-				-- languages here or re-enable it for the disabled ones.
-				local disable_filetypes = { c = true, cpp = true, rust = true }
-				return {
-					timeout_ms = 500,
-					lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-				}
+				-- Document existing key chains
+				require("which-key").add({
+					{ "<leader>c", "[C]ode" },
+					{ "<leader>d", "[D]ocument" },
+					{ "<leader>r", "[R]ename" },
+					{ "<leader>s", "[S]earch" },
+					{ "<leader>w", "[W]orkspace" },
+					{ "<leader>t", "[T]oggle" },
+					{ "<leader>h", "Git [H]unk", mode = { "n", "v" } },
+				})
 			end,
-			formatters_by_ft = {
-				lua = { "stylua" },
-				-- Conform can also run multiple formatters sequentially
-				python = { "isort", "black" },
-				--
-				-- You can use a sub-list to tell conform to run *until* a formatter
-				-- is found.
-				javascript = { "prettierd", "prettier", stop_after_first = true },
-				typrscript = { "prettierd", "prettier", stop_after_first = true },
+		},
+
+		-- NOTE: Plugins can specify dependencies.
+		--
+		-- The dependencies are proper plugin specifications as well - anything
+		-- you do for a plugin at the top level, you can do for a dependency.
+		--
+		-- Use the `dependencies` key to specify the dependencies of a particular plugin
+
+		{ -- Autoformat
+			"stevearc/conform.nvim",
+			lazy = false,
+			keys = {
+				{
+					"<leader>ff",
+					function()
+						require("conform").format({ async = true, lsp_fallback = true })
+					end,
+					mode = "",
+					desc = "[F]ormat buffer",
+				},
+			},
+			opts = {
+				notify_on_error = true,
+				format_on_save = function(bufnr)
+					-- Disable "format_on_save lsp_fallback" for languages that don't
+					-- have a well standardized coding style. You can add additional
+					-- languages here or re-enable it for the disabled ones.
+					local disable_filetypes = { c = true, cpp = true, rust = true }
+					return {
+						timeout_ms = 500,
+						lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+					}
+				end,
+				formatters_by_ft = {
+					lua = { "stylua" },
+					-- Conform can also run multiple formatters sequentially
+					python = { "isort", "black" },
+					--
+					-- You can use a sub-list to tell conform to run *until* a formatter
+					-- is found.
+					javascript = { "eslint", "prettierd", "prettier", stop_after_first = true },
+					typrscript = { "eslint", "prettierd", "prettier", stop_after_first = true },
+				},
 			},
 		},
+
+		-- Highlight todo, notes, etc in comments
+		{
+			"folke/todo-comments.nvim",
+			event = "VimEnter",
+			dependencies = {
+				"nvim-lua/plenary.nvim",
+			},
+			---@module "todo-comments"
+			---@type TodoConfig
+			opts = { signs = false },
+		},
+
+		-- neovide
+
+		-- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
+		-- init.lua. If you want these files, they are in the repository, so you can just download them and
+		-- place them in the correct locations.
+
+		-- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
+		--
+		--  Here are some example plugins that I've included in the Kickstart repository.
+		--  Uncomment any of the lines below to enable them (you will need to restart nvim).
+		--
+		-- require 'kickstart.plugins.debug',
+		-- require 'kickstart.plugins.indent_line',
+		-- require 'kickstart.plugins.lint',
+		-- require 'kickstart.plugins.autopairs',
+		-- require 'kickstart.plugins.neo-tree',
+		-- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+
+		-- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
+		--    This is the easiest way to modularize your config.
+		--
+		--  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
+		--    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
+		{ import = "custom.plugins" },
+		{ import = "custom.colors" },
+		{ import = "custom.ai" },
+		-- { import = "custom.ui" },
+		-- { import = "custom.ui_plugs" },
 	},
-
-	-- Highlight todo, notes, etc in comments
-	{
-		"folke/todo-comments.nvim",
-		event = "VimEnter",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = { signs = false },
-	},
-
-	{ -- Collection of various small independent plugins/modules
-		"echasnovski/mini.nvim",
-		config = function()
-			-- Better Around/Inside textobjects
-			--
-			-- Examples:
-			--  - va)  - [V]isually select [A]round [)]paren
-			--  - yinq - [Y]ank [I]nside [N]ext [']quote
-			--  - ci'  - [C]hange [I]nside [']quote
-			require("mini.ai").setup({ n_lines = 500 })
-
-			-- Add/delete/replace surroundings (brackets, quotes, etc.)
-			--
-			-- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-			-- - sd'   - [S]urround [D]elete [']quotes
-			-- - sr)'  - [S]urround [R]eplace [)] [']
-			require("mini.surround").setup()
-
-			-- Simple and easy statusline.
-			--  You could remove this setup call if you don't like it,
-			--  and try some other statusline plugin
-			local statusline = require("mini.statusline")
-			-- set use_icons to true if you have a Nerd Font
-			statusline.setup({ use_icons = vim.g.have_nerd_font })
-
-			-- You can configure sections in the statusline by overriding their
-			-- default behavior. For example, here we set the section for
-			-- cursor location to LINE:COLUMN
-			---@diagnostic disable-next-line: duplicate-set-field
-			statusline.section_location = function()
-				return "%2l:%-2v"
-			end
-
-			-- ... and there is more!
-			--  Check out: https://github.com/echasnovski/mini.nvim
-		end,
-	},
-
-	-- neovide
-
-	-- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
-	-- init.lua. If you want these files, they are in the repository, so you can just download them and
-	-- place them in the correct locations.
-
-	-- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
-	--
-	--  Here are some example plugins that I've included in the Kickstart repository.
-	--  Uncomment any of the lines below to enable them (you will need to restart nvim).
-	--
-	-- require 'kickstart.plugins.debug',
-	-- require 'kickstart.plugins.indent_line',
-	-- require 'kickstart.plugins.lint',
-	-- require 'kickstart.plugins.autopairs',
-	-- require 'kickstart.plugins.neo-tree',
-	-- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
-	-- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-	--    This is the easiest way to modularize your config.
-	--
-	--  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-	--    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-	{ import = "custom.plugins" },
-	{ import = "custom.colors" },
-	{ import = "custom.ai" },
-	-- { import = "custom.ui_plugs" },
 }, {
 	ui = {
 		-- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -472,14 +448,18 @@ require("lazy").setup({
 -- vim: ts=2 sts=2 sw=2 et
 --
 -- make nvim transparent
-function ColorMyPrncils(color)
+function ColorMEplease(color, hasTransparancy)
 	color = color or "tokyonight-night"
 	vim.cmd.colorscheme(color)
-	vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-	vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+	if not hasTransparancy then
+		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+		vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
+		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+	end
 end
 
--- ColorMyPrncils()
 vim.filetype.add({
 	pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
 })
@@ -498,10 +478,10 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 if vim.g.neovide then
 	vim.o.guifont = "JetBrainsMono NF:h18" -- text below applies for VimScript
 end
-vim.cmd([[
-  highlight Pmenu guibg=NONE ctermbg=NONE
-  " highlight PmenuSel guibg= ctermbg=NONE
-]])
+-- vim.cmd([[
+--   highlight Pmenu guibg=NONE ctermbg=NONE
+--   " highlight PmenuSel guibg= ctermbg=NONE
+-- ]])
 
 vim.api.nvim_set_keymap("n", "<C-a>", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("v", "<C-a>", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
@@ -511,3 +491,10 @@ vim.api.nvim_set_keymap("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap =
 
 -- Expand 'cc' into 'CodeCompanion' in the command line
 vim.cmd([[cab cc CodeCompanion]])
+
+-- vim.cmd("colorscheme bluloco")
+-- ColorMEplease("aurora", false)
+-- ColorMEplease("onedark", false)
+ColorMEplease("fluoromachine", false)
+
+-- ColorMEplease("tokyodark", true)

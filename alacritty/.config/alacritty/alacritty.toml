@@ -13,24 +13,24 @@ size = 18.0
 
 
 [font.bold]
-# family = "Iosevkaterm Nerd Font"
-family = "JetBrainsMono Nerd Font"
+family = "Iosevkaterm Nerd Font"
+# family = "JetBrainsMono Nerd Font"
 style = "SemiBold"
 
 [font.bold_italic]
-# family = "Iosevkaterm Nerd Font"
-family = "JetBrainsMono Nerd Font"
+family = "Iosevkaterm Nerd Font"
+# family = "JetBrainsMono Nerd Font"
 style = "SemiBold Italic"
 #
 
 [font.italic]
-# family = "Iosevkaterm Nerd Font"
-family = "JetBrainsMono Nerd Font"
+family = "Iosevkaterm Nerd Font"
+# family = "JetBrainsMono Nerd Font"
 style = "Italic"
 
 [font.normal]
-# family = "Iosevkaterm Nerd Font"
-family = "JetBrainsMono Nerd Font"
+family = "Iosevkaterm Nerd Font"
+# family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
 # [font.fallback]

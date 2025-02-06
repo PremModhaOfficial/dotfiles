@@ -1,6 +1,7 @@
 return {
 	{
 		"supermaven-inc/supermaven-nvim",
+		enabled = false,
 		config = function()
 			-- Function to get the hex color of a highlight group
 			---@param name string

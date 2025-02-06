@@ -1,12 +1,16 @@
 return {
 	"nvimdev/lspsaga.nvim",
+	---@module "lspsaga"
+	---@type LspsagaConfig
 	opts = {
-		ui = {
-			beacon = {
-				enable = true,
-				devicon = true,
-			},
+		callhierarchy = {
+			layout = "float",
 		},
+
+		beacon = {
+			enable = true,
+		},
+		ui = { border = "rounded", code_action = "" },
 	},
 	-- add your config value here
 	dependencies = {

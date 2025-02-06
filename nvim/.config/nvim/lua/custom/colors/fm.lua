@@ -1,6 +1,7 @@
 return {
 	"maxmx03/fluoromachine.nvim",
 	lazy = false,
+	-- enabled = false,
 	priority = 1000,
 	config = function()
 		local fm = require("fluoromachine")
@@ -12,14 +13,14 @@ return {
 			brightness = 100.0,
 			true_colors = true,
 			styles = {
-				functions = { bold = true },
 				comments = { italic = true },
-				keywords = { italic = true },
-				strings = { italic = true },
 				constants = { bold = true },
-				variables = {},
-				fields = {},
+				functions = { bold = true, blend = 34 },
+				keywords = { italic = true },
+				numbers = {},
 				parameters = {},
+				types = {},
+				variables = {},
 			},
 		})
 	end,

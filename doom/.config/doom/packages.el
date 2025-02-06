@@ -50,3 +50,5 @@
 ;; (unpin! t)
 (package! spacemacs-theme)
 (package! obsidian)
+;; Add ob-diagrams package for diagram support
+(package! ob-diagrams)

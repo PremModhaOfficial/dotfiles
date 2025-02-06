@@ -9,9 +9,9 @@ colors.apply_colors(config)
 config.enable_wayland = false
 config.enable_tab_bar = false
 config.font = wezterm.font_with_fallback({
-	-- { family = "Iosevkaterm NF", weight = "Regular" },
-	{ family = "JetBrainsMono NF", weight = "Light" },
-	-- "JetBrainsMono NF",
+	-- { family = "JetBrainsMono NF", weight = "Regular" },
+	{ family = "Iosevkaterm NF", weight = "Regular" },
+	"JetBrainsMono Nerd Font Mono",
 	"Noto Color Emoji", -- Add fallback for emojis
 })
 
@@ -31,7 +31,7 @@ config.window_padding = {
 	top = 1,
 	bottom = 1,
 }
-config.window_background_opacity = 0.69
+config.window_background_opacity = 0.49
 -- config.dpi = 192
 config.adjust_window_size_when_changing_font_size = false
 
