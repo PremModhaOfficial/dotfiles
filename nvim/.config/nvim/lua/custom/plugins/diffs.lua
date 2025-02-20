@@ -1,4 +1,5 @@
 return {
+	enable = false,
 	"julienvincent/hunk.nvim",
 	dependencies = {
 		"MunifTanjim/nui.nvim",

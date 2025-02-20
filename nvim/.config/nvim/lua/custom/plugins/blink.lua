@@ -33,6 +33,41 @@ return { -- Autocompletion
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
+		cmdline = {
+			enabled = true,
+			keymap = {
+
+				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+				["<Tab>"] = { "show", "select_next", "fallback" },
+
+				["<C-e>"] = { "hide" },
+				["<CR>"] = { "accept", "fallback" },
+			},
+			sources = function()
+				local type = vim.fn.getcmdtype()
+				-- Search forward and backward
+				if type == "/" or type == "?" then
+					return { "buffer" }
+				end
+				-- Commands
+				if type == ":" or type == "@" then
+					return { "cmdline" }
+				end
+				return {}
+			end,
+			completion = {
+				trigger = {
+					show_on_blocked_trigger_characters = {},
+					show_on_x_blocked_trigger_characters = nil, -- Inherits from top level `completion.trigger.show_on_blocked_trigger_characters` config when not set
+				},
+				menu = {
+					auto_show = nil, -- Inherits from top level `completion.menu.auto_show` config when not set
+					draw = {
+						columns = { { "label", "label_description", gap = 1 } },
+					},
+				},
+			},
+		},
 		keymap = {
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide" },
@@ -52,13 +87,6 @@ return { -- Autocompletion
 
 			["<C-l>"] = { "snippet_forward", "fallback" },
 			["<S-C-l>"] = { "snippet_backward", "fallback" },
-			cmdline = {
-				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-				["<Tab>"] = { "show", "select_next", "fallback" },
-
-				["<C-e>"] = { "hide" },
-				["<CR>"] = { "accept", "fallback" },
-			},
 		},
 		completion = {
 			accept = {
@@ -71,7 +99,7 @@ return { -- Autocompletion
 			menu = {
 				enabled = true,
 				border = "rounded",
-				winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
+				-- winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 				scrolloff = 2,
 				scrollbar = true,
 				direction_priority = { "s", "n" },
@@ -99,7 +127,7 @@ return { -- Autocompletion
 				treesitter_highlighting = true,
 				window = {
 					border = "rounded",
-					winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
+					-- winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 					scrollbar = true,
 				},
 			},
@@ -120,7 +148,7 @@ return { -- Autocompletion
 			enabled = true,
 			window = {
 				border = "double",
-				winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
+				-- winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
 				scrollbar = false, -- Note that the gutter will be disabled when border ~= 'none'
 				direction_priority = { "n", "s" },
 				treesitter_highlighting = true,
@@ -140,16 +168,6 @@ return { -- Autocompletion
 				"ripgrep",
 				"codecompanion",
 			},
-			cmdline = function()
-				local type = vim.fn.getcmdtype()
-				if type == "/" or type == "?" then
-					return { "buffer" }
-				end
-				if type == ":" then
-					return { "cmdline" }
-				end
-				return {}
-			end,
 			providers = {
 				lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 1000 },
 				codecompanion = {
