@@ -31,7 +31,7 @@ return {
 				ignore_filetypes = { cpp = true }, -- or { "cpp", }
 				color = {
 					suggestion_color = suggestion_color,
-					-- red cterm=167 gui=red
+					-- red cterm=167, gui='red',
 					cterm = 167,
 				},
 				log_level = "off", -- set to "off" to disable logging completely

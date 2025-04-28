@@ -4,7 +4,11 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		dependencies = {
-			"HiPhish/rainbow-delimiters.nvim",
+			{
+
+				"HiPhish/rainbow-delimiters.nvim",
+				-- enabled = false,
+			},
 		},
 		opts = {
 			ensure_installed = { "bash", "c", "diff", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },

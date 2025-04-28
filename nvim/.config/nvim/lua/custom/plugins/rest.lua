@@ -1,5 +1,6 @@
 return {
 	"mistweaverco/kulala.nvim",
+	-- enabled = false,
 	-- ft = "http",
 	opts = {
 		-- cURL path

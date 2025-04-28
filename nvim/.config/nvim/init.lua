@@ -1,3 +1,28 @@
+function ColorMEplease(color, hasTransparancy, callback)
+	if not callback then
+		color = color or "tokyonight-night"
+		vim.cmd.colorscheme(color)
+	else
+		callback()
+		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
+	end
+	if not hasTransparancy then
+		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+		vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
+		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+	end
+end
+
+function DefaultColors(col)
+	if not col then
+		ColorMEplease("fluoromachine", false)
+		return
+	end
+	ColorMEplease(col, false)
+end
+
 --[[
 
 =====================================================================
@@ -67,6 +92,7 @@ Kickstart Guide:
 
   I have left several `:help X` comments throughout the init.lua
 
+
     These are hints about where to find more information about the relevant settings,
     plugins or Neovim features used in Kickstart.
 
@@ -94,6 +120,8 @@ vim.g.maplocalleader = " "
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 vim.opt.conceallevel = 2
+
+-- vim.api.nvim_set_hl(0, "SpellBad", { cterm = { undercurl = true }, undercurl = true })
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -173,7 +201,7 @@ vim.keymap.set("n", "<M-1>", "<cmd>Exp<CR>")
 -- Diagnostic keymaps
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic [E]rror messages" })
+vim.keymap.set("n", "<leader>od", vim.diagnostic.open_float, { desc = "Show diagnostic [E]rror messages" })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -331,7 +359,7 @@ require("lazy").setup({
 					{ "<leader>s", "[S]earch" },
 					{ "<leader>w", "[W]orkspace" },
 					{ "<leader>t", "[T]oggle" },
-					{ "<leader>h", "Git [H]unk", mode = { "n", "v" } },
+					-- { "<leader>h", "Git [H]unk", mode = { "n", "v" } },
 				})
 			end,
 		},
@@ -348,7 +376,7 @@ require("lazy").setup({
 			lazy = false,
 			keys = {
 				{
-					"<leader>ff",
+					"<leader>DF",
 					function()
 						require("conform").format({ async = true, lsp_fallback = true })
 					end,
@@ -376,7 +404,7 @@ require("lazy").setup({
 					-- You can use a sub-list to tell conform to run *until* a formatter
 					-- is found.
 					javascript = { "eslint", "prettierd", "prettier", stop_after_first = true },
-					typrscript = { "eslint", "prettierd", "prettier", stop_after_first = true },
+					typrscript = { "prettierd", "prettier", "eslint", stop_after_first = true },
 				},
 			},
 		},
@@ -419,6 +447,7 @@ require("lazy").setup({
 		{ import = "custom.plugins" },
 		{ import = "custom.colors" },
 		{ import = "custom.ai" },
+		{ import = "custom.editor" },
 		-- { import = "custom.ui" },
 		-- { import = "custom.ui_plugs" },
 	},
@@ -448,18 +477,6 @@ require("lazy").setup({
 -- vim: ts=2 sts=2 sw=2 et
 --
 -- make nvim transparent
-function ColorMEplease(color, hasTransparancy)
-	color = color or "tokyonight-night"
-	vim.cmd.colorscheme(color)
-	if not hasTransparancy then
-		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-		vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-	end
-end
-
 vim.filetype.add({
 	pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
 })
@@ -491,10 +508,16 @@ vim.api.nvim_set_keymap("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap =
 
 -- Expand 'cc' into 'CodeCompanion' in the command line
 vim.cmd([[cab cc CodeCompanion]])
+vim.opt.termguicolors = true
 
 -- vim.cmd("colorscheme bluloco")
 -- ColorMEplease("aurora", false)
 -- ColorMEplease("onedark", false)
-ColorMEplease("fluoromachine", false)
+-- ColorMEplease("fluoromachine", false)
+ColorMEplease("randomhue", true)
+-- ColorMEplease("gruvbox", false)
+-- ColorMEplease("andromeda", false)
+-- ColorMEplease("neon-netrunner-night", false)
+require("config.undercurl").setup()
 
--- ColorMEplease("tokyodark", true)
+Snacks.toggle.inlay_hints()

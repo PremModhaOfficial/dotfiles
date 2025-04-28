@@ -38,11 +38,7 @@ return {
 		keys = {
 			{ "<leader>gu", "<cmd>LazyGit<cr>", desc = "LazyGit" },
 			{ "<leader>gc", "<cmd>Gitsigns preview_hunk<cr>", desc = "show line diff (Gitsigns)" },
-			{
-				"<leader>gb",
-				"<cmd>Gitsigns toggle_current_line_blame<cr>",
-				desc = "Gitsigns toggle current line blame",
-			},
+			-- { "<leader>gb", "<cmd>Gitsigns toggle_current_line_blame<cr>", desc = "Gitsigns toggle current line blame", },
 		},
 	},
 	{

@@ -2,19 +2,28 @@ return {
 	"yetone/avante.nvim",
 	event = "VeryLazy",
 	lazy = false,
+	---@module "avante"
+	---@type avante.Config
 	opts = {
-		provider = "copilot",
-		auto_suggestions_provider = "copilot",
-		-- provider = "tabnine",
-		-- auto_suggestions_provider = "tabnine",
-		openai_compatible = {
-			endpoint = "https://glhf.chat/api/openai/v1/chat/completions",
-			api_key_name = "GLHF_API_KEY",
-			model = "hf:meta-llama/Meta-Llama-3.1-405B-Instruct",
+
+		file_selector = {
+			provider = "snacks",
+			-- Options override for custom providers
+			provider_opts = {},
 		},
 
+		provider = "copilot",
+		dual_boost = {
+			enabled = false,
+			first_provider = "copilot",
+			second_provider = "copilot",
+			prompt = "Based on the two reference outputs below, generate a response that incorporates elements from both but reflects your own judgment and unique perspective. Do not provide any explanation, just give the response directly. Reference Output 1: [{{provider1_output}}], Reference Output 2: [{{provider2_output}}]",
+			timeout = 60000, -- Timeout in milliseconds
+		},
+		auto_suggestions_provider = "copilot",
+
 		prompt_size = 20,
-		inlay_hint = { enabled = true },
+		-- inlay_hint = { enabled = true },
 		windows = {
 			position = "smart",
 			wrap = true, -- similar to vim.o.wrap
@@ -26,7 +35,7 @@ return {
 				rounded = true,
 			},
 			ask = {
-				floating = true,
+				floating = false,
 			},
 			chat = {
 				floating = false,

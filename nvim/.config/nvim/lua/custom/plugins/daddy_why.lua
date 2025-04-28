@@ -5,6 +5,11 @@ return {
 		event = "VeryLazy",
 		dependencies = { "MunifTanjim/nui.nvim" },
 		opts = {},
+		config = function()
+			vim.keymap.set("n", "<leader>H", function()
+				require("hardtime").toggle()
+			end, { desc = "toggle hartime" })
+		end,
 	},
 	{
 		"tris203/precognition.nvim",

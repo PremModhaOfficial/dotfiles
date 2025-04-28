@@ -3,6 +3,7 @@ return { -- Autocompletion
 	"saghen/blink.cmp",
 	lazy = false, -- lazy loading handled internally
 	dependencies = {
+		"Kaiser-Yang/blink-cmp-avante",
 		"hrsh7th/nvim-cmp", -- Add nvim-cmp as a dependency
 		{
 			"L3MON4D3/LuaSnip",
@@ -34,14 +35,18 @@ return { -- Autocompletion
 	---@type blink.cmp.Config
 	opts = {
 		cmdline = {
-			enabled = true,
+			enabled = false,
+
 			keymap = {
 
-				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-				["<Tab>"] = { "show", "select_next", "fallback" },
-
-				["<C-e>"] = { "hide" },
-				["<CR>"] = { "accept", "fallback" },
+				preset = "cmdline",
+				["<C-j>"] = { "select_next", "fallback" },
+				["<C-k>"] = { "select_prev", "fallback" },
+				-- ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+				-- ["<Tab>"] = { "show", "select_next", "fallback" },
+				--
+				-- ["<C-e>"] = { "hide" },
+				-- ["<CR>"] = { "accept", "fallback" },
 			},
 			sources = function()
 				local type = vim.fn.getcmdtype()
@@ -56,6 +61,13 @@ return { -- Autocompletion
 				return {}
 			end,
 			completion = {
+				list = {
+					selection = {
+						auto_insert = false,
+						preselect = false,
+					},
+				},
+
 				trigger = {
 					show_on_blocked_trigger_characters = {},
 					show_on_x_blocked_trigger_characters = nil, -- Inherits from top level `completion.trigger.show_on_blocked_trigger_characters` config when not set
@@ -72,7 +84,7 @@ return { -- Autocompletion
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide" },
 			["<C-y>"] = { "select_and_accept" },
-			["<C-CR>"] = { "accept", "fallback" },
+			-- ["<C-CR>"] = { "accept", "fallback" },
 
 			-- ["<S-Tab>"] = { "select_prev", "fallback" },
 			["<C-p>"] = { "select_prev", "fallback" },
@@ -132,7 +144,7 @@ return { -- Autocompletion
 				},
 			},
 			ghost_text = {
-				enabled = true,
+				enabled = false,
 				show_with_selection = true,
 			},
 			list = {
@@ -167,9 +179,17 @@ return { -- Autocompletion
 				"lazydev",
 				"ripgrep",
 				"codecompanion",
+				"avante",
 			},
 			providers = {
 				lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 1000 },
+				avante = {
+					module = "blink-cmp-avante",
+					name = "Avante",
+					opts = {
+						-- options for blink-cmp-avante
+					},
+				},
 				codecompanion = {
 					name = "CodeCompanion",
 					module = "codecompanion.providers.completion.blink",
@@ -234,7 +254,7 @@ return { -- Autocompletion
 					max_items = 8,
 					min_keyword_length = 1,
 					module = "blink.cmp.sources.snippets",
-					score_offset = 85, -- the higher the number, the higher the priority
+					score_offset = 100, -- the higher the number, the higher the priority
 					-- Only show snippets if I type the trigger_text characters, so
 					-- to expand the "bash" snippet, if the trigger_text is ";" I have to
 					-- type ";bash"
@@ -309,7 +329,7 @@ return { -- Autocompletion
 			-- Sets the fallback highlight groups to nvim-cmp's highlight groups
 			-- Useful for when your theme doesn't support blink.cmp
 			-- Will be removed in a future release
-			use_nvim_cmp_as_default = false,
+			use_nvim_cmp_as_default = true,
 			nerd_font_variant = "mono",
 		},
 	},

@@ -42,8 +42,7 @@ return {
 				},
 			})
 		end,
-		init = function()
-			require("onedark").load()
-		end,
+		-- init = function() require("onedark").loa
+		-- () end,
 	},
 }

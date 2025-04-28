@@ -4,7 +4,7 @@ return {
 		require("py_lsp").setup({
 			-- This is optional, but allows to create virtual envs from nvim
 			host_python = "/usr/bin/python",
-			default_venv_name = "env", -- For local venv
+			default_venv_name = ".venv", -- For local venv
 		})
 	end,
 }

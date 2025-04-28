@@ -1,6 +1,6 @@
 --@diagnostic disable: unused-local
 return {
-	"epwalsh/obsidian.nvim",
+	"obsidian-nvim/obsidian.nvim",
 	version = "*", -- recommended, use latest release instead of latest commit
 	lazy = true,
 	ft = "markdown",
@@ -59,10 +59,12 @@ return {
 
 		-- Optional, completion of wiki links, local markdown links, and tags using nvim-cmp.
 		completion = {
-			-- Set to false to disable completion.
-			nvim_cmp = true,
+			-- Enables completion using nvim_cmp
+			nvim_cmp = false,
+			-- Enables completion using blink.cmp
+			blink = true,
 			-- Trigger completion at 2 chars.
-			min_chars = 1,
+			min_chars = 2,
 		},
 
 		-- Optional, configure key mappings. These are the defaults. If you don't want to set any keymappings this
@@ -95,7 +97,7 @@ return {
 				end,
 				desc = "Search for notes",
 			},
-			["<leader>sf"] = {
+			["<leader>fo"] = {
 				action = function()
 					vim.cmd("ObsidianSearch")
 				end,
@@ -233,14 +235,20 @@ return {
 
 		picker = {
 			-- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.
-			name = "telescope.nvim",
+			name = "snacks.pick",
 			-- Optional, configure key mappings for the picker. These are the defaults.
 			-- Not all pickers support all mappings.
-			mappings = {
+			note_mappings = {
 				-- Create a new note from your query.
 				new = "<C-x>",
 				-- Insert a link to the selected note.
 				insert_link = "<C-l>",
+			},
+			tag_mappings = {
+				-- Add tag(s) to current note.
+				tag_note = "<C-x>",
+				-- Insert a tag at the current location.
+				insert_tag = "<C-l>",
 			},
 		},
 

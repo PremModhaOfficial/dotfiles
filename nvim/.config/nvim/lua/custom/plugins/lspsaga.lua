@@ -6,7 +6,10 @@ return {
 		callhierarchy = {
 			layout = "float",
 		},
-
+		symbol_in_winbar = {
+			color_mode = false,
+			enable = true,
+		},
 		beacon = {
 			enable = true,
 		},
