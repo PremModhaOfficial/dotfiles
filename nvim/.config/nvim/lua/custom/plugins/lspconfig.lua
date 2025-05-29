@@ -192,6 +192,14 @@ return { -- LSP Configuration & Plugins
 		local servers = {
 			-- clangd = {},
 			-- gopls = {},
+			basedpyright = {
+				cmd = { "basedpyright-langserver", "--stdio" },
+				settings = {
+					basedpyright = {
+						pythonPath = vim.fn.getcwd() .. "/.venv/bin/python"
+					}
+				}
+			},
 			pyright = {
 				python = {
 					analysis = {

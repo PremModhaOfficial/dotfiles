@@ -44,7 +44,6 @@
               nix-output-monitor
               nixd
               nushell
-              python313Packages.aider-chat
               chafa
 
               # (writeShellScriptBin

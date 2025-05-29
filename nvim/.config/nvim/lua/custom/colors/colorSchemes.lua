@@ -10,6 +10,10 @@ return { -- You can easily change to a different colorscheme.
 	---@type tokyonight.Config
 	opts = {
 		transparent = true,
+		styles = {
+			sidebars = "transparent",
+			floats = "transparent",
+		},
 		style = "night",
 		cache = false,
 	},

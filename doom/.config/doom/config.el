@@ -10,6 +10,7 @@
 (use-package! spacemacs-theme
   :config
   (load-theme 'doom-feather-dark t))  ; Or 'spacemacs-light for the light variant
+(setq shell-file-name (executable-find "zsh"))
 
 (setq display-line-numbers-type 'relative)
 
@@ -45,8 +46,8 @@
 (setq! scroll-margin 30)
 ;; (setq! shell-file-name '/bin/zsh)
 
-(set-frame-parameter nil 'alpha-background 60)
-(add-to-list 'default-frame-alist '(alpha-background . 60))
+(set-frame-parameter nil 'alpha-background 69)
+(add-to-list 'default-frame-alist '(alpha-background . 69))
 
 (after! org
   (setq org-latex-compiler "xelatex"))  ;; Use XeLaTeX as default compiler
@@ -55,7 +56,6 @@
   :ensure t
   :demand t
   :config
-  (obsidian-specify-path "~/Notes/second_brain/fleating_notes")
   (global-obsidian-mode t)
   :custom
   ;; This directory will be used for `obsidian-capture' if set.

@@ -57,7 +57,7 @@ return { -- Autocompletion
 				-- ["<Tab>"] = { "show", "select_next", "fallback" },
 				--
 				-- ["<C-e>"] = { "hide" },
-				-- ["<CR>"] = { "accept", "fallback" },
+				["<CR>"] = { "accept", "fallback" },
 			},
 			sources = function()
 				local type = vim.fn.getcmdtype()
@@ -92,7 +92,9 @@ return { -- Autocompletion
 			},
 		},
 		keymap = {
-			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+			-- ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+			["<C-t>"] = { "show", "show_documentation", "hide_documentation" },
+
 			["<C-e>"] = { "hide" },
 			["<C-y>"] = { "select_and_accept" },
 			-- ["<C-CR>"] = { "accept", "fallback" },

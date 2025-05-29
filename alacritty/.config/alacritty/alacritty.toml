@@ -4,6 +4,9 @@ draw_bold_text_with_bright_colors = true
 
 [cursor]
 style = "Block"
+unfocused_hollow = true
+blink_interval = 750
+thickness = 0.15
 
 [env]
 TERM = "xterm-256color"
@@ -11,37 +14,36 @@ TERM = "xterm-256color"
 [font]
 size = 18.0
 
+[font.normal]
+family = "Iosevkaterm Nerd Font"
+style = "Light"
 
 [font.bold]
 family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
 style = "SemiBold"
-
-[font.bold_italic]
-family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
-style = "SemiBold Italic"
-#
 
 [font.italic]
 family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
-style = "Italic"
+style = "Light Italic"
 
-[font.normal]
+[font.bold_italic]
 family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
-style = "Regular"
+style = "SemiBold Italic"
 
-# [font.fallback]
-# family = "Noto Color Emoji"
-
-# [font.offset]
-# x = 0
-# y = 0
+# Better rendering for special characters
 [font.glyph_offset]
 x = 0
 y = 0
+
+# Improve font rendering
+[font.offset]
+x = 0
+y = 0
+
+# Allow for fallback fonts for special characters
+# [[font.fallback]]
+# family = "Noto Color Emoji"
+# style = "Regular"
 
 [[keyboard.bindings]]
 action = "Paste"
@@ -127,11 +129,17 @@ key = "End"
 mode = "~Alt"
 mods = "Shift"
 
-# [mouse.url.launcher]
-# program = "xdg-open"
+# Mouse configuration for better URL handling
+[mouse]
+hide_when_typing = true
+
+# [mouse.url]
+# launcher = { program = "xdg-open" }
+# modifiers = "Control"
 
 [scrolling]
-history = 5000
+history = 10000
+multiplier = 3
 
 [selection]
 save_to_clipboard = true
@@ -140,23 +148,32 @@ semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 # [terminal.shell]
 # program = "/"
 
-# [visual_bell]
-# animation = "EaseOutExpo"
-# color = "#ff00ff"
-# duration = 1
+# Visual bell helps with notifications
+[bell]
+animation = "Linear"
+duration = 150
+color = "#FFFFFF"
 
 [window]
-dynamic_padding = false
-opacity = 0.75
+dynamic_padding = true
+opacity = 0.78
 title = "Alacritty"
+decorations = "Full"
 
 [window.class]
 general = "Alacritty"
 instance = "Alacritty"
 
 [window.padding]
-x = 0
-y = 0
+x = 4
+y = 4
+
+# Improve rendering
+[debug]
+render_timer = false
+persistent_logging = false
+log_level = "Warn"
+print_events = false
 
 # [general]
 # live_config_reload = true

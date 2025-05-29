@@ -93,7 +93,7 @@ return {
 		styles = {
 			snacks_image = {
 				relative = "cursor",
-				position = "float",
+				position = "top",
 				border = "double",
 				focusable = false,
 				backdrop = 2,

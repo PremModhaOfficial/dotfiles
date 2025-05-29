@@ -32,8 +32,10 @@ playlist_display_mode = "columns" # (classic/columns)
 browser_display_mode = "columns" #(classic/columns)
 autocenter_mode = "yes"
 
-progressbar_look = " "
+# progressbar_look = " "
+progressbar_look = ""
 # progressbar_look = "ジョジョ "
+# 
 
 user_interface = "classic" #(classic/alternative)
 header_visibility = "no"

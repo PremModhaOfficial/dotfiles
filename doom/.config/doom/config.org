@@ -58,6 +58,7 @@
 (use-package! spacemacs-theme
   :config
   (load-theme 'doom-feather-dark t))  ; Or 'spacemacs-light for the light variant
+(setq shell-file-name (executable-find "zsh"))
 #+end_src
 
 *** docs
@@ -149,8 +150,8 @@
 ;; they are implemented.
 ** Transparency
 #+begin_src emacs-lisp
-(set-frame-parameter nil 'alpha-background 60)
-(add-to-list 'default-frame-alist '(alpha-background . 60))
+(set-frame-parameter nil 'alpha-background 69)
+(add-to-list 'default-frame-alist '(alpha-background . 69))
 #+end_src
 
 ** latex
@@ -167,7 +168,6 @@
   :ensure t
   :demand t
   :config
-  (obsidian-specify-path "~/Notes/second_brain/fleating_notes")
   (global-obsidian-mode t)
   :custom
   ;; This directory will be used for `obsidian-capture' if set.
@@ -190,7 +190,12 @@
   ;; If you prefer you can use `obsidian-insert-link'
   ("C-c C-l" . obsidian-insert-wikilink)))
 #+end_src
+
+#+RESULTS:
+: obsidian-insert-wikilink
+
 * Theme Configuration
+
 # ** Dark Pride Theme
 # #+begin_src emacs-lisp
 # ;; Set theme and related options

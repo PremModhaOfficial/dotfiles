@@ -75,6 +75,8 @@ return {
 			-- 	},
 			-- },
 			styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
+				floats = "transparent",
+				sidebars = "transparent",
 				comments = { "italic" }, -- Change the style of comments
 				conditionals = { "italic" },
 				keywords = { "italic" },

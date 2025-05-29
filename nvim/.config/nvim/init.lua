@@ -128,7 +128,6 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 -- Disable conceal globally to prevent treesitter conflicts
@@ -411,6 +410,7 @@ require("lazy").setup({
 		{ -- Autoformat
 			"stevearc/conform.nvim",
 			lazy = false,
+			enabled = false,
 			keys = {
 				{
 					"<leader>DF",
@@ -485,6 +485,7 @@ require("lazy").setup({
 		{ import = "custom.colors" },
 		{ import = "custom.ai" },
 		{ import = "custom.editor" },
+		{ import = "custom.competitive." },
 		-- { import = "custom.ui" },
 		-- { import = "custom.ui_plugs" },
 	},
