@@ -68,6 +68,20 @@ return {
 			},
 		})
 
+		dap.configurations.java = {
+			{
+				type = "java",
+				request = "launch",
+				name = "Launch Java Program",
+				mainClass = function()
+					return vim.fn.input("Main class > ")
+				end,
+				projectName = function()
+					return vim.fn.input("Project name > ")
+				end,
+			},
+		}
+
 		-- Dap UI setup
 		-- For more information, see |:help nvim-dap-ui|
 		dapui.setup({

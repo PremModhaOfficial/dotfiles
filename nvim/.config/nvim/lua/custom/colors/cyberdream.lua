@@ -1,10 +1,10 @@
 return {
 	"scottmckendry/cyberdream.nvim",
 	lazy = false,
-	enabled = false,
+	-- enabled = false,
 	priority = 1000,
 	config = function()
-		vim.cmd([[ set background=dark ]])
+		-- vim.cmd([[ set background=dark ]])
 		require("cyberdream").setup({
 			transparent = true,
 			italic_comments = true,

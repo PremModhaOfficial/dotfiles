@@ -137,8 +137,8 @@ history = 5000
 save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-[terminal.shell]
-program = "/bin/fish"
+# [terminal.shell]
+# program = "/"
 
 # [visual_bell]
 # animation = "EaseOutExpo"
@@ -158,12 +158,10 @@ instance = "Alacritty"
 x = 0
 y = 0
 
-[general]
+# [general]
+# live_config_reload = true
 
-live_config_reload = true
+# import = [
+# 	"/home/prm/.config/alacritty/dark_pride.toml",
+# ]
 
-import = [
-	"/home/prm/.config/alacritty/dark_pride.toml",
-]
-
-[terminal]

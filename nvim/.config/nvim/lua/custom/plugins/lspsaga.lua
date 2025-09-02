@@ -7,13 +7,13 @@ return {
 			layout = "float",
 		},
 		symbol_in_winbar = {
-			color_mode = false,
+			color_mode = true,
 			enable = true,
 		},
 		beacon = {
-			enable = true,
+			enable = false,
 		},
-		ui = { border = "rounded", code_action = "" },
+		ui = { border = "rounded", code_action = "" },
 	},
 	-- add your config value here
 	dependencies = {

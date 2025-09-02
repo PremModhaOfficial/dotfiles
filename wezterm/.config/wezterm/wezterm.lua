@@ -1,23 +1,24 @@
 local wezterm = require("wezterm")
-local colors = require("theme")
 -- disable tabs
 local config = wezterm.config_builder()
 -- config.CloseOnCleanExit = true
 -- apply colors
-colors.apply_colors(config)
 
-config.enable_wayland = false
+config.enable_wayland = true
 config.enable_tab_bar = false
 config.font = wezterm.font_with_fallback({
 	-- { family = "JetBrainsMono NF", weight = "Regular" },
 	{ family = "Iosevkaterm NF", weight = "Regular" },
-	"JetBrainsMono Nerd Font Mono",
+	-- "JetBrainsMono Nerd Font Mono",
 	"Noto Color Emoji", -- Add fallback for emojis
 })
 
 config.keys = {
-	-- Turn off the default CMD-m Hide action, allowing CMD-m to
-	-- be potentially recognized and handled by the tab
+	{
+		key = "Enter",
+		mods = "SHIFT|CTRL",
+		action = wezterm.action.ToggleFullScreen,
+	},
 	{
 		key = "Enter",
 		mods = "ALT",
@@ -38,9 +39,9 @@ config.adjust_window_size_when_changing_font_size = false
 -- Spawn a fish shell in login mode
 config.default_prog = { "/bin/fish", "-l" }
 
-if require("overrides") then
-	local overrides = require("overrides")
-	overrides.override(config)
-end
+-- if require("overrides") then
+-- 	local overrides = require("overrides")
+-- 	overrides.override(config)
+-- end
 
 return config

@@ -8,26 +8,40 @@ return {
 
 		file_selector = {
 			provider = "snacks",
-			-- Options override for custom providers
 			provider_opts = {},
 		},
+		provider = "gemini_proxy",
+		providers = {
+			-- 2. Define your custom provider
+			gemini_proxy = {
+				-- Inherit the base settings from the 'openai' provider
+				__inherited_from = "openai",
 
-		provider = "copilot",
+				-- Override the endpoint to point to your local LiteLLM server
+				-- The '/v1' suffix is important as LiteLLM exposes an OpenAI-compatible API
+				endpoint = "http://127.0.0.1:4000",
+
+				-- Set the model to the alias you created with LiteLLM
+				model = "avante-gemini",
+
+				-- The API key is handled by the LiteLLM process itself,
+				-- so you can set a dummy environment variable name here.
+				api_key_name = "DUMMY_GEMINI_KEY",
+			},
+		},
 		dual_boost = {
 			enabled = false,
-			first_provider = "copilot",
-			second_provider = "copilot",
+			first_provider = "openai",
+			second_provider = "openai",
 			prompt = "Based on the two reference outputs below, generate a response that incorporates elements from both but reflects your own judgment and unique perspective. Do not provide any explanation, just give the response directly. Reference Output 1: [{{provider1_output}}], Reference Output 2: [{{provider2_output}}]",
 			timeout = 60000, -- Timeout in milliseconds
 		},
-		auto_suggestions_provider = "copilot",
-
 		prompt_size = 20,
-		-- inlay_hint = { enabled = true },
+		inlay_hint = { enabled = false },
 		windows = {
 			position = "smart",
 			wrap = true, -- similar to vim.o.wrap
-			width = 45, -- default % based on available width in vertical layout
+			width = 50, -- default % based on available width in vertical layout
 			height = 30, -- default % based on available height in horizontal layout
 			sidebar_header = {
 				enabled = true, -- true, false to enable/disable the header

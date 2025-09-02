@@ -1,4 +1,20 @@
-function ColorMEplease(color, hasTransparancy, callback)
+local function makeNone()
+	local Normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+	local NormalNC = vim.api.nvim_get_hl(0, { name = "NormalNC" })
+	local NormalFloat = vim.api.nvim_get_hl(0, { name = "NormalFloat" })
+
+	vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+	vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
+	vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+
+	return function()
+		vim.api.nvim_set_hl(0, "Normal", { bg = Normal.bg })
+		vim.api.nvim_set_hl(0, "NormalNC", { bg = NormalNC.bg })
+		vim.api.nvim_set_hl(0, "NormalFloat", { bg = NormalFloat.bg })
+	end
+end
+
+function ColorschemeWithTransprancy(color, transparentByDefault, callback)
 	if not callback then
 		color = color or "tokyonight-night"
 		vim.cmd.colorscheme(color)
@@ -6,21 +22,17 @@ function ColorMEplease(color, hasTransparancy, callback)
 		callback()
 		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
 	end
-	if not hasTransparancy then
-		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-		vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+	if not transparentByDefault then
+		return makeNone()
 	end
 end
 
 function DefaultColors(col)
 	if not col then
-		ColorMEplease("fluoromachine", false)
+		ColorschemeWithTransprancy("fluoromachine", false)
 		return
 	end
-	ColorMEplease(col, false)
+	ColorschemeWithTransprancy(col, false)
 end
 
 --[[
@@ -119,7 +131,8 @@ vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
-vim.opt.conceallevel = 2
+vim.opt.conceallevel = 3
+vim.opt.cursorcolumn = false
 
 -- vim.api.nvim_set_hl(0, "SpellBad", { cterm = { undercurl = true }, undercurl = true })
 
@@ -176,7 +189,8 @@ vim.opt.splitbelow = true
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
-vim.opt.listchars = { tab = "»·", trail = "·", nbsp = "␣", extends = "…", precedes = "…" }
+-- vim.opt.listchars = { tab = "»·", trail = "·", nbsp = "␣", extends = "…", precedes = "…" }
+vim.opt.listchars = { tab = "  ", trail = "·", nbsp = "␣", extends = "…", precedes = "…" }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"
@@ -452,8 +466,7 @@ require("lazy").setup({
 		-- { import = "custom.ui_plugs" },
 	},
 }, {
-	ui = {
-		-- If you are using a Nerd Font: set icons to an empty table which will use the
+	ui = { -- If you are using a Nerd Font: set icons to an empty table which will use the
 		-- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
 		icons = vim.g.have_nerd_font and {} or {
 			cmd = "⌘",
@@ -511,13 +524,18 @@ vim.cmd([[cab cc CodeCompanion]])
 vim.opt.termguicolors = true
 
 -- vim.cmd("colorscheme bluloco")
--- ColorMEplease("aurora", false)
--- ColorMEplease("onedark", false)
--- ColorMEplease("fluoromachine", false)
-ColorMEplease("randomhue", true)
--- ColorMEplease("gruvbox", false)
--- ColorMEplease("andromeda", false)
--- ColorMEplease("neon-netrunner-night", false)
+-- ColorschemeWithTransprancy("neon-netrunner-night", false)
+-- ColorschemeWithTransprancy("catppuccin", false)
+-- ("aurora", false)
+-- ("material", false)
+local resetColors = ColorschemeWithTransprancy("fluoromachine", false)
+
+vim.keymap.set("n", "<leader>cd", function()
+	resetColors()
+end)
+-- ("randomhue", true)
+-- ColorschemeWithTransprancy("gruvbox", false)
+-- ("andromeda", false)
 require("config.undercurl").setup()
 
-Snacks.toggle.inlay_hints()
+-- Snacks.toggle.inlay_hints()

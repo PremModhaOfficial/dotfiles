@@ -7,7 +7,7 @@ return {
 		local fm = require("fluoromachine")
 
 		fm.setup({
-			theme = "retrowave",
+			theme = "delta",
 			glow = false,
 			transparent = true,
 			brightness = 100.0,

@@ -73,6 +73,9 @@ return { -- LSP Configuration & Plugins
 				local map = function(keys, func, desc)
 					vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 				end
+				local xXmap = function(keys, func, desc, mode)
+					vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
+				end
 
 				-- Jump to the definition of the word under your cursor.
 				--  This is where a variable was first declared, or where a function is defined, etc.
@@ -124,7 +127,7 @@ return { -- LSP Configuration & Plugins
 				-- Execute a code action, usually your cursor needs to be on top of an error
 				-- or a suggestion from your LSP for this to activate.
 				map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
-				map("<M-Enter>", vim.lsp.buf.code_action, "[C]ode [A]ction")
+				xXmap("<M-Enter>", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "v" })
 
 				-- Opens a popup that displays documentation about the word under your cursor
 				--  See `:help K` for why this keymap.
@@ -236,12 +239,7 @@ return { -- LSP Configuration & Plugins
 				},
 			},
 			-- rust_analyzer = {},
-			nil_ls = {
-				cmd = { "nil", "--stdio" },
-				flake = {
-					autoArchive = "true",
-				},
-			},
+			-- nil_ls = { cmd = { "nil", "--stdio" }, flake = { autoArchive = "true", }, },
 			pylsp = {
 				plugins = {
 					pycodestyle = {

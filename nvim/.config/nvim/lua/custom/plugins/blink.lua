@@ -1,4 +1,15 @@
 local trigger_text = ";"
+local cached_cursor_col = 0
+local cached_line = ""
+vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+	callback = function()
+		local ok, cursor = pcall(vim.api.nvim_win_get_cursor, 0)
+		if ok then
+			cached_cursor_col = cursor[2]
+			cached_line = vim.api.nvim_get_current_line()
+		end
+	end,
+})
 return { -- Autocompletion
 	"saghen/blink.cmp",
 	lazy = false, -- lazy loading handled internally
@@ -42,6 +53,11 @@ return { -- Autocompletion
 				preset = "cmdline",
 				["<C-j>"] = { "select_next", "fallback" },
 				["<C-k>"] = { "select_prev", "fallback" },
+				["<c-f>"] = {
+					function()
+						require("blink-cmp").show({ providers = { "ripgrep" } })
+					end,
+				},
 				-- ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 				-- ["<Tab>"] = { "show", "select_next", "fallback" },
 				--
@@ -84,6 +100,7 @@ return { -- Autocompletion
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide" },
 			["<C-y>"] = { "select_and_accept" },
+			["<Tab>"] = { "accept", "fallback" },
 			-- ["<C-CR>"] = { "accept", "fallback" },
 
 			-- ["<S-Tab>"] = { "select_prev", "fallback" },
@@ -174,11 +191,11 @@ return { -- Autocompletion
 				"path",
 				"snippets",
 				"buffer",
-				"copilot",
+				-- "copilot",
 				"dadbod",
 				"lazydev",
 				"ripgrep",
-				"codecompanion",
+				-- "codecompanion",
 				"avante",
 			},
 			providers = {
@@ -202,7 +219,18 @@ return { -- Autocompletion
 					name = "Ripgrep",
 					---@module "blink-ripgrep"
 					---@type blink-ripgrep.Options
-					opts = { prefix_min_len = 3, context_size = 5, max_filesize = "1M" },
+					opts = {
+						backend = {
+							use = "ripgrep",
+							ripgrep = {
+								max_filesize = "1M",
+								project_root_fallback = true,
+								search_casing = "--smart-case",
+							},
+							context_size = 5,
+						},
+						prefix_min_len = 2,
+					},
 				},
 				lsp = {
 					name = "lsp",
@@ -258,9 +286,13 @@ return { -- Autocompletion
 					-- Only show snippets if I type the trigger_text characters, so
 					-- to expand the "bash" snippet, if the trigger_text is ";" I have to
 					-- type ";bash"
+					-- Cache cursor position outside of fast events
+
+					-- Update cache on cursor movement (not in fast event)
+
 					should_show_items = function()
-						local col = vim.api.nvim_win_get_cursor(0)[2]
-						local before_cursor = vim.api.nvim_get_current_line():sub(1, col)
+						-- Use cached values instead of API calls
+						local before_cursor = cached_line:sub(1, cached_cursor_col)
 						-- NOTE: remember that `trigger_text` is modified at the top of the file
 						return before_cursor:match(trigger_text .. "%w*$") ~= nil
 					end,

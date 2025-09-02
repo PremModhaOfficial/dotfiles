@@ -7,18 +7,18 @@ return {
 	---@type snacks.Config
 	opts = {
 		image = {
-			debug = { placement = true },
+			-- debug = { placement = true },
 			enabled = true,
 		},
 		bigfile = { enabled = true },
 		dashboard = {
 			sections = {
-				{
-					section = "terminal",
-					cmd = "chafa (swww query | awk -F ': ' '{print $5}') --format symbols --symbols vhalf --size 60x17 --stretch; sleep 1ms",
-					height = 17,
-					padding = 1,
-				},
+				-- {
+				-- 	section = "terminal",
+				-- 	cmd = "chafa (swww query | awk -F ': ' '{print $5}') --format symbols --symbols vhalf --size 60x17 --stretch; sleep 1ms",
+				-- 	height = 17,
+				-- 	padding = 1,
+				-- },
 				{
 					pane = 2,
 					{ section = "keys", gap = 1, padding = 1 },
@@ -61,7 +61,7 @@ return {
 		input = { enabled = true },
 		notifier = {
 			enabled = true,
-			timeout = 3000,
+			timeout = 2000,
 		},
 		quickfile = { enabled = true },
 		scroll = { enabled = false },
