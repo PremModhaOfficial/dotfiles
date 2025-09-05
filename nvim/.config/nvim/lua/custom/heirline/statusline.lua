@@ -1,11 +1,37 @@
 local utils = require("heirline.utils")
 local conditions = require("heirline.conditions")
 
--- Safe highlight getter
+-- Optimized safe highlight getter with caching
+local hl_cache = {}
 local function safe_hl(name, attr)
+	local key = name .. "_" .. attr
+	if hl_cache[key] then
+		return hl_cache[key]
+	end
+
 	local hl = utils.get_highlight(name)
-	return hl and hl[attr] or (attr == "fg" and "#ffffff" or "#000000")
+	local result = hl and hl[attr] or (attr == "fg" and "#ffffff" or "#000000")
+	hl_cache[key] = result
+	return result
 end
+
+-- Clear cache when colors change
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = function()
+		hl_cache = {}
+	end,
+})
+
+-- Simple pattern component for middle section
+local MiddlePattern = {
+	provider = " ", -- Simple space for performance
+	hl = function()
+		return {
+			fg = safe_hl("Comment", "fg"),
+			bg = safe_hl("Normal", "bg"),
+		}
+	end,
+}
 
 -- Visual separators
 local LeftSlantStart = {
@@ -55,7 +81,6 @@ local VimMode = {
 	end,
 	update = {
 		"ModeChanged",
-		pattern = "*:*",
 		callback = vim.schedule_wrap(function()
 			vim.cmd("redrawstatus")
 		end),
@@ -240,7 +265,7 @@ local LspDiagnostics = {
 		end,
 		name = "sl_diagnostics_click",
 	},
-	update = { "DiagnosticChanged", "BufEnter" },
+	update = { "DiagnosticChanged" },
 	-- Errors
 	{
 		condition = function(self)
@@ -538,4 +563,3 @@ local statusline = {
 }
 
 return statusline
-

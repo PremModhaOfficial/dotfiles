@@ -321,7 +321,7 @@ function M.execute_java_class(class_name, project_root)
 		end
 
 		vim.notify("✅ Detected Maven project", vim.log.levels.INFO)
-		vim.notify(vim.tbl_keys(cmd_table))
+		vim.notify("Command: " .. table.concat(cmd_table, " "), vim.log.levels.INFO)
 	elseif gradle_exists or gradle_kts_exists then
 		cmd_table = { "gradle", "run", "--console=plain", "-PmainClass=" .. class_name }
 

@@ -6,6 +6,7 @@
 - **Plugins**: Avante.nvim and CodeCompanion for AI assistance
 - **Completion**: Blink.cmp integrated with both plugins
 - **Tools**: Enabled for enhanced functionality
+- **Statusline**: Custom Heirline with dynamic colors and performance optimizations
 
 ## Key Insights from Configuration
 1. **OpenRouter Integration**: Use `__inherited_from = "openai"` for Avante, `extend("openai")` for CodeCompanion
@@ -54,3 +55,48 @@
 - Blink: Global sources include avante and codecompanion providers
 - Notifications: Snacks handles error display
 - Logs: Available via `:CodeCompanion logs` for troubleshooting
+
+## User Preferences & Customizations
+
+### Statusline (Heirline)
+- **Design**: Clean, minimal with Powerline separators ()
+- **Components**: Mode indicator, Git branch, File path, LSP status, Diagnostics, Position
+- **Colors**: Dynamic mode-based colors with safe highlight caching
+- **Performance**: Optimized with cached highlights and reduced update frequency
+- **Layout**: Left components → Space → Right components
+- **Features**: Clickable elements, conditional rendering, theme compatibility
+
+### Performance Optimizations
+- **Highlight Caching**: Cached `safe_hl()` function results
+- **Reduced Updates**: Optimized component refresh frequencies
+- **Lazy Loading**: Components load only when needed
+- **Memory Management**: Proper cleanup and cache management
+- **Update Conditions**: Smart event-based updates only when necessary
+
+### Theme & UI Preferences
+- **Colorschemes**: Gruvbox, Tokyo Dark, Cyberdream, and others
+- **Minimal Design**: Clean interfaces with essential information
+- **Responsive Layout**: Adapts to window size and content
+- **Visual Hierarchy**: Clear separation with slants and colors
+- **Accessibility**: High contrast elements and readable fonts
+
+### LSP & AI Integration
+- **LSP Saga**: Winbar breadcrumbs with file navigation
+- **CodeCompanion**: Chat-based AI assistance with tools
+- **Avante**: Inline AI suggestions and edits
+- **Snacks**: Enhanced notifications and pickers
+- **Performance**: Balanced between features and responsiveness
+
+### Development Workflow
+- **File Navigation**: LSP-based with Snacks pickers
+- **Git Integration**: Gitsigns with branch display
+- **Diagnostics**: Inline error/warning indicators
+- **Completion**: Blink.cmp with AI provider integration
+- **Search**: Telescope/Snacks for efficient file finding
+
+### Key Preferences
+- **Performance First**: Optimized for smooth experience
+- **Clean Aesthetics**: Minimal but informative design
+- **Smart Defaults**: Sensible configurations with customization options
+- **Tool Integration**: Seamless AI and development tool integration
+- **Maintainability**: Well-documented and organized configuration

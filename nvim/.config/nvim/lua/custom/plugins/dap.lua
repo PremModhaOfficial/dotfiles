@@ -28,21 +28,29 @@ return {
 		local dap = require("dap")
 		local dapui = require("dapui")
 		return {
-			-- Basic debugging keymaps, feel free to change to your liking!
-			{ "<F5>", dap.continue, desc = "Debug: Start/Continue" },
-			{ "<F1>", dap.step_into, desc = "Debug: Step Into" },
-			{ "<F2>", dap.step_over, desc = "Debug: Step Over" },
-			{ "<F3>", dap.step_out, desc = "Debug: Step Out" },
-			{ "<leader>p", dap.toggle_breakpoint, desc = "Debug: Toggle Breakpoint" },
+			-- Basic debugging keymaps with leader prefix (no conflicts!)
+			{ "<leader>dc", dap.continue, desc = "Debug: Start/Continue" },
+			{ "<leader>di", dap.step_into, desc = "Debug: Step Into" },
+			{ "<leader>do", dap.step_over, desc = "Debug: Step Over" },
+			{ "<leader>dO", dap.step_out, desc = "Debug: Step Out" },
+			{ "<leader>db", dap.toggle_breakpoint, desc = "Debug: Toggle Breakpoint" },
 			{
-				"<leader>B",
+				"<leader>dB",
 				function()
 					dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 				end,
 				desc = "Debug: Set Breakpoint",
 			},
-			-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-			{ "<F7>", dapui.toggle, desc = "Debug: See last session result." },
+			{ "<leader>dr", dap.repl.open, desc = "Debug: Open REPL" },
+			{ "<leader>du", dapui.toggle, desc = "Debug: Toggle UI" },
+			{ "<leader>dt", dap.terminate, desc = "Debug: Terminate" },
+			{
+				"<leader>dw",
+				function()
+					dapui.elements.watches.add(vim.fn.input("Expression: "))
+				end,
+				desc = "Debug: Add Watch",
+			},
 			unpack(keys),
 		}
 	end,
@@ -68,16 +76,51 @@ return {
 			},
 		})
 
+		-- NerdFont breakpoint icons with fallbacks
+		local function define_sign(name, icon, fallback)
+			local has_nerd_font = vim.fn.has("gui_running") == 1 or vim.env.TERM_PROGRAM == "iTerm.app"
+			local text = has_nerd_font and icon or fallback
+
+			vim.fn.sign_define(name, {
+				text = text,
+				texthl = name,
+				linehl = name == "DapStopped" and "DapStoppedLine" or "",
+				numhl = "",
+			})
+		end
+
+		-- Define signs with NerdFont icons and fallbacks
+		define_sign("DapBreakpoint", "", "●")           -- Regular breakpoint
+		define_sign("DapBreakpointCondition", "", "◆")   -- Conditional breakpoint
+		define_sign("DapLogPoint", "", "▶")              -- Log point
+		define_sign("DapStopped", "", "▶")               -- Current execution line
+		define_sign("DapBreakpointRejected", "", "✗")    -- Rejected breakpoint
+
+		-- Enhanced Java configuration
 		dap.configurations.java = {
 			{
 				type = "java",
 				request = "launch",
 				name = "Launch Java Program",
 				mainClass = function()
-					return vim.fn.input("Main class > ")
+					return vim.fn.input("Main class (or press Enter for auto-detect): ", "", "file")
 				end,
 				projectName = function()
-					return vim.fn.input("Project name > ")
+					return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+				end,
+				-- Add VM arguments support
+				vmArgs = function()
+					local args = vim.fn.input("VM Args (optional): ")
+					return args ~= "" and args or nil
+				end,
+			},
+			{
+				type = "java",
+				request = "attach",
+				name = "Attach to Java Process",
+				hostName = "localhost",
+				port = function()
+					return vim.fn.input("Port: ", "5005")
 				end,
 			},
 		}
@@ -104,9 +147,19 @@ return {
 			},
 		})
 
-		dap.listeners.after.event_initialized["dapui_config"] = dapui.open
-		dap.listeners.before.event_terminated["dapui_config"] = dapui.close
-		dap.listeners.before.event_exited["dapui_config"] = dapui.close
+		-- Enhanced event listeners with notifications
+		dap.listeners.after.event_initialized["dapui_config"] = function()
+			dapui.open()
+			vim.notify("🐛 Debug session started", vim.log.levels.INFO)
+		end
+		dap.listeners.before.event_terminated["dapui_config"] = function()
+			vim.notify("✅ Debug session ended", vim.log.levels.INFO)
+			dapui.close()
+		end
+		dap.listeners.before.event_exited["dapui_config"] = function()
+			vim.notify("🔚 Debug session exited", vim.log.levels.INFO)
+			dapui.close()
+		end
 
 		-- Install golang specific config
 		require("dap-go").setup({

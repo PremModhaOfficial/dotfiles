@@ -390,8 +390,7 @@ require("lazy").setup({
 					{ "<leader>ca", "[C]ode [A]ction" },
 					{ "<leader>ci", "[C]all [I]ncoming" },
 					{ "<leader>co", "[C]all [O]utgoing" },
-					{ "<leader>dd", "[D]ocument [D]iagnostics" },
-					{ "<leader>dl", "[D]ocument [L]ine diagnostics" },
+
 					{ "<leader>ff", "[F]inder" },
 					{ "<leader>P", "[P]eek type definition" },
 					{ "<leader>rn", "[R]e[n]ame" },

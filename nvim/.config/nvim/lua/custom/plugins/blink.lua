@@ -4,36 +4,43 @@ return { -- Autocompletion
 	dependencies = {
 		"Kaiser-Yang/blink-cmp-avante",
 		"hrsh7th/nvim-cmp", -- Add nvim-cmp as a dependency
-		{
-			"L3MON4D3/LuaSnip",
-			dependencies = {
-				"rafamadriz/friendly-snippets",
-			},
-			version = "v2.*",
-			build = "make install_jsregexp",
-			config = function()
-				_ = require("luasnip.loaders.from_vscode").lazy_load()
-			end,
+
+	{
+		"saghen/blink.compat",
+		---@module 'blink.compat'
+		---@type blink.compat.Config
+		opts = {
+			impersonate_nvim_cmp = true,
+			debug = false,
 		},
-		{
-			"saghen/blink.compat",
-			---@module 'blink.compat'
-			---@type blink.compat.Config
-			opts = {
-				impersonate_nvim_cmp = true,
-				debug = false,
-			},
+	},
+	{
+		"L3MON4D3/LuaSnip",
+		dependencies = {
+			"rafamadriz/friendly-snippets",
 		},
+		version = "v2.*",
+		build = "make install_jsregexp",
+		config = function()
+			_ = require("luasnip.loaders.from_vscode").lazy_load()
+		end,
+	},
 		"zbirenbaum/copilot-cmp",
 		"mikavilpas/blink-ripgrep.nvim",
 		"giuxtaposition/blink-cmp-copilot",
 	},
 	version = "v1.*",
 
-	---@module 'blink.cmp'
-	---@type blink.cmp.Config
-	opts = {
-		cmdline = {
+ 	---@module 'blink.cmp'
+ 	---@type blink.cmp.Config
+ 	opts = {
+ 		fuzzy = {
+ 			implementation = "prefer_rust_with_warning",
+ 			max_typos = function(keyword) return math.floor(#keyword / 4) end,
+ 			use_frecency = true,
+ 			use_proximity = true,
+ 		},
+ 		cmdline = {
 			enabled = false,
 
 			keymap = {
@@ -274,7 +281,7 @@ return { -- Autocompletion
 					max_items = 8,
 					min_keyword_length = 2,
 					module = "blink.cmp.sources.snippets",
-					score_offset = 100,
+					score_offset = 85,  -- Lower than LSP (90) to prioritize actual completions
 				},
 				dadbod = {
 					name = "Dadbod",

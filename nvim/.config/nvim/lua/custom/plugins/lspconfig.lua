@@ -164,15 +164,7 @@ return { -- LSP Configuration & Plugins
 					end, "[T]oggle Inlay [H]ints")
 				end
 
-				-- Document diagnostics
-				map("<leader>dd", function()
-					vim.cmd("Lspsaga show_buf_diagnostics")
-				end, "[D]ocument [D]iagnostics")
 
-				-- Line diagnostics
-				map("<leader>dl", function()
-					vim.cmd("Lspsaga show_line_diagnostics")
-				end, "[D]ocument [L]ine diagnostics")
 			end,
 		})
 
