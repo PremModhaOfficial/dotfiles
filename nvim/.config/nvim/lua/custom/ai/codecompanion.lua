@@ -25,7 +25,7 @@ return {
 		},
 		strategies = {
 			chat = {
-				adapter = "openrouter",
+				adapter = "copilot",
 				picker = "snacks", -- Specify telescope explicitly for `/file` picker
 
 				diff = {
@@ -33,35 +33,57 @@ return {
 				},
 			},
 			inline = {
-				adapter = "openrouter",
+				adapter = "copilot",
 			},
 			agent = {
-				adapter = "openrouter",
+				adapter = "copilot",
 			},
 		},
 		adapters = {
 			http = {
-				openrouter = function()
-					return require("codecompanion.adapters").extend("openai", {
+				copilot = function()
+					return require("codecompanion.adapters").extend("copilot", {
 						env = {
-							api_key = "OPENROUTER_API_KEY",
+							token = "GITHUB_TOKEN",
 						},
-						url = "https://openrouter.ai/api/v1",
 						schema = {
 							model = {
-								default = "qwen/qwen3-coder:free",
+								default = "claude-3.5-sonnet",
+								choices = {
+									"claude-3.5-sonnet",
+									"claude-3-haiku",
+									"gpt-4o",
+									"gpt-4",
+									"gpt-3.5-turbo",
+								},
 							},
 						},
 					})
 				end,
 			},
 		},
+		extensions = {
+			mcphub = {
+				callback = "mcphub.extensions.codecompanion",
+				opts = {
+					-- MCP Tools 
+					make_tools = true,              -- Make individual tools (@server__tool) and server groups (@server)
+					show_server_tools_in_chat = true, -- Show individual tools in chat completion
+					add_mcp_prefix_to_tool_names = false, -- Keep clean tool names
+					show_result_in_chat = true,      -- Show tool results in chat buffer
+					-- MCP Resources
+					make_vars = true,                -- Convert MCP resources to #variables
+					-- MCP Prompts 
+					make_slash_commands = true,      -- Add MCP prompts as /slash commands
+				}
+			}
+		},
 	},
 	init = function()
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = "codecompanion",
 			callback = function()
-				require("blink.cmp").setup.buffer({
+				require("blink.cmp").setup({
 					sources = {
 						default = { "lsp", "path", "snippets", "buffer" },
 					},

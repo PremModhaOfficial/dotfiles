@@ -110,6 +110,26 @@ return { -- Autocompletion
 
 			["<C-l>"] = { "snippet_forward", "fallback" },
 			["<S-C-l>"] = { "snippet_backward", "fallback" },
+			
+			-- AI-specific keymaps
+			["<C-a>"] = { 
+				function()
+					-- Force show AI completions (avante, codecompanion, copilot)
+					require("blink.cmp").show({ 
+						providers = { "avante", "codecompanion", "copilot" } 
+					})
+				end,
+				"fallback"
+			},
+			["<C-g>"] = { 
+				function()
+					-- Show only CodeCompanion completions
+					require("blink.cmp").show({ 
+						providers = { "codecompanion" } 
+					})
+				end,
+				"fallback"
+			},
 		},
 		completion = {
 			accept = {
@@ -127,6 +147,20 @@ return { -- Autocompletion
 				scrollbar = true,
 				direction_priority = { "s", "n" },
 				auto_show = function(ctx)
+					-- Enhanced auto-show logic for AI plugins
+					if ctx.mode == "cmdline" then
+						return false
+					end
+					
+					-- Always show in AI plugin buffers
+					local ai_filetypes = { "codecompanion", "Avante" }
+					for _, ft in ipairs(ai_filetypes) do
+						if vim.bo.filetype == ft then
+							return true
+						end
+					end
+					
+					-- Standard auto-show for other contexts
 					return ctx.mode ~= "cmdline"
 				end,
 				draw = {
@@ -138,6 +172,23 @@ return { -- Autocompletion
 					columns = { { "kind_icon" }, { "label", "label_description", gap = 1 } },
 					-- for a setup similar to nvim-cmp: https://github.com/Saghen/blink.cmp/pull/245#issuecomment-2463659508
 					-- columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind", gap = 1 } },
+					-- Enhanced formatting for AI completions
+					components = {
+						kind_icon = {
+							text = function(item)
+								-- Custom icons for AI sources
+								if item.source_name == "codecompanion" then
+									return "🤖"
+								elseif item.source_name == "avante" then
+									return "✨"
+								elseif item.source_name == "copilot" then
+									return ""
+								end
+								-- Return empty string for other sources (use default behavior)
+								return ""
+							end,
+						},
+					},
 				},
 			},
 			documentation = {
@@ -200,21 +251,65 @@ return { -- Autocompletion
 
 				return sources
 			end,
+			-- Filetype-specific source configurations for AI plugins
+			per_filetype = {
+				codecompanion = {
+					"codecompanion", "avante", "lsp", "path", "snippets", "buffer"
+				},
+				Avante = {
+					"avante", "codecompanion", "lsp", "snippets", "buffer", "path"
+				},
+				-- Regular code files get standard priority with AI as secondary
+				lua = function()
+					local sources = { "lsp", "snippets", "path", "buffer", "lazydev" }
+					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
+					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
+					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
+					return sources
+				end,
+				python = function()
+					local sources = { "lsp", "snippets", "path", "buffer" }
+					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
+					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
+					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
+					return sources
+				end,
+				javascript = function()
+					local sources = { "lsp", "snippets", "path", "buffer" }
+					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
+					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
+					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
+					return sources
+				end,
+				typescript = function()
+					local sources = { "lsp", "snippets", "path", "buffer" }
+					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
+					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
+					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
+					return sources
+				end,
+			},
 			providers = {
 				lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 1000 },
 				avante = {
 					module = "blink-cmp-avante",
 					name = "Avante",
+					score_offset = 75, -- Optimized priority
+					async = true,
 					opts = {
-						-- options for blink-cmp-avante
+						-- Enhanced options for better AI context
+						max_items = 10,
+						min_keyword_length = 2,
 					},
 				},
 				codecompanion = {
 					name = "CodeCompanion",
 					module = "codecompanion.providers.completion.blink",
-					-- kind = "CC",
+					score_offset = 80, -- Higher priority for chat-based completions
 					enabled = true,
 					async = true,
+					max_items = 8,
+					min_keyword_length = 2,
 				},
 				ripgrep = {
 					module = "blink-ripgrep",
@@ -294,9 +389,15 @@ return { -- Autocompletion
 					enabled = true,
 					module = "blink-cmp-copilot",
 					-- kind = "Copilot",
-					min_keyword_length = 6,
-					score_offset = -100, -- the higher the number, the higher the priority
+					min_keyword_length = 4, -- Reduced from 6 for better responsiveness
+					score_offset = -50, -- Improved from -100 for better balance
 					async = true,
+					max_items = 5,
+					-- Enhanced configuration for better AI completion context
+					opts = {
+						-- Only show copilot when other sources don't have good matches
+						priority = "fallback",
+					},
 				},
 			},
 		},
