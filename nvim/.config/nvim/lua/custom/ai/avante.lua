@@ -10,23 +10,17 @@ return {
 			provider = "snacks",
 			provider_opts = {},
 		},
-		provider = "gemini_proxy",
+		provider = "openrouter",
 		providers = {
-			-- 2. Define your custom provider
-			gemini_proxy = {
-				-- Inherit the base settings from the 'openai' provider
+			openrouter = {
 				__inherited_from = "openai",
-
-				-- Override the endpoint to point to your local LiteLLM server
-				-- The '/v1' suffix is important as LiteLLM exposes an OpenAI-compatible API
-				endpoint = "http://127.0.0.1:4000",
-
-				-- Set the model to the alias you created with LiteLLM
-				model = "avante-gemini",
-
-				-- The API key is handled by the LiteLLM process itself,
-				-- so you can set a dummy environment variable name here.
-				api_key_name = "DUMMY_GEMINI_KEY",
+				endpoint = "https://openrouter.ai/api/v1",
+				model = "qwen/qwen3-coder:free",
+				api_key_name = "OPENROUTER_API_KEY",
+				extra_request_body = {
+					temperature = 0,
+					max_tokens = 4096,
+				},
 			},
 		},
 		dual_boost = {

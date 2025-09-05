@@ -3,7 +3,8 @@ return {
 	"obsidian-nvim/obsidian.nvim",
 	version = "*",
 	lazy = true,
-	ft = "markdown",
+	event = { "BufReadPre *.md", "BufNewFile *.md" },
+	cmd = { "ObsidianSearch", "ObsidianOpen", "ObsidianNew", "ObsidianQuickSwitch", "ObsidianFollowLink" },
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		-- Optional: for better telescope integration
@@ -20,13 +21,11 @@ return {
 				},
 			},
 		},
-		open = {
-			func = function(uri)
-				vim.ui.open(uri, { cmd = { "open", "-a", "/Applications/Obsidian.app" } })
-			end,
-		},
 
 		log_level = vim.log.levels.INFO,
+
+		-- Disable legacy commands to avoid deprecation warnings
+		legacy_commands = false,
 
 		daily_notes = {
 			folder = "notes/",
@@ -41,127 +40,7 @@ return {
 			min_chars = 1,
 		},
 
-		-- Enhanced mappings for atomic note workflow
-		mappings = {
-			-- Default mappings
-			["gf"] = {
-				action = function()
-					return require("obsidian").util.gf_passthrough()
-				end,
-				opts = { noremap = false, expr = true, buffer = true },
-			},
-			["<leader>ch"] = {
-				action = function()
-					return require("obsidian").util.toggle_checkbox()
-				end,
-				opts = { buffer = true },
-			},
-			["<cr>"] = {
-				action = function()
-					return require("obsidian").util.smart_action()
-					-- header_level
-				end,
-				opts = { buffer = true, expr = true },
-			},
 
-			-- Your existing mappings
-			["<leader>b"] = {
-				action = function()
-					vim.cmd("wall")
-				end,
-				desc = "Save all buffers",
-			},
-			["<leader>fo"] = {
-				action = function()
-					vim.cmd("ObsidianSearch")
-				end,
-				desc = "Search for notes",
-			},
-			["<leader>od"] = {
-				action = function()
-					vim.cmd("ObsidianDailies")
-				end,
-				desc = "Open dailies",
-				opts = { noremap = true },
-			},
-			["<leader>oo"] = {
-				action = function()
-					vim.cmd("ObsidianOpen")
-				end,
-				desc = "Open in Obsidian app",
-				opts = { noremap = true },
-			},
-			["<leader>on"] = {
-				action = function()
-					vim.cmd("ObsidianNew")
-				end,
-				desc = "Create new note",
-				opts = { noremap = true },
-			},
-
-			-- NEW: Enhanced mappings for atomic note workflow
-			["<leader>ot"] = {
-				action = function()
-					vim.cmd("ObsidianTemplate atomic-note-template")
-				end,
-				desc = "Insert atomic note template",
-				opts = { noremap = true },
-			},
-			["<leader>ol"] = {
-				action = function()
-					vim.cmd("ObsidianLinks")
-				end,
-				desc = "Show all links in current note",
-				opts = { noremap = true },
-			},
-			["<leader>ob"] = {
-				action = function()
-					vim.cmd("ObsidianBacklinks")
-				end,
-				desc = "Show backlinks to current note",
-				opts = { noremap = true },
-			},
-			["<leader>og"] = {
-				action = function()
-					vim.cmd("ObsidianTags")
-				end,
-				desc = "Browse all tags",
-				opts = { noremap = true },
-			},
-			["<leader>or"] = {
-				action = function()
-					-- Custom function to mark note for review
-					local client = require("obsidian").get_client()
-					local note = client:current_note()
-					if note then
-						-- Add review tag and update status
-						local content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-						for i, line in ipairs(content) do
-							if line:match("^%*%*Status:%*%*") then
-								content[i] = "**Status:** #needs-review"
-								vim.api.nvim_buf_set_lines(0, i - 1, i, false, { content[i] })
-								break
-							end
-						end
-						print("Note marked for review")
-					end
-				end,
-				desc = "Mark note for review",
-				opts = { noremap = true },
-			},
-			["<leader>oc"] = {
-				action = function()
-					-- Custom function to create concept note
-					local title = vim.fn.input("Concept title: ")
-					if title ~= "" then
-						-- vim.cmd("ObsidianNew " .. title)
-						vim.cmd("Obsidian new_from_template " .. title .. " atomic-note-template")
-					end
-				end,
-				desc = "Create new concept note",
-				opts = { noremap = true },
-			},
-		},
 
 		new_notes_location = "notes_subdir",
 
@@ -255,8 +134,12 @@ return {
 			vim.fn.jobstart({ "xdg-open", url }) -- linux
 		end,
 
-		use_advanced_uri = false,
-		open_app_foreground = false,
+
+		open = {
+			func = function(uri)
+				vim.ui.open(uri, { cmd = { "open", "-a", "/Applications/Obsidian.app" } })
+			end,
+		},
 
 		picker = {
 			name = "snacks.pick",
@@ -280,18 +163,17 @@ return {
 		callbacks = {
 			post_setup = function(client)
 				-- Auto-create templates directory
-				local templates_dir = client.dir / "templates"
-				if not templates_dir:exists() then
-					templates_dir:mkdir()
+				local workspace_path = vim.fn.expand("~/Notes/Conceptrone/")
+				local templates_dir = workspace_path .. "/templates"
+				if vim.fn.isdirectory(templates_dir) == 0 then
+					vim.fn.mkdir(templates_dir, "p")
 				end
 
 				require("../../config/obsidianCustoms").setup()
 			end,
 
 			enter_note = function(client, note)
-				-- Auto-set conceallevel for better markdown rendering
-				vim.opt_local.conceallevel = 2
-				vim.opt_local.concealcursor = "nc"
+				-- Note entered - additional setup can be added here if needed
 			end,
 
 			leave_note = function(client, note)
@@ -314,7 +196,11 @@ return {
 			end,
 
 			post_set_workspace = function(client, workspace)
-				print("Workspace set to: " .. workspace.name)
+				if workspace then
+					print("Workspace set to: " .. workspace.name)
+				else
+					print("Workspace set (no workspace info available)")
+				end
 			end,
 		},
 
@@ -323,16 +209,6 @@ return {
 			enable = false,
 			update_debounce = 200,
 			max_file_length = 5000,
-			checkboxes = {
-				[" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
-				["x"] = { char = "", hl_group = "ObsidianDone" },
-				[">"] = { char = "", hl_group = "ObsidianRightArrow" },
-				["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
-				["!"] = { char = "", hl_group = "ObsidianImportant" },
-				-- Add review-specific checkboxes
-				["?"] = { char = "󰘥", hl_group = "ObsidianQuestion" },
-				["i"] = { char = "󰋼", hl_group = "ObsidianInfo" },
-			},
 			bullets = { char = "•", hl_group = "ObsidianBullet" },
 			external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
 			reference_text = { hl_group = "ObsidianRefText" },

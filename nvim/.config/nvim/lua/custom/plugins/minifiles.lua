@@ -191,9 +191,26 @@ return {
 				if content.code == 0 then
 					callback(content.stdout)
 					vim.g.content = content.stdout
+				else
+					-- Silently handle git errors without displaying them
+					vim.notify("Git status unavailable: " .. (content.stderr or "Unknown error"), vim.log.levels.DEBUG)
 				end
 			end
-			vim.system({ "git", "status", "--ignored", "--porcelain" }, { text = true, cwd = cwd }, on_exit)
+
+			-- Check if git is available before running
+			if vim.fn.executable("git") == 0 then
+				vim.notify("Git not found in PATH", vim.log.levels.DEBUG)
+				return
+			end
+
+			-- Use pcall to catch any system errors
+			local success, err = pcall(function()
+				vim.system({ "git", "status", "--ignored", "--porcelain" }, { text = true, cwd = cwd }, on_exit)
+			end)
+
+			if not success then
+				vim.notify("Failed to run git status: " .. err, vim.log.levels.DEBUG)
+			end
 		end
 
 		local function escapePattern(str)
@@ -235,10 +252,10 @@ return {
 		end
 
 		local function is_valid_git_repo()
-			if vim.fn.isdirectory(".git") == 0 then
-				return false
-			end
-			return true
+			local success, result = pcall(function()
+				return vim.fn.isdirectory(".git") == 1
+			end)
+			return success and result
 		end
 
 		-- Thanks for the idea of gettings https://github.com/refractalize/oil-git-status.nvim signs for dirs
@@ -276,22 +293,28 @@ return {
 		end
 
 		local function updateGitStatus(buf_id)
-			if not is_valid_git_repo() then
-				return
-			end
-			local cwd = vim.fn.expand("%:p:h")
-			local currentTime = os.time()
-			if gitStatusCache[cwd] and currentTime - gitStatusCache[cwd].time < cacheTimeout then
-				updateMiniWithGit(buf_id, gitStatusCache[cwd].statusMap)
-			else
-				fetchGitStatus(cwd, function(content)
-					local gitStatusMap = parseGitStatus(content)
-					gitStatusCache[cwd] = {
-						time = currentTime,
-						statusMap = gitStatusMap,
-					}
-					updateMiniWithGit(buf_id, gitStatusMap)
-				end)
+			local success, err = pcall(function()
+				if not is_valid_git_repo() then
+					return
+				end
+				local cwd = vim.fn.expand("%:p:h")
+				local currentTime = os.time()
+				if gitStatusCache[cwd] and currentTime - gitStatusCache[cwd].time < cacheTimeout then
+					updateMiniWithGit(buf_id, gitStatusCache[cwd].statusMap)
+				else
+					fetchGitStatus(cwd, function(content)
+						local gitStatusMap = parseGitStatus(content)
+						gitStatusCache[cwd] = {
+							time = currentTime,
+							statusMap = gitStatusMap,
+						}
+						updateMiniWithGit(buf_id, gitStatusMap)
+					end)
+				end
+			end)
+
+			if not success then
+				vim.notify("Error updating git status: " .. err, vim.log.levels.DEBUG)
 			end
 		end
 
@@ -308,8 +331,13 @@ return {
 			pattern = "MiniFilesExplorerOpen",
 			-- pattern = { "minifiles" },
 			callback = function()
-				local bufnr = vim.api.nvim_get_current_buf()
-				updateGitStatus(bufnr)
+				local success, err = pcall(function()
+					local bufnr = vim.api.nvim_get_current_buf()
+					updateGitStatus(bufnr)
+				end)
+				if not success then
+					vim.notify("MiniFiles git status error: " .. err, vim.log.levels.DEBUG)
+				end
 			end,
 		})
 
@@ -317,7 +345,12 @@ return {
 			group = augroup("close"),
 			pattern = "MiniFilesExplorerClose",
 			callback = function()
-				clearCache()
+				local success, err = pcall(function()
+					clearCache()
+				end)
+				if not success then
+					vim.notify("MiniFiles cache clear error: " .. err, vim.log.levels.DEBUG)
+				end
 			end,
 		})
 
@@ -325,10 +358,15 @@ return {
 			group = augroup("update"),
 			pattern = "MiniFilesBufferUpdate",
 			callback = function(sii)
-				local bufnr = sii.data.buf_id
-				local cwd = vim.fn.expand("%:p:h")
-				if gitStatusCache[cwd] then
-					updateMiniWithGit(bufnr, gitStatusCache[cwd].statusMap)
+				local success, err = pcall(function()
+					local bufnr = sii.data.buf_id
+					local cwd = vim.fn.expand("%:p:h")
+					if gitStatusCache[cwd] then
+						updateMiniWithGit(bufnr, gitStatusCache[cwd].statusMap)
+					end
+				end)
+				if not success then
+					vim.notify("MiniFiles buffer update error: " .. err, vim.log.levels.DEBUG)
 				end
 			end,
 		})

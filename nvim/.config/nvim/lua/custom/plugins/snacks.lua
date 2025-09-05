@@ -2,7 +2,8 @@ return {
 	"folke/snacks.nvim",
 	-- enabled = false,
 	priority = 1000,
-	lazy = false,
+	lazy = true,
+	event = "VimEnter",
 	---@module "snacks"
 	---@type snacks.Config
 	opts = {
@@ -61,7 +62,17 @@ return {
 		input = { enabled = true },
 		notifier = {
 			enabled = true,
-			timeout = 2000,
+			timeout = 3000,
+			level = vim.log.levels.INFO,
+			icons = {
+				error = "",
+				warn = "",
+				info = "",
+				debug = "",
+				trace = "",
+			},
+			style = "fancy",
+			top_down = false,
 		},
 		quickfile = { enabled = true },
 		scroll = { enabled = false },
@@ -612,7 +623,7 @@ return {
 						wrap = false,
 						signcolumn = "yes",
 						statuscolumn = " ",
-						conceallevel = 3,
+						conceallevel = 0,
 					},
 				})
 			end,
@@ -631,6 +642,13 @@ return {
 				end
 				vim.print = _G.dd -- Override print to use snacks for `:=` command
 
+				-- Replace vim.notify with Snacks notifier
+				vim.schedule(function()
+					if Snacks.notifier then
+						vim.notify = Snacks.notifier.notify
+					end
+				end)
+
 				Snacks.input.enable()
 				-- Create some toggle mappings
 				Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
@@ -638,9 +656,19 @@ return {
 				Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
 				Snacks.toggle.diagnostics():map("<leader>ud")
 				Snacks.toggle.line_number():map("<leader>ul")
-				Snacks.toggle
-					.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-					:map("<leader>uc")
+				Snacks.toggle({
+					name = "Conceal",
+					get = function()
+						return vim.o.conceallevel > 0
+					end,
+					set = function(state)
+						if vim.bo.filetype == "markdown" then
+							vim.o.conceallevel = state and 2 or 0
+						else
+							vim.o.conceallevel = 0  -- Keep disabled for non-markdown files
+						end
+					end,
+				}):map("<leader>uc")
 				Snacks.toggle.treesitter():map("<leader>uT")
 				Snacks.toggle
 					.option("background", { off = "light", on = "dark", name = "Dark Background" })
@@ -648,6 +676,20 @@ return {
 				Snacks.toggle.inlay_hints():map("<leader>uh")
 				Snacks.toggle.indent():map("<leader>ug")
 				Snacks.toggle.dim():map("<leader>uD")
+			end,
+		})
+
+		-- Integrate Blink with Avante
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "Avante",
+			callback = function()
+				pcall(function()
+					require("blink.cmp").setup.buffer({
+						sources = {
+							default = { "lsp", "path", "snippets", "buffer" },
+						},
+					})
+				end)
 			end,
 		})
 	end,

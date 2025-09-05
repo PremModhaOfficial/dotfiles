@@ -131,7 +131,9 @@ vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
-vim.opt.conceallevel = 3
+-- Disable conceal globally to prevent treesitter conflicts
+vim.opt.conceallevel = 0
+vim.opt.concealcursor = ""
 vim.opt.cursorcolumn = false
 
 -- vim.api.nvim_set_hl(0, "SpellBad", { cterm = { undercurl = true }, undercurl = true })
@@ -255,6 +257,15 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+-- Enable conceal only for markdown files to preserve decorations
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	callback = function()
+		vim.opt_local.conceallevel = 2
+		vim.opt_local.concealcursor = "nc"
+	end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -374,6 +385,19 @@ require("lazy").setup({
 					{ "<leader>w", "[W]orkspace" },
 					{ "<leader>t", "[T]oggle" },
 					-- { "<leader>h", "Git [H]unk", mode = { "n", "v" } },
+
+					-- LSP specific keymaps
+					{ "<leader>ca", "[C]ode [A]ction" },
+					{ "<leader>ci", "[C]all [I]ncoming" },
+					{ "<leader>co", "[C]all [O]utgoing" },
+					{ "<leader>dd", "[D]ocument [D]iagnostics" },
+					{ "<leader>dl", "[D]ocument [L]ine diagnostics" },
+					{ "<leader>ff", "[F]inder" },
+					{ "<leader>P", "[P]eek type definition" },
+					{ "<leader>rn", "[R]e[n]ame" },
+					{ "<leader>rN", "[R]e[n]ame project" },
+					{ "<leader>th", "[T]oggle inlay [H]ints" },
+					{ "<leader>wd", "[W]orkspace [D]iagnostics" },
 				})
 			end,
 		},

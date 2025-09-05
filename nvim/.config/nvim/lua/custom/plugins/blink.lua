@@ -1,15 +1,3 @@
-local trigger_text = ";"
-local cached_cursor_col = 0
-local cached_line = ""
-vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-	callback = function()
-		local ok, cursor = pcall(vim.api.nvim_win_get_cursor, 0)
-		if ok then
-			cached_cursor_col = cursor[2]
-			cached_line = vim.api.nvim_get_current_line()
-		end
-	end,
-})
 return { -- Autocompletion
 	"saghen/blink.cmp",
 	lazy = false, -- lazy loading handled internally
@@ -40,7 +28,7 @@ return { -- Autocompletion
 		"mikavilpas/blink-ripgrep.nvim",
 		"giuxtaposition/blink-cmp-copilot",
 	},
-	version = "v0.*",
+	version = "v1.*",
 
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
@@ -100,7 +88,6 @@ return { -- Autocompletion
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide" },
 			["<C-y>"] = { "select_and_accept" },
-			["<Tab>"] = { "accept", "fallback" },
 			-- ["<C-CR>"] = { "accept", "fallback" },
 
 			-- ["<S-Tab>"] = { "select_prev", "fallback" },
@@ -161,7 +148,7 @@ return { -- Autocompletion
 				},
 			},
 			ghost_text = {
-				enabled = false,
+				enabled = true,
 				show_with_selection = true,
 			},
 			list = {
@@ -186,18 +173,26 @@ return { -- Autocompletion
 		},
 
 		sources = {
-			default = {
-				"lsp",
-				"path",
-				"snippets",
-				"buffer",
-				-- "copilot",
-				"dadbod",
-				"lazydev",
-				"ripgrep",
-				-- "codecompanion",
-				"avante",
-			},
+			default = function()
+				local sources = { "lsp", "path", "snippets", "buffer", "lazydev" }
+
+				-- Conditionally add AI sources if available
+				if package.loaded["blink-cmp-copilot"] then
+					table.insert(sources, "copilot")
+				end
+
+				-- Add avante if available
+				if package.loaded["blink-cmp-avante"] then
+					table.insert(sources, "avante")
+				end
+
+				-- Add codecompanion if available
+				if package.loaded["codecompanion"] then
+					table.insert(sources, "codecompanion")
+				end
+
+				return sources
+			end,
 			providers = {
 				lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 1000 },
 				avante = {
@@ -217,19 +212,15 @@ return { -- Autocompletion
 				ripgrep = {
 					module = "blink-ripgrep",
 					name = "Ripgrep",
-					---@module "blink-ripgrep"
-					---@type blink-ripgrep.Options
 					opts = {
+						prefix_min_len = 3,
 						backend = {
 							use = "ripgrep",
 							ripgrep = {
-								max_filesize = "1M",
-								project_root_fallback = true,
-								search_casing = "--smart-case",
+								max_filesize = "2M",
+								additional_args = { "--hidden", "--no-ignore" },
 							},
-							context_size = 5,
 						},
-						prefix_min_len = 2,
 					},
 				},
 				lsp = {
@@ -272,55 +263,18 @@ return { -- Autocompletion
 				buffer = {
 					name = "Buffer",
 					enabled = true,
-					max_items = 3,
+					max_items = 5,
 					module = "blink.cmp.sources.buffer",
-					min_keyword_length = 4,
+					min_keyword_length = 3,
+					score_offset = 10,
 				},
 				snippets = {
 					name = "snippets",
 					enabled = true,
 					max_items = 8,
-					min_keyword_length = 1,
+					min_keyword_length = 2,
 					module = "blink.cmp.sources.snippets",
-					score_offset = 100, -- the higher the number, the higher the priority
-					-- Only show snippets if I type the trigger_text characters, so
-					-- to expand the "bash" snippet, if the trigger_text is ";" I have to
-					-- type ";bash"
-					-- Cache cursor position outside of fast events
-
-					-- Update cache on cursor movement (not in fast event)
-
-					should_show_items = function()
-						-- Use cached values instead of API calls
-						local before_cursor = cached_line:sub(1, cached_cursor_col)
-						-- NOTE: remember that `trigger_text` is modified at the top of the file
-						return before_cursor:match(trigger_text .. "%w*$") ~= nil
-					end,
-					-- After accepting the completion, delete the trigger_text characters
-					-- from the final inserted text
-					transform_items = function(_, items)
-						local col = vim.api.nvim_win_get_cursor(0)[2]
-						local before_cursor = vim.api.nvim_get_current_line():sub(1, col)
-						local trigger_pos = before_cursor:find(trigger_text .. "[^" .. trigger_text .. "]*$")
-						if trigger_pos then
-							for _, item in ipairs(items) do
-								item.textEdit = {
-									newText = item.insertText or item.label,
-									range = {
-										start = { line = vim.fn.line(".") - 1, character = trigger_pos - 1 },
-										["end"] = { line = vim.fn.line(".") - 1, character = col },
-									},
-								}
-							end
-						end
-						-- NOTE After the transformation, I have to reload the luasnip source
-						-- Otherwise really crazy shit happens and I spent way too much time
-						-- figurig this out
-						vim.schedule(function()
-							require("blink.cmp").reload("snippets")
-						end)
-						return items
-					end,
+					score_offset = 100,
 				},
 				dadbod = {
 					name = "Dadbod",
@@ -358,9 +312,6 @@ return { -- Autocompletion
 
 		appearance = {
 			highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
-			-- Sets the fallback highlight groups to nvim-cmp's highlight groups
-			-- Useful for when your theme doesn't support blink.cmp
-			-- Will be removed in a future release
 			use_nvim_cmp_as_default = true,
 			nerd_font_variant = "mono",
 		},

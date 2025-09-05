@@ -1,6 +1,6 @@
 return {
 	"mfussenegger/nvim-jdtls",
-	ft = { "java", "jdtls" },
+	event = { "BufReadPre *.java", "BufNewFile *.java" },
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"mfussenegger/nvim-dap",
@@ -27,13 +27,14 @@ return {
 				"-Dosgi.bundles.defaultStartLevel=4",
 				"-Declipse.product=org.eclipse.jdt.ls.core.product",
 				"-Dlog.protocol=true",
-				"-Dlog.level=ALL",
+				"-Dlog.level=WARNING",
 				"-Xms1g",
 				"--add-modules=ALL-SYSTEM",
 				"--add-opens",
 				"java.base/java.util=ALL-UNNAMED",
 				"--add-opens",
 				"java.base/java.lang=ALL-UNNAMED",
+				"-javaagent:" .. home .. "/.local/share/java/lombok.jar",
 				"-jar",
 				launcher_jar,
 				"-configuration",
@@ -144,6 +145,7 @@ return {
 				end
 
 				-- Context-aware keymap for quick access
+				vim.keymap.set("i", "<M-v>", "var")
 				vim.keymap.set("n", "<leader>rm", function()
 					if is_main_method_context() then
 						java_runner.run_main_class_picker()
@@ -160,6 +162,13 @@ return {
 				require("jdtls.dap").setup_dap_main_class_configs()
 			end,
 		}
-		jdtls.start_or_attach(config)
+		-- Start or attach JDTLS with error handling
+		local success, err = pcall(function()
+			jdtls.start_or_attach(config)
+		end)
+
+		if not success then
+			vim.notify("Failed to start JDTLS: " .. err, vim.log.levels.ERROR)
+		end
 	end,
 }

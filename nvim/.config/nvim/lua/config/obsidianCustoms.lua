@@ -5,7 +5,7 @@ function M.setup()
 	-- Obsidian-specific autocommands and enhancements
 	local obsidian_group = vim.api.nvim_create_augroup("ObsidianEnhancements", { clear = true })
 
-	-- Auto-conceal for better markdown rendering in obsidian notes
+	-- Auto-wrap for better markdown editing in obsidian notes
 	vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 		group = obsidian_group,
 		pattern = { "*.md" },
@@ -13,8 +13,6 @@ function M.setup()
 			local file_path = vim.fn.expand("%:p")
 			-- Only apply to files in your obsidian vault
 			if string.find(file_path, "Conceptrone") then
-				vim.opt_local.conceallevel = 2
-				vim.opt_local.concealcursor = "nc"
 				vim.opt_local.wrap = true
 				vim.opt_local.linebreak = true
 			end
@@ -93,14 +91,14 @@ function M.setup()
 	vim.api.nvim_create_user_command("ObsidianSearchByStatus", function()
 		local status = vim.fn.input("Search status (draft/reviewed/refined/mastered): ")
 		if status ~= "" then
-			vim.cmd("ObsidianSearch #" .. status)
+			vim.cmd("Obsidian search #" .. status)
 		end
 	end, {})
 
 	-- Quick link insertion with search
 	vim.keymap.set("n", "<leader>oL", function()
 		-- This will open search and allow you to insert a link to selected note
-		vim.cmd("ObsidianQuickSwitch")
+		vim.cmd("Obsidian quick switch")
 	end, { desc = "Quick link to note" })
 
 	-- Navigate to related notes
@@ -109,7 +107,7 @@ function M.setup()
 		local current_line = vim.api.nvim_get_current_line()
 		local tag_match = current_line:match("#[%w/%-]+")
 		if tag_match then
-			vim.cmd("ObsidianSearch " .. tag_match)
+			vim.cmd("Obsidian search " .. tag_match)
 		else
 			print("No tag found on current line")
 		end
@@ -156,7 +154,7 @@ function M.setup()
 		local title = vim.fn.input("Note title: ", selected_text:match("[^\n]*"))
 
 		if title ~= "" then
-			vim.cmd("ObsidianNew " .. title)
+			vim.cmd("Obsidian new " .. title)
 			-- Insert selected text as content
 		end
 	end, { desc = "Create note from selection" })
@@ -180,7 +178,7 @@ function M.setup()
 
 		if title ~= "" then
 			-- Insert selected text as content
-			vim.cmd("Obsidian new_from_template " .. title .. " atomic-note-template")
+			vim.cmd("Obsidian new from template " .. title .. " atomic-note-template")
 			local wrapped_text = "[[" .. selected_text .. "]]"
 			vim.api.nvim_buf_set_text(
 				0,

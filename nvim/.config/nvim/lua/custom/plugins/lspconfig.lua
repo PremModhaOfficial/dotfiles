@@ -17,22 +17,7 @@ return { -- LSP Configuration & Plugins
 		-- used for completion, annotations and signatures of Neovim apis
 	},
 	config = function()
-		-- local l = vim.lsp
-		-- l.handlers["textDocument/hover"] = function(_, result, ctx, config)
-		-- 	config = config or { border = "rounded", focusable = true }
-		-- 	config.focus_id = ctx.method
-		-- 	if not (result and result.contents) then
-		-- 		return
-		-- 	end
-		-- 	local markdown_lines = l.util.convert_input_to_markdown_lines(result.contents)
-		-- 	markdown_lines = vim.tbl_filter(function(line)
-		-- 		return line ~= ""
-		-- 	end, markdown_lines)
-		-- 	if vim.tbl_isempty(markdown_lines) then
-		-- 		return
-		-- 	end
-		-- 	return l.util.open_floating_preview(markdown_lines, "markdown", config)
-		-- end
+
 		-- Brief aside: **What is LSP?**
 		--
 		-- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -77,34 +62,9 @@ return { -- LSP Configuration & Plugins
 					vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 				end
 
-				-- Jump to the definition of the word under your cursor.
-				--  This is where a variable was first declared, or where a function is defined, etc.
-				--  To jump back, press <C-t>.
-				-- map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
-				--
-				-- -- Find references for the word under your cursor.
-				-- map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
-				--
-				-- -- Jump to the implementation of the word under your cursor.
-				-- --  Useful when your language has ways of declaring types without an actual implementation.
-				-- map("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-				--
-				-- -- Jump to the type of the word under your cursor.
-				-- --  Useful when you're not sure what type a variable is and you want to see
-				-- --  the definition of its *type*, not where it was *defined*.
-				-- map("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
-				--
-				-- -- Fuzzy find all the symbols in your current document.
-				-- --  Symbols are things like variables, functions, types, etc.
-				-- map("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
-				--
-				-- -- Fuzzy find all the symbols in your current workspace.
-				-- --  Similar to document symbols, except searches over your entire project.
-				-- map("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
 
-				-- Rename the variable under your cursor.
-				--  Most Language Servers support renaming across files, etc.
-				-- map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+
+
 				map("<leader>rN", function()
 					vim.cmd("Lspsaga rename ++project")
 				end, "[R]e[n]ame (project)")
@@ -113,9 +73,7 @@ return { -- LSP Configuration & Plugins
 					vim.cmd("Lspsaga rename")
 				end, "[R]e[n]ame")
 
-				map("<leader>co", function()
-					vim.cmd("Lspsaga outline")
-				end, "[C]ode [O]utline")
+
 
 				map("<leader>p", function()
 					vim.cmd("Lspsaga peek_definition")
@@ -124,6 +82,25 @@ return { -- LSP Configuration & Plugins
 				map("<leader>P", function()
 					vim.cmd("Lspsaga peek_type_definition")
 				end, "[P]eek TYPE definition from lsp saga")
+
+				-- Workspace diagnostics
+				map("<leader>wd", function()
+					vim.cmd("Lspsaga show_workspace_diagnostics")
+				end, "[W]orkspace [D]iagnostics")
+
+				-- Call hierarchy
+				map("<leader>ci", function()
+					vim.cmd("Lspsaga incoming_calls")
+				end, "[C]all [I]ncoming")
+
+				map("<leader>co", function()
+					vim.cmd("Lspsaga outgoing_calls")
+				end, "[C]all [O]utgoing")
+
+				-- Finder (definitions, references, implementations)
+				map("<leader>ff", function()
+					vim.cmd("Lspsaga finder")
+				end, "[F]inder")
 				-- Execute a code action, usually your cursor needs to be on top of an error
 				-- or a suggestion from your LSP for this to activate.
 				map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
@@ -133,7 +110,7 @@ return { -- LSP Configuration & Plugins
 				--  See `:help K` for why this keymap.
 				-- map("K", vim.lsp.buf.hover, "Hover Documentation")
 				map("<c-s-k>", function()
-					vim.cmd("Lspsaga peak_definition")
+					vim.cmd("Lspsaga peek_definition")
 				end, "Hover Documentation")
 
 				map("K", function()
@@ -173,28 +150,7 @@ return { -- LSP Configuration & Plugins
 					})
 				end
 				--
-				-- local function check_codelens_support()
-				-- 	local clients = vim.lsp.get_clients({ bufnr = 0 })
-				-- 	for _, c in ipairs(clients) do
-				-- 		if c.server_capabilities.codeLensProvider then
-				-- 			return true
-				-- 		end
-				-- 	end
-				-- 	return false
-				-- end
 
-				-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach", "BufEnter" }, {
-				-- 	buffer = event.bufnr,
-				-- 	callback = function()
-				-- 		if check_codelens_support() then
-				-- 			vim.lsp.codelens.refresh({ bufnr = 0 })
-				-- 			map("<leader>cA", function()
-				-- 				vim.lsp.codelens.refresh()
-				-- 				vim.lsp.codelens.run()
-				-- 			end, "[C]ode Lense [A]ction")
-				-- 		end
-				-- 	end,
-				-- })
 				-- trigger codelens refresh
 				vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 
@@ -207,6 +163,16 @@ return { -- LSP Configuration & Plugins
 						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
 					end, "[T]oggle Inlay [H]ints")
 				end
+
+				-- Document diagnostics
+				map("<leader>dd", function()
+					vim.cmd("Lspsaga show_buf_diagnostics")
+				end, "[D]ocument [D]iagnostics")
+
+				-- Line diagnostics
+				map("<leader>dl", function()
+					vim.cmd("Lspsaga show_line_diagnostics")
+				end, "[D]ocument [L]ine diagnostics")
 			end,
 		})
 
@@ -215,7 +181,12 @@ return { -- LSP Configuration & Plugins
 		--  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
 		--  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
 		local capabilities = vim.lsp.protocol.make_client_capabilities()
-		-- capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+
+		-- Add folding range capability for better folding support
+		capabilities.textDocument.foldingRange = {
+			dynamicRegistration = false,
+			lineFoldingOnly = true,
+		}
 
 		-- Enable the following language servers
 		--  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -266,25 +237,7 @@ return { -- LSP Configuration & Plugins
 			-- But for many setups, the LSP (`tsserver`) will work just fine
 			-- tsserver = {},
 			--
-			-- nixd = {
-			-- 	cmd = { "nixd" },
-			-- 	filetypes = { "nix" },
-			-- 	settings = {
-			-- 		nixd = {
-			-- 			nixpkgs = {
-			-- 				expr = "import <nixpkgs> { }",
-			-- 			},
-			-- 			formatting = {
-			-- 				command = { "nixpkgs-fmt" },
-			-- 			},
-			-- 			options = {
-			-- 				home_manager = {
-			-- 					expr = '(builtins.getFlake "~/.config/nixpkgs/").homeConfigurations."prm".options',
-			-- 				},
-			-- 			},
-			-- 		},
-			-- 	},
-			-- },
+
 
 			lua_ls = {
 				-- cmd = {...},
@@ -300,14 +253,80 @@ return { -- LSP Configuration & Plugins
 					},
 				},
 			},
+			-- TypeScript/JavaScript
+			ts_ls = {
+				settings = {
+					typescript = {
+						inlayHints = {
+							includeInlayParameterNameHints = "all",
+							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+							includeInlayFunctionParameterTypeHints = true,
+							includeInlayVariableTypeHints = true,
+							includeInlayPropertyDeclarationTypeHints = true,
+							includeInlayFunctionLikeReturnTypeHints = true,
+							includeInlayEnumMemberValueHints = true,
+						},
+					},
+					javascript = {
+						inlayHints = {
+							includeInlayParameterNameHints = "all",
+							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+							includeInlayFunctionParameterTypeHints = true,
+							includeInlayVariableTypeHints = true,
+							includeInlayPropertyDeclarationTypeHints = true,
+							includeInlayFunctionLikeReturnTypeHints = true,
+							includeInlayEnumMemberValueHints = true,
+						},
+					},
+				},
+			},
+			-- Rust (though you have rustaceanvim, this provides fallback)
+			rust_analyzer = {},
+			-- C/C++
+			clangd = {
+				cmd = {
+					"clangd",
+					"--background-index",
+					"--clang-tidy",
+					"--header-insertion=iwyu",
+					"--completion-style=detailed",
+					"--function-arg-placeholders",
+					"--fallback-style=llvm",
+				},
+				init_options = {
+					usePlaceholders = true,
+					completeUnimported = true,
+					clangdFileStatus = true,
+				},
+			},
+			-- Go
+			gopls = {
+				settings = {
+					gopls = {
+						analyses = {
+							unusedparams = true,
+						},
+						staticcheck = true,
+						gofumpt = true,
+					},
+				},
+			},
+			-- Additional useful servers
 		}
-		-- TODO: blink
 		local lspconfig = require("lspconfig")
 		for server, config in pairs(servers) do
 			-- passing config.capabilities to blink.cmp merges with the capabilities in your
 			-- `opts[server].capabilities, if you've defined it
 			config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
-			lspconfig[server].setup(config)
+
+			-- Add error handling for LSP setup
+			local success, err = pcall(function()
+				lspconfig[server].setup(config)
+			end)
+
+			if not success then
+				vim.notify("Failed to setup LSP server '" .. server .. "': " .. err, vim.log.levels.ERROR)
+			end
 		end
 
 		-- Ensure the servers and tools above are installed
@@ -341,6 +360,10 @@ return { -- LSP Configuration & Plugins
 		local ensure_installed = vim.tbl_keys(servers or {})
 		vim.list_extend(ensure_installed, {
 			"stylua", -- Used to format Lua code
+			"prettier", -- Code formatter
+			"eslint_d", -- Fast ESLint
+			"shellcheck", -- Shell script linting
+			"shfmt", -- Shell script formatting
 		})
 		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 

@@ -43,12 +43,12 @@ return {
 	},
   -- stylua: ignore
   keys = {
-    { "<leader>ow", "<cmd>OverseerToggle<cr>",      desc = "Task list" },
-    { "<leader>oo", "<cmd>OverseerRun<cr>",         desc = "Run task" },
-    { "<leader>oq", "<cmd>OverseerQuickAction<cr>", desc = "Action recent task" },
-    { "<leader>oi", "<cmd>OverseerInfo<cr>",        desc = "Overseer Info" },
-    { "<leader>ob", "<cmd>OverseerBuild<cr>",       desc = "Task builder" },
-    { "<leader>ot", "<cmd>OverseerTaskAction<cr>",  desc = "Task action" },
-    { "<leader>oc", "<cmd>OverseerClearCache<cr>",  desc = "Clear cache" },
+    { "<leader>tw", "<cmd>OverseerToggle<cr>",      desc = "Task list" },
+    { "<leader>to", "<cmd>OverseerRun<cr>",         desc = "Run task" },
+    { "<leader>tq", "<cmd>OverseerQuickAction<cr>", desc = "Action recent task" },
+    { "<leader>ti", "<cmd>OverseerInfo<cr>",        desc = "Overseer Info" },
+    { "<leader>tb", "<cmd>OverseerBuild<cr>",       desc = "Task builder" },
+    { "<leader>tt", "<cmd>OverseerTaskAction<cr>",  desc = "Task action" },
+    { "<leader>tc", "<cmd>OverseerClearCache<cr>",  desc = "Clear cache" },
   },
 }

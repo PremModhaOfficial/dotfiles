@@ -317,8 +317,8 @@ return {
 	"rebelot/heirline.nvim",
 	lazy = true,
 	config = function()
-		local statu_scolumn = require("custom.ui_plugs.heirline.statuscolumn")
-		local status_line = require("custom.ui_plugs.heirline.statusline")
+		local statu_scolumn = require("custom.heirline.statuscolumn")
+		local status_line = require("custom.heirline.statusline")
 		require("heirline").setup({
 			statusline = status_line,
 			statuscolumn = statu_scolumn,

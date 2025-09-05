@@ -25,7 +25,7 @@ return {
 		},
 		strategies = {
 			chat = {
-				adapter = "gemini",
+				adapter = "openrouter",
 				picker = "snacks", -- Specify telescope explicitly for `/file` picker
 
 				diff = {
@@ -33,23 +33,40 @@ return {
 				},
 			},
 			inline = {
-				adapter = "gemini",
+				adapter = "openrouter",
 			},
 			agent = {
-				adapter = "gemini",
+				adapter = "openrouter",
 			},
 		},
-		-- adapters = {},
+		adapters = {
+			http = {
+				openrouter = function()
+					return require("codecompanion.adapters").extend("openai", {
+						env = {
+							api_key = "OPENROUTER_API_KEY",
+						},
+						url = "https://openrouter.ai/api/v1",
+						schema = {
+							model = {
+								default = "qwen/qwen3-coder:free",
+							},
+						},
+					})
+				end,
+			},
+		},
 	},
-	-- init = function()
-	-- 	-- Attach blink.cmp explicitly to codecompanion's chat buffer
-	-- 	local cmp = require("cmp")
-	-- 	cmp.setup.buffer({
-	-- 		sources = cmp.config.sources({
-	-- 			{ name = "blink" },
-	-- 		}),
-	-- 	})
-	-- init = function()
-	-- require("custom.code.codecompanion_ui.fid"):init()
-	-- end, -- end,
+	init = function()
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "codecompanion",
+			callback = function()
+				require("blink.cmp").setup.buffer({
+					sources = {
+						default = { "lsp", "path", "snippets", "buffer" },
+					},
+				})
+			end,
+		})
+	end,
 }

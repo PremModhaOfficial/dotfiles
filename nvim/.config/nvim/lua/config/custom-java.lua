@@ -4,6 +4,10 @@ local M = {}
 -- Store runtime flags per project (in memory for session)
 M.project_runtime_flags = {}
 
+-- Cache for main classes to improve performance
+M.main_classes_cache = {}
+M.cache_timeout = 30000 -- 30 seconds cache timeout
+
 -- Finds the project root using git. Falls back to the current directory.
 local function find_project_root()
 	local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
@@ -15,7 +19,11 @@ end
 
 -- Enhanced function to get main class from current file context
 local function get_current_file_main_class()
-	local buf_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	local success, buf_lines = pcall(vim.api.nvim_buf_get_lines, 0, 0, -1, false)
+	if not success then
+		vim.notify("Error reading current buffer", vim.log.levels.ERROR)
+		return nil
+	end
 	local package_name = ""
 	local class_name = ""
 
@@ -50,7 +58,10 @@ end
 
 -- Check if current file has a main method
 local function current_file_has_main()
-	local buf_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	local success, buf_lines = pcall(vim.api.nvim_buf_get_lines, 0, 0, -1, false)
+	if not success then
+		return false
+	end
 	for _, line in ipairs(buf_lines) do
 		if line:match("public%s+static%s+void%s+main") or line:match("static%s+public%s+void%s+main") then
 			return true
@@ -61,15 +72,33 @@ end
 
 -- Find main classes by scanning Java files in the project
 local function find_main_classes_in_project(project_root)
+	-- Check cache first
+	local cache_key = project_root
+	local cached = M.main_classes_cache[cache_key]
+	local current_time = vim.loop.now()
+
+	if cached and (current_time - cached.timestamp) < M.cache_timeout then
+		return cached.classes
+	end
+
 	local main_classes = {}
 
 	-- Use find command to locate all .java files
 	local find_cmd = string.format("find '%s' -name '*.java' -type f 2>/dev/null", project_root)
 	local java_files = vim.fn.systemlist(find_cmd)
 
+	if vim.v.shell_error ~= 0 then
+		vim.notify("Error scanning for Java files: " .. table.concat(java_files, " "), vim.log.levels.ERROR)
+		return {}
+	end
+
 	for _, file_path in ipairs(java_files) do
 		if vim.fn.filereadable(file_path) == 1 then
-			local file_lines = vim.fn.readfile(file_path)
+			local success, file_lines = pcall(vim.fn.readfile, file_path)
+			if not success then
+				vim.notify("Error reading file: " .. file_path, vim.log.levels.WARN)
+				goto continue
+			end
 			local has_main = false
 			local package_name = ""
 			local class_name = ""
@@ -103,7 +132,14 @@ local function find_main_classes_in_project(project_root)
 				})
 			end
 		end
+		::continue::
 	end
+
+	-- Cache the results
+	M.main_classes_cache[cache_key] = {
+		classes = main_classes,
+		timestamp = current_time,
+	}
 
 	return main_classes
 end
@@ -265,16 +301,19 @@ function M.execute_java_class(class_name, project_root)
 	local gradle_exists = vim.fn.filereadable(gradle_path) == 1
 	local gradle_kts_exists = vim.fn.filereadable(gradle_kts_path) == 1
 
-	print("Maven pom.xml exists at " .. pom_path .. ": " .. tostring(pom_exists))
-	print("Gradle build.gradle exists at " .. gradle_path .. ": " .. tostring(gradle_exists))
-	print("Gradle build.gradle.kts exists at " .. gradle_kts_path .. ": " .. tostring(gradle_kts_exists))
-
 	-- Get runtime flags for this project
 	local runtime_flags = M.project_runtime_flags[project_root] or ""
 
 	local cmd_table
 	if pom_exists then
-		cmd_table = { "mvn", "-X", "-q", "compile", "exec:java", "-Dexec.mainClass=" .. class_name }
+		cmd_table = {
+			"mvn",
+			"-X",
+			"-q",
+			"compile",
+			"exec:java",
+			"-Dexec.mainClass=" .. class_name,
+		}
 
 		-- Add runtime flags to Maven command
 		if runtime_flags ~= "" then

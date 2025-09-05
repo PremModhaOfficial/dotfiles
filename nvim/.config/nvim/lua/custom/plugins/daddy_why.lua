@@ -3,6 +3,7 @@ return {
 	{
 		"m4xshen/hardtime.nvim",
 		event = "VeryLazy",
+		enable = false,
 		dependencies = { "MunifTanjim/nui.nvim" },
 		opts = {},
 		config = function()

@@ -1,6 +1,7 @@
 local v, fn, api = vim.v, vim.fn, vim.api
 
 local conditions = require("heirline.conditions")
+local api = vim.api
 
 local align = { provider = "%=" }
 local spacer = { provider = " ", hl = "HeirlineStatusColumn" }
@@ -185,7 +186,7 @@ return {
 				{
 					provider = "│",
 					hl = function(self)
-						return self.sign or { fg = "bg" }
+						return self.sign or { fg = "#ffffff" }
 					end,
 					on_click = {
 						name = "sc_gitsigns_click",
