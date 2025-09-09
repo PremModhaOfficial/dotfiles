@@ -46,7 +46,8 @@ return {
 					"-data",
 					workspace_dir,
 				},
-				root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }),
+				root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" })
+					or vim.fn.getcwd(),
 				settings = {
 					java = {
 						project = {

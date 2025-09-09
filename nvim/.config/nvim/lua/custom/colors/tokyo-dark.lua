@@ -1,6 +1,6 @@
 return {
 	"tiagovla/tokyodark.nvim",
-	enabled = false,
+	-- enabled = false,
 	---@module "tokyodark"
 	opts = {
 		transparent_background = true, -- set background to transparent

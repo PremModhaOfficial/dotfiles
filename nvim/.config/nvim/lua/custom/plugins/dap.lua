@@ -90,11 +90,11 @@ return {
 		end
 
 		-- Define signs with NerdFont icons and fallbacks
-		define_sign("DapBreakpoint", "", "●")           -- Regular breakpoint
-		define_sign("DapBreakpointCondition", "", "◆")   -- Conditional breakpoint
-		define_sign("DapLogPoint", "", "▶")              -- Log point
-		define_sign("DapStopped", "", "▶")               -- Current execution line
-		define_sign("DapBreakpointRejected", "", "✗")    -- Rejected breakpoint
+		define_sign("DapBreakpoint", "", "●") -- Regular breakpoint
+		define_sign("DapBreakpointCondition", "", "◆") -- Conditional breakpoint
+		define_sign("DapLogPoint", "", "▶") -- Log point
+		define_sign("DapStopped", "", "▶") -- Current execution line
+		define_sign("DapBreakpointRejected", "", "✗") -- Rejected breakpoint
 
 		-- Enhanced Java configuration
 		dap.configurations.java = {

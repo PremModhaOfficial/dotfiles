@@ -472,6 +472,31 @@ local CodeCompanionAgent = {
 	},
 }
 
+-- Macro recording indicator
+local MacroRec = {
+	condition = function()
+		return vim.fn.reg_recording() ~= ""
+	end,
+	update = {
+		"RecordingEnter",
+		"RecordingLeave",
+	},
+	RightSlantStart,
+	{
+		provider = function()
+			return " 󱎘 @" .. vim.fn.reg_recording() .. " "
+		end,
+		hl = function()
+			return {
+				fg = safe_hl("Comment", "fg"),
+				bg = safe_hl("StatusLine", "bg"),
+				bold = true,
+			}
+		end,
+	},
+	RightSlantEnd,
+}
+
 -- File type and encoding
 local FileType = {
 	condition = function(self)
@@ -504,7 +529,8 @@ local FileEncoding = {
 	{
 		provider = function()
 			local enc = (vim.bo.fenc ~= "" and vim.bo.fenc) or vim.o.enc
-			return " " .. enc .. " "
+			local chars = vim.fn.wordcount().chars
+			return " " .. enc .. " (" .. chars .. ") "
 		end,
 		hl = function()
 			return {
@@ -556,6 +582,7 @@ local statusline = {
 		{ provider = "%=" },
 		CodeCompanionAgent,
 		CodeCompanion,
+		MacroRec,
 		FileType,
 		FileEncoding,
 		Ruler,

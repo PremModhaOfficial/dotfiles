@@ -7,7 +7,7 @@ return {
 		local fm = require("fluoromachine")
 
 		fm.setup({
-			theme = "fluoromachine",
+			theme = "retrowave",
 			glow = false,
 			transparent = true,
 			brightness = 100.0,
@@ -16,10 +16,10 @@ return {
 				comments = { italic = true },
 				constants = { bold = true },
 				functions = { bold = true, blend = 34 },
-				keywords = { italic = true },
+				keywords = { bold = true },
 				numbers = {},
 				parameters = {},
-				types = {},
+				types = {}, -- types = { italic = true }, NOTE: NICE LOOKING
 				variables = {},
 			},
 		})

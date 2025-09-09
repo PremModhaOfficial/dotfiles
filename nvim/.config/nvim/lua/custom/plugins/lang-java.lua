@@ -20,6 +20,12 @@ return {
 			true,
 			true
 		)
+
+		local extendedClientCapabilities = vim.tbl_deep_extend("force", require("jdtls").extendedClientCapabilities, {
+			resolveAdditionalTextEditsSupport = true,
+			progressReportProvider = false,
+		})
+
 		local config = {
 			cmd = {
 				"java",
@@ -42,28 +48,143 @@ return {
 				"-data",
 				workspace_dir,
 			},
-			root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }),
+			root_dir = require("jdtls.setup").find_root({ "pom.xml", "build.gradle", "mvnw", "gradlew", ".git" })
+				or vim.fn.getcwd(),
 			settings = {
 				java = {
+					import = {
+						gradle = {
+							enabled = true, -- IMPORT_GRADLE_ENABLED
+							wrapper = {
+								enabled = true, -- GRADLE_WRAPPER_ENABLED
+							},
+							offline = {
+								enabled = false, -- IMPORT_GRADLE_OFFLINE_ENABLED
+							},
+						},
+						maven = {
+							enabled = true, -- IMPORT_MAVEN_ENABLED
+							downloadSources = true, -- MAVEN_DOWNLOAD_SOURCES
+							updateSnapshots = false, -- MAVEN_UPDATE_SNAPSHOTS
+						},
+						exclusions = { -- JAVA_IMPORT_EXCLUSIONS_KEY
+							"**/node_modules/**",
+							"**/.metadata/**",
+							"**/archetype-resources/**",
+							"**/META-INF/maven/**",
+						},
+					},
 					configuration = {
+						annotationProcessing = { enabled = true },
 						runtimes = {
-							{
-								name = "JavaSE-21",
-								path = "/usr/lib/jvm/openjdk-21",
-								default = true,
+							{ name = "JavaSE-24", path = "/usr/lib/jvm/jdk-24.0.2-oracle-x64", default = true },
+							{ name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk-amd64", default = false },
+						},
+						updateBuildConfiguration = "automatic",
+					},
+					format = { enabled = true, settings = { url = "~/javaFormatMotadata.xml" } },
+					codeGeneration = {
+						toString = {
+							template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}",
+						},
+						useBlocks = true,
+					},
+					completion = {
+						enabled = true, -- COMPLETION_ENABLED_KEY
+						maxResults = 30, -- JAVA_COMPLETION_MAX_RESULTS_KEY
+						overwrite = true, -- JAVA_COMPLETION_OVERWRITE_KEY
+						guessMethodArguments = "insertParameterNames", -- JAVA_COMPLETION_GUESS_METHOD_ARGUMENTS_KEY
+						postfix = {
+							enabled = true, -- POSTFIX_COMPLETION_KEY
+						},
+						matchCase = "off", -- COMPLETION_MATCH_CASE_MODE_KEY
+						lazyResolveTextEdit = {
+							enabled = true, -- COMPLETION_LAZY_RESOLVE_TEXT_EDIT_ENABLED_KEY
+						},
+						chain = {
+							enabled = true, -- Enable method chaining completion for fluent APIs
+						},
+						favoriteStaticMembers = {
+							"org.assertj.core.api.Assertions.*",
+							"org.junit.Assert.*",
+							"org.junit.Assume.*",
+							"org.junit.jupiter.api.Assertions.*",
+							"org.junit.jupiter.api.Assumptions.*",
+							"org.junit.jupiter.api.DynamicContainer.*",
+							"org.junit.jupiter.api.DynamicTest.*",
+							"org.mockito.Mockito.*",
+							"org.mockito.ArgumentMatchers.*",
+							"org.mockito.Answers.*",
+							"java.util.stream.Collectors.*",
+							"java.util.function.Function.*",
+							"java.util.function.Predicate.*",
+							"java.util.function.Consumer.*",
+							"java.util.function.Supplier.*",
+							"java.util.Optional.*",
+							"java.util.stream.Stream.*",
+							"java.util.Arrays.*",
+							"java.util.List.*",
+							"java.util.Map.*",
+							"java.util.Set.*",
+						},
+						importOrder = {
+							"#",
+							"java",
+							"javax",
+							"java.util.function",
+							"java.util.stream",
+							"java.util",
+							"org",
+							"com",
+						},
+						signatureHelp = {
+							enabled = true, -- SIGNATURE_HELP_ENABLED_KEY
+							description = {
+								enabled = true, -- SIGNATURE_HELP_DESCRIPTION_ENABLED_KEY
 							},
 						},
 					},
-					-- sources = { attach = { "/usr/lib/jvm/openjdk-21/src.zip" }, },
-					format = {
+					contentProvider = { preferred = "fernflower" },
+					eclipse = {
+						downloadSources = true,
+					},
+					flags = {
+						allow_incremental_sync = true,
+						-- TODO: SEE THE `SIDE E F F E C T S` -> SEEMS NOT TO EFFECT THE FUZZZ
+						server_side_fuzzy_completion = true,
+					},
+					implementationsCodeLens = {
+						enabled = true, --Don"t automatically show implementations
+					},
+					inlayHints = {
+						parameterNames = { enabled = "all" },
+					},
+					maven = {
+						downloadSources = true,
+					},
+					referencesCodeLens = {
+						enabled = true, --Don"t automatically show references
+					},
+					references = {
+						includeDecompiledSources = true,
+					},
+					saveActions = {
+						organizeImports = true,
+					},
+					signatureHelp = { enabled = true },
+					test = {
 						enabled = true,
-						settings = {
-							url = "~/javaFormatMotadata.xml",
+					},
+					sources = {
+						organizeImports = {
+							starThreshold = 9999,
+							staticStarThreshold = 9999,
 						},
 					},
 				},
 			},
 			init_options = {
+				extendedClientCapabilities = extendedClientCapabilities,
 				bundles = bundles,
 			},
 			on_attach = function(client, bufnr)

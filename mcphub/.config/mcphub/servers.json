@@ -1,0 +1,156 @@
+{
+  "mcpServers": {
+    "context7": {
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "autoApprove": [
+        "resolve-library-id",
+        "get-library-docs"
+      ],
+      "command": "npx",
+      "disabled": false,
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": 6969
+      }
+    },
+    "fetch": {
+      "args": [
+        "mcp-server-fetch"
+      ],
+      "autoApprove": [
+        "fetch"
+      ],
+      "command": "uvx",
+      "disabled": false,
+      "disabled_prompts": []
+    },
+    "git": {
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "${REPOSITORY_PATH}"
+      ],
+      "autoApprove": [],
+      "command": "uvx",
+      "disabled": true
+    },
+    "github": {
+      "autoApprove": [],
+      "disabled": true,
+      "headers": {
+        "Authorization": "Bearer ${cmd: echo $GITHUB_PERSONAL_ACCESS_TOKEN}"
+      },
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "memory": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "autoApprove": [
+        "create_entities",
+        "create_relations",
+        "add_observations",
+        "delete_entities",
+        "delete_observations",
+        "delete_relations",
+        "read_graph",
+        "search_nodes",
+        "open_nodes"
+      ],
+      "command": "npx"
+    },
+    "sequentialthinking": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "autoApprove": [
+        "sequentialthinking"
+      ],
+      "command": "npx",
+      "disabled": false
+    }
+  },
+  "nativeMCPServers": {
+    "dap": {
+      "autoApprove": [
+        "continue",
+        "step_over",
+        "step_into",
+        "step_out",
+        "toggle_breakpoint",
+        "set_conditional_breakpoint",
+        "terminate",
+        "open_repl",
+        "toggle_ui",
+        "list_breakpoints"
+      ]
+    },
+    "lsp": {
+      "autoApprove": [
+        "list_lsp_clients",
+        "check_lsp_capabilities",
+        "get_visual_selection",
+        "rename_symbol",
+        "list_code_actions",
+        "apply_code_action",
+        "list_diagnostics",
+        "goto_definition",
+        "find_references",
+        "hover_info",
+        "signature_help",
+        "format_document",
+        "format_range",
+        "document_symbols",
+        "workspace_symbols",
+        "list_code_buffers"
+      ]
+    },
+    "mcphub": {
+      "autoApprove": [
+        "get_current_servers",
+        "toggle_mcp_server"
+      ]
+    },
+    "neotest": {
+      "autoApprove": [
+        "run_nearest_test",
+        "run_file_tests",
+        "run_all_tests",
+        "run_tests_in_dir",
+        "debug_nearest_test",
+        "get_test_summary",
+        "list_test_positions",
+        "stop_running_tests",
+        "open_test_output"
+      ]
+    },
+    "neovim": {
+      "autoApprove": [
+        "execute_lua",
+        "execute_command",
+        "read_file",
+        "move_item",
+        "read_multiple_files",
+        "delete_items",
+        "find_files",
+        "list_directory",
+        "write_file",
+        "edit_file"
+      ]
+    },
+    "overseer": {
+      "autoApprove": [
+        "list_tasks",
+        "run_task",
+        "stop_task",
+        "get_task_output",
+        "list_task_templates"
+      ],
+      "disabled": false
+    }
+  }
+}

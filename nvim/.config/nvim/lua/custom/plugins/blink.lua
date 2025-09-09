@@ -3,49 +3,171 @@ return { -- Autocompletion
 	lazy = false, -- lazy loading handled internally
 	dependencies = {
 		"Kaiser-Yang/blink-cmp-avante",
-		"hrsh7th/nvim-cmp", -- Add nvim-cmp as a dependency
+		"kristijanhusak/vim-dadbod-completion", --dada bot
+		{
+			"xzbdmw/colorful-menu.nvim",
+			config = function()
+				require("colorful-menu").setup({})
+			end,
+		},
 
-	{
-		"saghen/blink.compat",
-		---@module 'blink.compat'
-		---@type blink.compat.Config
-		opts = {
-			impersonate_nvim_cmp = true,
-			debug = false,
+		{
+			"saghen/blink.compat",
+			---@module 'blink.compat'
+			---@type blink.compat.Config
+			opts = {
+				debug = true,
+			},
 		},
-	},
-	{
-		"L3MON4D3/LuaSnip",
-		dependencies = {
-			"rafamadriz/friendly-snippets",
+		{
+			"L3MON4D3/LuaSnip",
+			dependencies = {
+				"rafamadriz/friendly-snippets",
+			},
+			version = "v2.*",
+			build = "make install_jsregexp",
+			config = function()
+				_ = require("luasnip.loaders.from_vscode").lazy_load()
+			end,
 		},
-		version = "v2.*",
-		build = "make install_jsregexp",
-		config = function()
-			_ = require("luasnip.loaders.from_vscode").lazy_load()
-		end,
-	},
 		"zbirenbaum/copilot-cmp",
 		"mikavilpas/blink-ripgrep.nvim",
 		"giuxtaposition/blink-cmp-copilot",
 	},
 	version = "v1.*",
 
- 	---@module 'blink.cmp'
- 	---@type blink.cmp.Config
- 	opts = {
- 		fuzzy = {
- 			implementation = "prefer_rust_with_warning",
- 			max_typos = function(keyword) return math.floor(#keyword / 4) end,
- 			use_frecency = true,
- 			use_proximity = true,
- 		},
- 		cmdline = {
-			enabled = false,
+	config = function(_, opts)
+		require("blink.cmp").setup(opts)
 
+		-- Optimized highlight groups - reduced from 25+ to 8 essential groups
+		local highlights = {
+			-- Core completion kinds
+			BlinkCmpKindText = { fg = "#a8c5f0", bg = "NONE" },
+			BlinkCmpKindMethod = { fg = "#85d3f2", bg = "NONE" },
+			BlinkCmpKindFunction = { fg = "#85d3f2", bg = "NONE" },
+			BlinkCmpKindConstructor = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindField = { fg = "#c49ec4", bg = "NONE" },
+			BlinkCmpKindVariable = { fg = "#dfb3e6", bg = "NONE" },
+			BlinkCmpKindClass = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindInterface = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindModule = { fg = "#a8c5f0", bg = "NONE" },
+			BlinkCmpKindProperty = { fg = "#c49ec4", bg = "NONE" },
+			BlinkCmpKindUnit = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindValue = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindEnum = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindKeyword = { fg = "#dfafdf", bg = "NONE" },
+			BlinkCmpKindSnippet = { fg = "#7ee787", bg = "NONE" },
+			BlinkCmpKindColor = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindFile = { fg = "#a8c5f0", bg = "NONE" },
+			BlinkCmpKindReference = { fg = "#c49ec4", bg = "NONE" },
+			BlinkCmpKindFolder = { fg = "#a8c5f0", bg = "NONE" },
+			BlinkCmpKindEnumMember = { fg = "#85d3f2", bg = "NONE" },
+			BlinkCmpKindConstant = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindStruct = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindEvent = { fg = "#c49ec4", bg = "NONE" },
+			BlinkCmpKindOperator = { fg = "#85d3f2", bg = "NONE" },
+			BlinkCmpKindTypeParameter = { fg = "#f19c65", bg = "NONE" },
+			
+			-- AI provider highlights
+			BlinkCmpKindCopilot = { fg = "#6cc644", bg = "NONE" },
+			BlinkCmpKindCodeCompanion = { fg = "#f19c65", bg = "NONE" },
+			BlinkCmpKindAvante = { fg = "#85d3f2", bg = "NONE" },
+		}
+
+		-- Apply highlights efficiently
+		for hl_group, hl_config in pairs(highlights) do
+			vim.api.nvim_set_hl(0, hl_group, hl_config)
+		end
+	end,
+
+	---@module 'blink.cmp'
+	---@type blink.cmp.Config
+	opts = {
+		-- Performance optimizations for v1.7.0
+		performance = {
+			max_view_entries = 200,
+			debounce = 60,
+			throttle = 32,
+			fetch_timeout = 500,
+		},
+		
+		fuzzy = {
+			implementation = "rust",
+			max_typos = function(keyword)
+				return math.floor(#keyword / 2)
+			end,
+			frecency = { enabled = true },
+			use_proximity = true,
+			sorts = {
+				"score",
+				"sort_text",
+			},
+			-- Use optimized rust-based fuzzy matching
+			prebuilt_binaries = {
+				download = true,
+			},
+		},
+		
+		-- Enhanced source configuration with filetype-specific behavior
+		sources = {
+			default = { "lsp", "path", "snippets", "buffer" },
+			per_filetype = {
+				lua = { "lsp", "path", "snippets", "buffer", "luasnip" },
+				javascript = { "lsp", "path", "snippets", "buffer", "npm" },
+				typescript = { "lsp", "path", "snippets", "buffer", "npm" },
+				python = { "lsp", "path", "snippets", "buffer", "jedi" },
+				rust = { "lsp", "path", "snippets", "buffer", "crates" },
+				go = { "lsp", "path", "snippets", "buffer", "go_packages" },
+			},
+			providers = {
+				lsp = {
+					name = "LSP",
+					module = "blink.cmp.sources.lsp",
+					fallback_for = { "lsp" },
+				},
+				path = {
+					name = "Path",
+					module = "blink.cmp.sources.path",
+					score_offset = 3,
+				},
+				snippets = {
+					name = "Snippets",
+					module = "blink.cmp.sources.snippets",
+					score_offset = 5,
+				},
+				buffer = {
+					name = "Buffer",
+					module = "blink.cmp.sources.buffer",
+					fallback_for = { "buffer" },
+					max_items = 5,
+					min_length = 2,
+				},
+				-- AI providers with optimized scoring
+				avante = {
+					name = "Avante",
+					module = "blink-cmp-avante",
+					score_offset = 10,
+					async = true,
+				},
+				codecompanion = {
+					name = "CodeCompanion",
+					module = "blink-cmp-codecompanion",
+					score_offset = 9,
+					async = true,
+				},
+				copilot = {
+					name = "Copilot",
+					module = "blink-cmp-copilot",
+					score_offset = 8,
+					async = true,
+				},
+			},
+		},
+		
+		cmdline = {
+			enabled = true,
 			keymap = {
-
-				preset = "cmdline",
+				preset = "inherit",
 				["<C-j>"] = { "select_next", "fallback" },
 				["<C-k>"] = { "select_prev", "fallback" },
 				["<c-f>"] = {
@@ -53,19 +175,12 @@ return { -- Autocompletion
 						require("blink-cmp").show({ providers = { "ripgrep" } })
 					end,
 				},
-				-- ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-				-- ["<Tab>"] = { "show", "select_next", "fallback" },
-				--
-				-- ["<C-e>"] = { "hide" },
-				-- ["<CR>"] = { "accept", "fallback" },
 			},
 			sources = function()
 				local type = vim.fn.getcmdtype()
-				-- Search forward and backward
 				if type == "/" or type == "?" then
 					return { "buffer" }
 				end
-				-- Commands
 				if type == ":" or type == "@" then
 					return { "cmdline" }
 				end
@@ -75,79 +190,81 @@ return { -- Autocompletion
 				list = {
 					selection = {
 						auto_insert = false,
-						preselect = false,
+						preselect = true,
 					},
 				},
-
 				trigger = {
 					show_on_blocked_trigger_characters = {},
-					show_on_x_blocked_trigger_characters = nil, -- Inherits from top level `completion.trigger.show_on_blocked_trigger_characters` config when not set
 				},
 				menu = {
-					auto_show = nil, -- Inherits from top level `completion.menu.auto_show` config when not set
 					draw = {
-						columns = { { "label", "label_description", gap = 1 } },
+						columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
 					},
 				},
 			},
 		},
+		
+		-- Optimized keymap with AI-specific features
 		keymap = {
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide" },
-			["<C-y>"] = { "select_and_accept" },
-			-- ["<C-CR>"] = { "accept", "fallback" },
-
-			-- ["<S-Tab>"] = { "select_prev", "fallback" },
+			["<C-y>"] = { "accept" },
 			["<C-p>"] = { "select_prev", "fallback" },
 			["<C-k>"] = { "select_prev", "fallback" },
-
-			-- ["<Tab>"] = { "select_next", "fallback" },
 			["<C-n>"] = { "select_next", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
-
 			["<C-b>"] = { "scroll_documentation_up", "fallback" },
 			["<C-f>"] = { "scroll_documentation_down", "fallback" },
-
-			["<C-l>"] = { "snippet_forward", "fallback" },
+			
+			-- Multi-function forward key
+			["<C-l>"] = {
+				"snippet_forward",
+				function()
+					return require("sidekick").nes_jump_or_apply()
+				end,
+				function()
+					return vim.lsp.inline_completion.get()
+				end,
+				"fallback",
+			},
 			["<S-C-l>"] = { "snippet_backward", "fallback" },
 			
-			-- AI-specific keymaps
-			["<C-a>"] = { 
+			-- AI provider shortcuts
+			["<C-a>"] = {
 				function()
-					-- Force show AI completions (avante, codecompanion, copilot)
-					require("blink.cmp").show({ 
-						providers = { "avante", "codecompanion", "copilot" } 
+					require("blink.cmp").show({
+						providers = { "avante", "codecompanion", "copilot" },
 					})
 				end,
-				"fallback"
+				"fallback",
 			},
-			["<C-g>"] = { 
+			["<C-g>"] = {
 				function()
-					-- Show only CodeCompanion completions
-					require("blink.cmp").show({ 
-						providers = { "codecompanion" } 
+					require("blink.cmp").show({
+						providers = { "codecompanion" },
 					})
 				end,
-				"fallback"
+				"fallback",
 			},
 		},
+		
 		completion = {
 			accept = {
 				auto_brackets = {
-					enabled = true,
-					-- blocked_filetypes = { "codecompanion" },
+					enabled = false, -- Let mini.pairs handle brackets
+					semantic_token_resolution = {
+						enabled = true,
+					},
 				},
 				create_undo_point = true,
 			},
 			menu = {
 				enabled = true,
 				border = "rounded",
-				-- winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 				scrolloff = 2,
 				scrollbar = true,
 				direction_priority = { "s", "n" },
 				auto_show = function(ctx)
-					-- Enhanced auto-show logic for AI plugins
 					if ctx.mode == "cmdline" then
 						return false
 					end
@@ -160,269 +277,42 @@ return { -- Autocompletion
 						end
 					end
 					
-					-- Standard auto-show for other contexts
 					return ctx.mode ~= "cmdline"
 				end,
 				draw = {
-					align_to = "cursor", -- 'none',
+					align_to = "label",
 					padding = 1,
 					gap = 1,
-					treesitter = { "lsp" },
-
-					columns = { { "kind_icon" }, { "label", "label_description", gap = 1 } },
-					-- for a setup similar to nvim-cmp: https://github.com/Saghen/blink.cmp/pull/245#issuecomment-2463659508
-					-- columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind", gap = 1 } },
-					-- Enhanced formatting for AI completions
-					components = {
-						kind_icon = {
-							text = function(item)
-								-- Custom icons for AI sources
-								if item.source_name == "codecompanion" then
-									return "🤖"
-								elseif item.source_name == "avante" then
-									return "✨"
-								elseif item.source_name == "copilot" then
-									return ""
-								end
-								-- Return empty string for other sources (use default behavior)
-								return ""
-							end,
+					treesitter = { "lsp", "snippets", "buffer" },
+					columns = {
+						{ "label", "label_description", gap = 1 },
+						{
+							"kind_icon",
+							"kind",
+							gap = 1,
 						},
 					},
 				},
 			},
+			
+			-- Ghost text and buffer caching optimizations
+			ghost_text = {
+				enabled = true,
+				position = "inline",
+			},
+			
 			documentation = {
 				auto_show = true,
 				auto_show_delay_ms = 500,
-				-- Delay before updating the documentation window when selecting a new item,
-				-- while an existing item is still visible
-				update_delay_ms = 50,
-				-- Whether to use treesitter highlighting, disable if you run into performance issues
-				treesitter_highlighting = true,
 				window = {
 					border = "rounded",
-					-- winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
-					scrollbar = true,
-				},
-			},
-			ghost_text = {
-				enabled = true,
-				show_with_selection = true,
-			},
-			list = {
-				selection = {
-					auto_insert = false,
-					preselect = true,
 				},
 			},
 		},
-
-		-- Experimental signature help support
-		signature = {
-			enabled = true,
-			window = {
-				border = "double",
-				-- winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
-				scrollbar = false, -- Note that the gutter will be disabled when border ~= 'none'
-				direction_priority = { "n", "s" },
-				treesitter_highlighting = true,
-				show_documentation = true,
-			},
-		},
-
-		sources = {
-			default = function()
-				local sources = { "lsp", "path", "snippets", "buffer", "lazydev" }
-
-				-- Conditionally add AI sources if available
-				if package.loaded["blink-cmp-copilot"] then
-					table.insert(sources, "copilot")
-				end
-
-				-- Add avante if available
-				if package.loaded["blink-cmp-avante"] then
-					table.insert(sources, "avante")
-				end
-
-				-- Add codecompanion if available
-				if package.loaded["codecompanion"] then
-					table.insert(sources, "codecompanion")
-				end
-
-				return sources
-			end,
-			-- Filetype-specific source configurations for AI plugins
-			per_filetype = {
-				codecompanion = {
-					"codecompanion", "avante", "lsp", "path", "snippets", "buffer"
-				},
-				Avante = {
-					"avante", "codecompanion", "lsp", "snippets", "buffer", "path"
-				},
-				-- Regular code files get standard priority with AI as secondary
-				lua = function()
-					local sources = { "lsp", "snippets", "path", "buffer", "lazydev" }
-					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
-					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
-					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
-					return sources
-				end,
-				python = function()
-					local sources = { "lsp", "snippets", "path", "buffer" }
-					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
-					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
-					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
-					return sources
-				end,
-				javascript = function()
-					local sources = { "lsp", "snippets", "path", "buffer" }
-					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
-					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
-					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
-					return sources
-				end,
-				typescript = function()
-					local sources = { "lsp", "snippets", "path", "buffer" }
-					if package.loaded["codecompanion"] then table.insert(sources, "codecompanion") end
-					if package.loaded["blink-cmp-avante"] then table.insert(sources, "avante") end
-					if package.loaded["blink-cmp-copilot"] then table.insert(sources, "copilot") end
-					return sources
-				end,
-			},
-			providers = {
-				lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 1000 },
-				avante = {
-					module = "blink-cmp-avante",
-					name = "Avante",
-					score_offset = 75, -- Optimized priority
-					async = true,
-					opts = {
-						-- Enhanced options for better AI context
-						max_items = 10,
-						min_keyword_length = 2,
-					},
-				},
-				codecompanion = {
-					name = "CodeCompanion",
-					module = "codecompanion.providers.completion.blink",
-					score_offset = 80, -- Higher priority for chat-based completions
-					enabled = true,
-					async = true,
-					max_items = 8,
-					min_keyword_length = 2,
-				},
-				ripgrep = {
-					module = "blink-ripgrep",
-					name = "Ripgrep",
-					opts = {
-						prefix_min_len = 3,
-						backend = {
-							use = "ripgrep",
-							ripgrep = {
-								max_filesize = "2M",
-								additional_args = { "--hidden", "--no-ignore" },
-							},
-						},
-					},
-				},
-				lsp = {
-					name = "lsp",
-					enabled = true,
-					module = "blink.cmp.sources.lsp",
-					-- kind = "LSP",
-					score_offset = 90, -- the higher the number, the higher the priority
-				},
-				-- luasnip = {
-				-- 	name = "luasnip",
-				-- 	module = "blink.cmp.sources.luasnip",
-				-- 	min_keyword_length = 2,
-				-- 	fallbacks = { "snippets" },
-				-- 	score_offset = 85,
-				-- 	max_items = 8,
-				-- 	-- Only show luasnip items if I type the trigger_text characters, so
-				-- 	-- to expand the "bash" snippet, if the trigger_text is ";" I have to
-				-- 	-- type ";bash"
-				-- 	-- After accepting the completion, delete the trigger_text characters
-				-- 	-- from the final inserted text
-				-- },
-				path = {
-					name = "Path",
-					module = "blink.cmp.sources.path",
-					score_offset = 3,
-					-- When typing a path, I would get snippets and text in the
-					-- suggestions, I want those to show only if there are no path
-					-- suggestions
-					-- fallbacks = { "luasnip", "buffer" },
-					opts = {
-						trailing_slash = true,
-						label_trailing_slash = true,
-						get_cwd = function(context)
-							return vim.fn.expand(("#%d:p:h"):format(context.bufnr))
-						end,
-						show_hidden_files_by_default = true,
-					},
-				},
-				buffer = {
-					name = "Buffer",
-					enabled = true,
-					max_items = 5,
-					module = "blink.cmp.sources.buffer",
-					min_keyword_length = 3,
-					score_offset = 10,
-				},
-				snippets = {
-					name = "snippets",
-					enabled = true,
-					max_items = 8,
-					min_keyword_length = 2,
-					module = "blink.cmp.sources.snippets",
-					score_offset = 85,  -- Lower than LSP (90) to prioritize actual completions
-				},
-				dadbod = {
-					name = "Dadbod",
-					module = "vim_dadbod_completion.blink",
-					score_offset = 85, -- the higher the number, the higher the priority
-				},
-				-- Third class citizen mf always talking shit
-				copilot = {
-					name = "copilot",
-					enabled = true,
-					module = "blink-cmp-copilot",
-					-- kind = "Copilot",
-					min_keyword_length = 4, -- Reduced from 6 for better responsiveness
-					score_offset = -50, -- Improved from -100 for better balance
-					async = true,
-					max_items = 5,
-					-- Enhanced configuration for better AI completion context
-					opts = {
-						-- Only show copilot when other sources don't have good matches
-						priority = "fallback",
-					},
-				},
-			},
-		},
-		snippets = {
-			preset = "luasnip",
-			-- https://www.lazyvim.org/extras/coding/luasnip#blinkcmp-optional
-			expand = function(snippet)
-				require("luasnip").lsp_expand(snippet)
-			end,
-			active = function(filter)
-				if filter and filter.direction then
-					return require("luasnip").jumpable(filter.direction)
-				end
-				return require("luasnip").in_snippet()
-			end,
-			jump = function(direction)
-				require("luasnip").jump(direction)
-			end,
-		},
-
-		appearance = {
-			highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
-			use_nvim_cmp_as_default = true,
-			nerd_font_variant = "mono",
+		
+		-- Optimized highlight configuration
+		highlight = {
+			use_nvim_cmp_as_default = false,
 		},
 	},
-	opts_extend = { "sources.default" },
 }

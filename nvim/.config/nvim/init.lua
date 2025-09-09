@@ -201,7 +201,7 @@ vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 19
+vim.opt.scrolloff = 3
 -- for fat cursur
 -- guicursur = "block"
 
@@ -215,8 +215,16 @@ vim.keymap.set("n", "<leader>fs", "<cmd>:w<CR>")
 vim.keymap.set("n", "<M-1>", "<cmd>Exp<CR>")
 
 -- Diagnostic keymaps
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
+-- vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
+-- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
+
+vim.keymap.set("n", "[d", function()
+	vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Go to previous [D]iagnostic message" })
+
+vim.keymap.set("n", "]d", function()
+	vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Go to next [D]iagnostic message" })
 vim.keymap.set("n", "<leader>od", vim.diagnostic.open_float, { desc = "Show diagnostic [E]rror messages" })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
 
@@ -234,14 +242,8 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" }
 -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+-- Keybinds for split navigation are handled by vim-tmux-navigator plugin
+-- which supports both vim splits and tmux panes seamlessly
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -331,6 +333,9 @@ require("lazy").setup({
 					{ path = "LazyVim", words = { "LazyVim" } },
 					{ path = "snacks.nvim", words = { "Snacks" } },
 					{ path = "lazy.nvim", words = { "LazyVim" } },
+				},
+				integrations = {
+					lspconfig = false, -- Disabled due to 'is_enabled' nil value error in lazydev/integrations/lspconfig.lua
 				},
 			},
 		},
@@ -551,11 +556,12 @@ vim.opt.termguicolors = true
 -- ColorschemeWithTransprancy("catppuccin", false)
 -- ("aurora", false)
 -- ("material", false)
-local resetColors = ColorschemeWithTransprancy("fluoromachine", false)
+local resetColors = ColorschemeWithTransprancy("tokyodark", false)
 
 vim.keymap.set("n", "<leader>cd", function()
 	resetColors()
 end)
+
 -- ("randomhue", true)
 -- ColorschemeWithTransprancy("gruvbox", false)
 -- ("andromeda", false)

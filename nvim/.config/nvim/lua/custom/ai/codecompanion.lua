@@ -43,19 +43,9 @@ return {
 			http = {
 				copilot = function()
 					return require("codecompanion.adapters").extend("copilot", {
-						env = {
-							token = "GITHUB_TOKEN",
-						},
 						schema = {
 							model = {
-								default = "claude-3.5-sonnet",
-								choices = {
-									"claude-3.5-sonnet",
-									"claude-3-haiku",
-									"gpt-4o",
-									"gpt-4",
-									"gpt-3.5-turbo",
-								},
+								default = "grok-code-fast-1",
 							},
 						},
 					})
@@ -63,20 +53,61 @@ return {
 			},
 		},
 		extensions = {
+			vectorcode = {
+				---@type VectorCode.CodeCompanion.ExtensionOpts
+				opts = {
+					tool_group = {
+						-- this will register a tool group called `@vectorcode_toolbox` that contains all 3 tools
+						enabled = true,
+						-- a list of extra tools that you want to include in `@vectorcode_toolbox`.
+						-- if you use @vectorcode_vectorise, it'll be very handy to include
+						-- `file_search` here.
+						extras = {},
+						collapse = false, -- whether the individual tools should be shown in the chat
+					},
+					tool_opts = {
+						-- ---@type VectorCode.CodeCompanion.ToolOpts
+						-- ["*"] = {},
+						---@type VectorCode.CodeCompanion.LsToolOpts
+						ls = {},
+						---@type VectorCode.CodeCompanion.VectoriseToolOpts
+						vectorise = {},
+						---@type VectorCode.CodeCompanion.QueryToolOpts
+						query = {
+							max_num = { chunk = -1, document = -1 },
+							default_num = { chunk = 50, document = 10 },
+							include_stderr = false,
+							use_lsp = true,
+							no_duplicate = true,
+							chunk_mode = false,
+							---@type VectorCode.CodeCompanion.SummariseOpts
+							summarise = {
+								---@type boolean|(fun(chat: CodeCompanion.Chat, results: VectorCode.QueryResult[]):boolean)|nil
+								enabled = false,
+								adapter = nil,
+								query_augmented = true,
+							},
+						},
+						files_ls = {},
+						files_rm = {},
+					},
+					prompt_library = {},
+				},
+			},
 			mcphub = {
 				callback = "mcphub.extensions.codecompanion",
 				opts = {
-					-- MCP Tools 
-					make_tools = true,              -- Make individual tools (@server__tool) and server groups (@server)
+					-- MCP Tools
+					make_tools = true, -- Make individual tools (@server__tool) and server groups (@server)
 					show_server_tools_in_chat = true, -- Show individual tools in chat completion
-					add_mcp_prefix_to_tool_names = false, -- Keep clean tool names
-					show_result_in_chat = true,      -- Show tool results in chat buffer
+					add_mcp_prefix_to_tool_names = true, -- Keep clean tool names
+					show_result_in_chat = true, -- Show tool results in chat buffer
 					-- MCP Resources
-					make_vars = true,                -- Convert MCP resources to #variables
-					-- MCP Prompts 
-					make_slash_commands = true,      -- Add MCP prompts as /slash commands
-				}
-			}
+					make_vars = true, -- Convert MCP resources to #variables
+					-- MCP Prompts
+					make_slash_commands = true, -- Add MCP prompts as /slash commands
+				},
+			},
 		},
 	},
 	init = function()

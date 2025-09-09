@@ -8,13 +8,23 @@ return {
 	build = "npm install -g mcp-hub@latest",
 	config = function()
 		require("mcphub").setup({
+			-- Load native servers
+			native_servers = {
+				overseer = require("mcp_servers.overseer"),
+				lsp = require("mcp_servers.lsp"),
+				neotest = require("mcp_servers.neotest"),
+				dap = require("mcp_servers.dap"),
+			},
+
+			-- Load CodeCompanion buffer protection
+			require("custom.codecompanion_fix"),
 			-- Auto-approval configuration
 			auto_approve = function(params)
 				-- Respect CodeCompanion's auto tool mode when enabled
 				if vim.g.codecompanion_auto_tool_mode == true then
 					return true
 				end
-				
+
 				-- Auto-approve safe file operations in current project
 				if params.tool_name == "read_file" then
 					local path = params.arguments.path or ""
@@ -22,27 +32,35 @@ return {
 						return true
 					end
 				end
-				
+
+				-- Auto-approve edit_file operations (but they may steal focus)
+				if params.tool_name == "edit_file" then
+					return true -- Let it proceed but we'll handle focus return
+				end
+
 				-- Auto-approve GitHub read operations
-				if params.server_name == "github" and params.tool_name and 
-				   (params.tool_name:match("^get_") or params.tool_name:match("^list_")) then
+				if
+					params.server_name == "github"
+					and params.tool_name
+					and (params.tool_name:match("^get_") or params.tool_name:match("^list_"))
+				then
 					return true
 				end
-				
+
 				-- Check if tool is configured for auto-approval in servers.json
 				if params.is_auto_approved_in_server then
 					return true
 				end
-				
+
 				return false -- Show confirmation prompt for everything else
 			end,
-			
+
 			-- Extension configurations
 			extensions = {
 				avante = {
 					make_slash_commands = true, -- Enable /mcp:server:prompt slash commands
-				}
-			}
+				},
+			},
 		})
 	end,
 }

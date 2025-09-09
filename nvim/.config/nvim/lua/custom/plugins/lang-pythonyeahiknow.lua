@@ -1,5 +1,6 @@
 return {
 	"HallerPatrick/py_lsp.nvim",
+	enabled = false,
 	config = function()
 		require("py_lsp").setup({
 			-- This is optional, but allows to create virtual envs from nvim

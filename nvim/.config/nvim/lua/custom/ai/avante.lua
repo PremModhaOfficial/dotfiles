@@ -2,15 +2,16 @@ return {
 	"yetone/avante.nvim",
 	event = "VeryLazy",
 	lazy = false,
+	enabled = false,
 	dependencies = {
-		"ravitemer/mcphub.nvim", -- Explicit dependency on MCPHub
-		"nvim-treesitter/nvim-treesitter",
-		"stevearc/dressing.nvim",
-		"nvim-lua/plenary.nvim",
 		"MunifTanjim/nui.nvim",
-		--- The below dependencies are optional,
+		"nvim-lua/plenary.nvim",
 		"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+		"nvim-treesitter/nvim-treesitter",
+		"ravitemer/mcphub.nvim", -- Explicit dependency on MCPHub
+		"stevearc/dressing.nvim",
 		"zbirenbaum/copilot.lua", -- for providers='copilot'
+		--- The below dependencies are optional,
 		{
 			-- support for image pasting
 			"HakonHarnes/img-clip.nvim",
@@ -128,38 +129,4 @@ return {
 			end
 		end, 100) -- Small delay to ensure proper loading order
 	end,
-	dependencies = {
-		"nvim-treesitter/nvim-treesitter",
-		"stevearc/dressing.nvim",
-		"nvim-lua/plenary.nvim",
-		"MunifTanjim/nui.nvim",
-		--- The below dependencies are optional,
-		"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-		"zbirenbaum/copilot.lua", -- for providers='copilot'
-		{
-			-- support for image pasting
-			"HakonHarnes/img-clip.nvim",
-			event = "VeryLazy",
-			opts = {
-				-- recommended settings
-				default = {
-					embed_image_as_base64 = false,
-					prompt_for_file_name = false,
-					drag_and_drop = {
-						insert_mode = true,
-					},
-					-- required for Windows users
-					-- use_absolute_path = true,
-				},
-			},
-		},
-		{
-			-- Make sure to set this up properly if you have lazy=true
-			"MeanderingProgrammer/render-markdown.nvim",
-			opts = {
-				file_types = { "markdown", "Avante", "codecompanion" },
-			},
-			ft = { "markdown", "Avante" },
-		},
-	},
 }

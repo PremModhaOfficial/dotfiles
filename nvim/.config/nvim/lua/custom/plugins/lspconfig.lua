@@ -8,6 +8,11 @@ return { -- LSP Configuration & Plugins
 		"nvimdev/lspsaga.nvim",
 		"saghen/blink.cmp",
 
+		{
+			"folke/neoconf.nvim",
+			cmd = "Neoconf",
+			opts = {},
+		},
 		-- Useful status updates for LSP.
 		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
 		-- Artifact its GONE
@@ -17,7 +22,6 @@ return { -- LSP Configuration & Plugins
 		-- used for completion, annotations and signatures of Neovim apis
 	},
 	config = function()
-
 		-- Brief aside: **What is LSP?**
 		--
 		-- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -62,9 +66,6 @@ return { -- LSP Configuration & Plugins
 					vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 				end
 
-
-
-
 				map("<leader>rN", function()
 					vim.cmd("Lspsaga rename ++project")
 				end, "[R]e[n]ame (project)")
@@ -72,8 +73,6 @@ return { -- LSP Configuration & Plugins
 				map("<leader>rn", function()
 					vim.cmd("Lspsaga rename")
 				end, "[R]e[n]ame")
-
-
 
 				map("<leader>p", function()
 					vim.cmd("Lspsaga peek_definition")
@@ -163,8 +162,6 @@ return { -- LSP Configuration & Plugins
 						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
 					end, "[T]oggle Inlay [H]ints")
 				end
-
-
 			end,
 		})
 
@@ -189,9 +186,19 @@ return { -- LSP Configuration & Plugins
 		--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
 		--  - settings (table): Override the default settings passed when initializing the server.
 		--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+		require("neoconf").setup({ -- override any of the default settings here
+		})
 		local servers = {
-			-- clangd = {},
-			-- gopls = {},
+			jdtls = {
+				root_markers = { ".git", "pom.xml", "build.gradle" },
+			},
+			sqls = {
+				cmd = { "sqls", "-log-to-stderr" },
+				filetypes = { "sql", "mysql", "plsql" },
+				root_dir = function(fname)
+					return vim.fs.root(fname, { ".git", "Makefile", "package.json" }) or vim.fn.getcwd()
+				end,
+			},
 			pyright = {
 				python = {
 					analysis = {
@@ -201,7 +208,6 @@ return { -- LSP Configuration & Plugins
 					},
 				},
 			},
-			-- rust_analyzer = {},
 			-- nil_ls = { cmd = { "nil", "--stdio" }, flake = { autoArchive = "true", }, },
 			pylsp = {
 				plugins = {
@@ -230,21 +236,6 @@ return { -- LSP Configuration & Plugins
 			-- tsserver = {},
 			--
 
-
-			lua_ls = {
-				-- cmd = {...},
-				-- filetypes = { ...},
-				-- capabilities = {},
-				settings = {
-					Lua = {
-						completion = {
-							callSnippet = "Replace",
-						},
-						-- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-						-- diagnostics = { disable = { 'missing-fields' } },
-					},
-				},
-			},
 			-- TypeScript/JavaScript
 			ts_ls = {
 				settings = {
@@ -305,7 +296,6 @@ return { -- LSP Configuration & Plugins
 			},
 			-- Additional useful servers
 		}
-		local lspconfig = require("lspconfig")
 		for server, config in pairs(servers) do
 			-- passing config.capabilities to blink.cmp merges with the capabilities in your
 			-- `opts[server].capabilities, if you've defined it
@@ -313,7 +303,8 @@ return { -- LSP Configuration & Plugins
 
 			-- Add error handling for LSP setup
 			local success, err = pcall(function()
-				lspconfig[server].setup(config)
+				vim.lsp.config(server, config)
+				vim.lsp.enable(server, true)
 			end)
 
 			if not success then
@@ -327,7 +318,16 @@ return { -- LSP Configuration & Plugins
 		--    :Mason
 		--
 		--  You can press `g?` for help in this menu.
-		require("lspconfig").nixd.setup({
+
+		local v = {
+			cmd = { "vectorcode-server" },
+			root_dir = vim.fs.root(0, { ".vectorcode", ".git" }),
+			settings = {},
+		}
+		-- vim.lsp.enable("VectorCode")
+		vim.lsp.config("VectorCode", v)
+
+		vim.lsp.config("nixd", {
 			cmd = { "nixd" },
 			filetypes = { "nix" },
 			settings = {
@@ -351,6 +351,7 @@ return { -- LSP Configuration & Plugins
 		-- for you, so that they are available from within Neovim.
 		local ensure_installed = vim.tbl_keys(servers or {})
 		vim.list_extend(ensure_installed, {
+			"lua_ls", -- Lua LSP server
 			"stylua", -- Used to format Lua code
 			"prettier", -- Code formatter
 			"eslint_d", -- Fast ESLint
@@ -368,7 +369,8 @@ return { -- LSP Configuration & Plugins
 					-- by the server configuration above. Useful when disabling
 					-- certain features of an LSP (for example, turning off formatting for tsserver)
 					server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-					require("lspconfig")[server_name].setup(server)
+					-- require("lspconfig")[server_name].setup(server)
+					vim.lsp.config(server_name, server)
 				end,
 			},
 		})
