@@ -21,17 +21,6 @@ return { -- Autocompletion
 			},
 		},
 		{
-			"folke/lazydev.nvim",
-			ft = "lua", -- only load on lua files
-			opts = {
-				library = {
-					-- See the configuration section for more details
-					-- Load luvit types when the `vim.uv` word is found
-					{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
-				},
-			},
-		},
-		{
 			"L3MON4D3/LuaSnip",
 			dependencies = {
 				"rafamadriz/friendly-snippets",
@@ -116,13 +105,17 @@ return { -- Autocompletion
 		sources = {
 			default = { "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
-				lua = { "lsp", "path", "snippets", "buffer", "lazydev" },
+				lua = { "lsp", "path", "snippets", "buffer", "luasnip" },
+				javascript = { "lsp", "path", "snippets", "buffer", "npm" },
+				typescript = { "lsp", "path", "snippets", "buffer", "npm" },
+				python = { "lsp", "path", "snippets", "buffer", "jedi" },
+				rust = { "lsp", "path", "snippets", "buffer", "crates" },
+				go = { "lsp", "path", "snippets", "buffer", "go_packages" },
 			},
 			providers = {
 				lsp = {
 					name = "LSP",
 					module = "blink.cmp.sources.lsp",
-					score_offset = 99,
 				},
 				path = {
 					name = "Path",
@@ -132,18 +125,13 @@ return { -- Autocompletion
 				snippets = {
 					name = "Snippets",
 					module = "blink.cmp.sources.snippets",
-					score_offset = -5,
+					score_offset = 5,
 				},
 				buffer = {
 					name = "Buffer",
 					module = "blink.cmp.sources.buffer",
 					max_items = 5,
 					min_keyword_length = 2,
-				},
-				lazydev = {
-					name = "LazyDev",
-					module = "lazydev.integrations.blink",
-					score_offset = 100, -- show at a higher priority than lsp
 				},
 				-- AI providers with optimized scoring
 				avante = {
@@ -171,7 +159,6 @@ return { -- Autocompletion
 			enabled = true,
 			keymap = {
 				preset = "inherit",
-				["<CR>"] = { "fallback" }, -- Execute command without completing
 				["<C-j>"] = { "select_next", "fallback" },
 				["<C-k>"] = { "select_prev", "fallback" },
 				["<c-f>"] = {
@@ -193,7 +180,7 @@ return { -- Autocompletion
 			completion = {
 				list = {
 					selection = {
-						auto_insert = true,
+						auto_insert = false,
 						preselect = true,
 					},
 				},
@@ -210,11 +197,9 @@ return { -- Autocompletion
 
 		-- Optimized keymap with AI-specific features
 		keymap = {
-			-- preset = "enter", DONT WANT THIS
-			-- ["<Tab>"] = { "snippet_forward", "fallback" }, DONT WANT THIS
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide" },
-			["<C-y>"] = { "select_and_accept" },
+			["<C-y>"] = { "accept" },
 			["<C-p>"] = { "select_prev", "fallback" },
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-n>"] = { "select_next", "fallback" },
@@ -316,3 +301,4 @@ return { -- Autocompletion
 		},
 	},
 }
+

@@ -1,7 +1,8 @@
 return {
 	"folke/snacks.nvim",
 	priority = 1000,
-	lazy = false,
+	lazy = true,
+	event = "VimEnter",
 	---@module "snacks"
 	---@type snacks.Config
 	opts = {
@@ -673,6 +674,7 @@ return {
 
 				vim.schedule(function()
 					if Snacks.notifier then
+						-- Use Snacks for notifications to avoid conflicts
 						vim.notify = Snacks.notifier.notify
 					end
 				end)

@@ -5,7 +5,6 @@ return { -- LSP Configuration & Plugins
 		{ "williamboman/mason.nvim", config = true }, -- NOTE: Must be loaded before dependants
 		"williamboman/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		"nvimdev/lspsaga.nvim",
 		"saghen/blink.cmp",
 
 		{
@@ -67,39 +66,39 @@ return { -- LSP Configuration & Plugins
 				end
 
 				map("<leader>rN", function()
-					vim.cmd("Lspsaga rename ++project")
+					vim.lsp.buf.rename()
 				end, "[R]e[n]ame (project)")
 
 				map("<leader>rn", function()
-					vim.cmd("Lspsaga rename")
+					vim.lsp.buf.rename()
 				end, "[R]e[n]ame")
 
 				map("<leader>p", function()
-					vim.cmd("Lspsaga peek_definition")
-				end, "[P]eek definition from lsp saga")
+					Snacks.picker.lsp_definitions()
+				end, "[P]eek definition")
 
 				map("<leader>P", function()
-					vim.cmd("Lspsaga peek_type_definition")
-				end, "[P]eek TYPE definition from lsp saga")
+					Snacks.picker.lsp_type_definitions()
+				end, "[P]eek TYPE definition")
 
 				-- Workspace diagnostics
 				map("<leader>wd", function()
-					vim.cmd("Lspsaga show_workspace_diagnostics")
+					Snacks.picker.diagnostics()
 				end, "[W]orkspace [D]iagnostics")
 
 				-- Call hierarchy
 				map("<leader>ci", function()
-					vim.cmd("Lspsaga incoming_calls")
+					vim.lsp.buf.incoming_calls()
 				end, "[C]all [I]ncoming")
 
 				map("<leader>co", function()
-					vim.cmd("Lspsaga outgoing_calls")
+					vim.lsp.buf.outgoing_calls()
 				end, "[C]all [O]utgoing")
 
-				-- Finder (definitions, references, implementations)
-				map("<leader>ff", function()
-					vim.cmd("Lspsaga finder")
-				end, "[F]inder")
+				-- Workspace Symbols (definitions, references, implementations)
+				map("<leader>ws", function()
+					Snacks.picker.lsp_symbols()
+				end, "[W]orkspace [S]ymbols")
 				-- Execute a code action, usually your cursor needs to be on top of an error
 				-- or a suggestion from your LSP for this to activate.
 				map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
@@ -107,14 +106,10 @@ return { -- LSP Configuration & Plugins
 
 				-- Opens a popup that displays documentation about the word under your cursor
 				--  See `:help K` for why this keymap.
-				-- map("K", vim.lsp.buf.hover, "Hover Documentation")
+				map("K", vim.lsp.buf.hover, "Hover Documentation")
 				map("<c-s-k>", function()
-					vim.cmd("Lspsaga peek_definition")
-				end, "Hover Documentation")
-
-				map("K", function()
-					vim.cmd("Lspsaga hover_doc")
-				end, "Hover Documentation")
+					Snacks.picker.lsp_definitions()
+				end, "Hover Definition")
 
 				-- WARN: This is not Goto Definition, this is Goto Declaration.
 				--  For example, in C this would take you to the header.
@@ -224,6 +219,10 @@ return { -- LSP Configuration & Plugins
 					flake8 = {
 						enabled = true,
 						executable = ".venv/bin/flake8",
+					},
+					black = {
+						enabled = true,
+						executable = vim.fn.stdpath("data") .. "/mason/bin/black",
 					},
 				},
 			},

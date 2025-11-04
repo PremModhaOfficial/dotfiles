@@ -127,6 +127,10 @@ P.S. You can delete this when you're done too. It's your config now! :)
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = " "
+
+-- Disable LazyVim order check to prevent warnings about import order
+-- We're using a custom order optimized for our enhanced UI
+vim.g.lazyvim_check_order = false
 vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
@@ -396,12 +400,25 @@ require("lazy").setup({
 					{ "<leader>ci", "[C]all [I]ncoming" },
 					{ "<leader>co", "[C]all [O]utgoing" },
 
-					{ "<leader>ff", "[F]inder" },
+					{ "<leader>ws", "[W]orkspace [S]ymbols" },
 					{ "<leader>P", "[P]eek type definition" },
 					{ "<leader>rn", "[R]e[n]ame" },
 					{ "<leader>rN", "[R]e[n]ame project" },
 					{ "<leader>th", "[T]oggle inlay [H]ints" },
 					{ "<leader>wd", "[W]orkspace [D]iagnostics" },
+
+					-- Snacks picker keybindings
+					{ "<leader><space>", "[F]ind Files (Smart)" },
+					{ "<leader>,", "[B]uffers" },
+					{ "<leader>/", "[G]rep" },
+					{ "<leader>ff", "[F]iles" },
+					{ "<leader>fg", "[G]it Files" },
+					{ "<leader>fp", "[P]rojects" },
+					{ "<leader>fr", "[R]ecent" },
+					{ "<leader>gy", "[G]it Branches" },
+					{ "<leader>gs", "[G]it Status" },
+					{ "<leader>sd", "[D]iagnostics" },
+					{ "<leader>sh", "[H]elp Pages" },
 				})
 			end,
 		},
@@ -481,17 +498,14 @@ require("lazy").setup({
 		-- require 'kickstart.plugins.neo-tree',
 		-- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
-		-- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-		--    This is the easiest way to modularize your config.
-		--
-		--  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-		--    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
+		-- NOTE: The import order below follows LazyVim best practices for better compatibility
+		-- 1. UI enhancements first (for proper styling)
+		-- 2. Core functionality
+		-- 3. Custom plugins
 		{ import = "custom.plugins" },
 		{ import = "custom.colors" },
 		{ import = "custom.ai" },
 		{ import = "custom.editor" },
-		-- { import = "custom.ui" },
-		-- { import = "custom.ui_plugs" },
 	},
 }, {
 	ui = { -- If you are using a Nerd Font: set icons to an empty table which will use the

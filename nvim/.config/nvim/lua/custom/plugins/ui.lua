@@ -27,8 +27,8 @@ return {
 		event = "VeryLazy",
 		-- enabled = false,
 		opts = {
-			notify = {
-				enabled = false,  -- Let Snacks handle notifications
+		notify = {
+			enabled = false,  -- Let Snacks handle notifications for consistency
 			},
 			lsp = {
 				progress = {

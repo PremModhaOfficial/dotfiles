@@ -120,13 +120,14 @@ return {
 		end
 		
 		-- Highlight matching pairs (replaces blink.pairs highlights)
-		local highlight_group = vim.api.nvim_create_augroup("MiniPairsHighlight", { clear = true })
-		
+		local highlight_augroup = vim.api.nvim_create_augroup("MiniPairsHighlight", { clear = true })
+		local highlight_ns = vim.api.nvim_create_namespace("MiniPairsHighlight")
+
 		vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-			group = highlight_group,
+			group = highlight_augroup,
 			callback = function()
 				-- Clear previous highlights
-				vim.api.nvim_buf_clear_namespace(0, highlight_group, 0, -1)
+				vim.api.nvim_buf_clear_namespace(0, highlight_ns, 0, -1)
 				
 				-- Only highlight in insert mode
 				if vim.fn.mode() ~= "i" then return end
@@ -151,12 +152,12 @@ return {
 								depth = depth - 1
 								if depth == 0 then
 									-- Highlight the pair
-									vim.api.nvim_buf_set_extmark(0, highlight_group, vim.fn.line(".") - 1, col - 2, {
+									vim.api.nvim_buf_set_extmark(0, highlight_ns, vim.fn.line(".") - 1, col - 2, {
 										end_col = col - 1,
 										hl_group = "MiniPairsOpen",
 										priority = 100,
 									})
-									vim.api.nvim_buf_set_extmark(0, highlight_group, vim.fn.line(".") - 1, i - 1, {
+									vim.api.nvim_buf_set_extmark(0, highlight_ns, vim.fn.line(".") - 1, i - 1, {
 										end_col = i,
 										hl_group = "MiniPairsClose",
 										priority = 100,
