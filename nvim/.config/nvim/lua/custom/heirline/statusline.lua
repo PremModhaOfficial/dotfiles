@@ -191,7 +191,7 @@ local VimMode = {
 	},
 	-- LED indicator (improved framed design)
 	{
-		provider = "⟨●⟩ ",
+		provider = "=<=●=|>",
 		hl = function(self)
 			return {
 				fg = self.mode_color,
