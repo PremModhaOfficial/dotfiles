@@ -570,7 +570,7 @@ vim.opt.termguicolors = true
 -- ColorschemeWithTransprancy("catppuccin", false)
 -- ("aurora", false)
 -- ("material", false)
-local resetColors = ColorschemeWithTransprancy("tokyodark", false)
+local resetColors = ColorschemeWithTransprancy("fluoromachine", false)
 
 vim.keymap.set("n", "<leader>cd", function()
 	resetColors()

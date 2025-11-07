@@ -33,32 +33,94 @@ local MiddlePattern = {
 	end,
 }
 
--- Nixie tube progress bar (9 segments)
+-- Nixie tube progress bar - State Machine
 local NixieProgressBar = {
 	condition = function(self)
 		return not conditions.buffer_matches({
 			filetype = self.filetypes,
 		})
 	end,
-	provider = function()
-		local line = vim.api.nvim_win_get_cursor(0)[1]
-		local total_lines = vim.api.nvim_buf_line_count(0)
-		local ratio = line / total_lines
-		local segments = math.floor(ratio * 9 + 0.5)
-		local filled = string.rep("▓", segments)
-		local empty = string.rep("░", 9 - segments)
-		return filled .. empty .. " "
+	init = function(self)
+		-- State priority: SEARCH > LSP_PROGRESS > DIAGNOSTIC > MODIFIED > IDLE
+		self.state = "IDLE"
+		self.segments = 0
+		self.color = safe_hl("Comment", "fg")
+
+		-- Check search state
+		if vim.v.hlsearch == 1 and vim.fn.searchcount then
+			local search = vim.fn.searchcount({ recompute = 1, maxcount = 999 })
+			if search.total and search.total > 0 then
+				self.state = "SEARCH"
+				self.segments = math.min(9, math.floor((search.current / search.total) * 9))
+				self.color = "#00ff00" -- Green for search
+				self.label = string.format(" %d/%d", search.current, search.total)
+				return
+			end
+		end
+
+		-- Check LSP progress
+		local lsp_progress = vim.lsp.status and vim.lsp.status() or ""
+		if lsp_progress ~= "" then
+			self.state = "LSP_PROGRESS"
+			-- Animated spinner effect
+			local frame = math.floor(vim.loop.now() / 100) % 9
+			self.segments = frame
+			self.color = "#bb00ff" -- Purple for LSP
+			self.label = ""
+			return
+		end
+
+		-- Check diagnostics
+		local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+		local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+		local total_diag = errors + warnings
+		if total_diag > 0 then
+			self.state = "DIAGNOSTIC"
+			self.segments = math.min(9, math.floor((total_diag / 10) * 9) + 1) -- Scale: 10 issues = full
+			self.color = errors > 0 and "#ff0000" or "#ffaa00" -- Red for errors, yellow for warnings
+			self.label = string.format(" E%d W%d", errors, warnings)
+			return
+		end
+
+		-- Check modified state
+		if vim.bo.modified then
+			self.state = "MODIFIED"
+			local changedtick = vim.b.changedtick or 0
+			self.segments = math.min(9, math.floor((changedtick % 100) / 11) + 1)
+			self.color = "#ff8800" -- Orange for modified
+			self.label = " *"
+			return
+		end
+
+		-- Default: IDLE state
+		self.state = "IDLE"
+		self.segments = 0
+		self.color = safe_hl("Comment", "fg")
+		self.label = ""
 	end,
-	hl = function()
+	provider = function(self)
+		local filled = string.rep("▓", self.segments)
+		local empty = string.rep("░", 9 - self.segments)
+		return "┣" .. filled .. empty .. "┫" .. self.label .. " "
+	end,
+	hl = function(self)
 		return {
-			fg = "#ff8800", -- Warm orange glow
+			fg = self.color,
 			bg = safe_hl("Normal", "bg"),
 		}
 	end,
-	update = { "CursorMoved", "CursorMovedI" },
+	update = {
+		"TextChanged",
+		"TextChangedI",
+		"BufWritePost",
+		"DiagnosticChanged",
+		"LspProgress",
+		"User",
+		"CursorHold",
+	},
 }
 
--- Mode indicator with Nixie tube label
+-- Mode indicator with color-changing LED dots
 local VimMode = {
 	init = function(self)
 		self.mode = vim.fn.mode(1)
@@ -127,14 +189,34 @@ local VimMode = {
 			}
 		end,
 	},
+	-- LED indicator (improved framed design)
+	{
+		provider = "⟨●⟩ ",
+		hl = function(self)
+			return {
+				fg = self.mode_color,
+				bg = safe_hl("Normal", "bg"),
+				bold = true,
+			}
+		end,
+	},
+	-- Left rounded separator for mode
+	{
+		provider = "",
+		hl = function(self)
+			return { fg = self.mode_color, bg = safe_hl("Normal", "bg") }
+		end,
+	},
+	-- Mode name with background
 	{
 		provider = function(self)
-			return "┏IN-12┫ " .. self.mode_names[self.mode] .. " "
+			return " " .. self.mode_names[self.mode] .. " "
 		end,
 		hl = function(self)
 			return { fg = safe_hl("Normal", "bg"), bg = self.mode_color }
 		end,
 	},
+	-- Separator
 	{
 		provider = "┣",
 		hl = function(self)
@@ -203,32 +285,40 @@ local FilePath = {
 	end,
 	init = function(self)
 		self.filename = vim.api.nvim_buf_get_name(0)
+		self.show_full_path = false
 	end,
 	{
 		{
 			provider = function(self)
 				local filepath = vim.fn.fnamemodify(self.filename, ":~:.")
 				if filepath == "" then
-					return "┣[No Name]"
+					return "┣ [No Name] ┫ "
 				end
-				-- Smart truncation for long paths
-				if #filepath > 50 then
-					filepath = "..." .. filepath:sub(-47)
+
+				local display_path
+				if self.show_full_path then
+					-- Show full path when expanded
+					display_path = filepath
+				else
+					-- Show just filename by default
+					display_path = vim.fn.fnamemodify(filepath, ":t")
 				end
-				return "┣" .. filepath
+
+				return "┣ " .. display_path .. " ┫ "
 			end,
+			on_click = {
+				callback = function(self)
+					self.show_full_path = not self.show_full_path
+					vim.cmd("redrawstatus")
+				end,
+				name = "sl_filepath_toggle",
+			},
 			hl = function()
 				return {
 					fg = safe_hl("Directory", "fg"),
 					bg = safe_hl("Normal", "bg"),
 				}
 			end,
-			on_click = {
-				callback = function()
-					Snacks.picker.files()
-				end,
-				name = "sl_filepath_click",
-			},
 		},
 		{
 			provider = "┫ ",
@@ -324,7 +414,7 @@ local LspDiagnostics = {
 	},
 }
 
--- LSP attached indicator with server names
+-- LSP attached indicator with server names (Colorful - Cyan/Blue)
 local LspAttached = {
 	condition = conditions.lsp_attached,
 	static = {
@@ -359,34 +449,76 @@ local LspAttached = {
 		end,
 		{
 			provider = function(self)
-				local servers = table.concat(self.server_names, ",")
-				return "┣" .. servers .. "┫ "
+				local servers = table.concat(self.server_names, "+")
+				return "┣ " .. servers .. " ┫ "
 			end,
 			hl = function()
 				return {
-					fg = safe_hl("Comment", "fg"),
+					fg = "#00d7ff", -- Bright cyan/blue for active tech
 					bg = safe_hl("Normal", "bg"),
+					bold = true,
 				}
 			end,
 		},
 	},
 }
 
--- Position and ruler with encoding
+-- Position and ruler with encoding (Colorful - Green encoding, Purple position, Red/Orange dial)
 local Ruler = {
 	condition = function(self)
 		return not conditions.buffer_matches({
 			filetype = self.filetypes,
 		})
 	end,
+	-- Total lines
+	{
+		provider = function()
+			local total_lines = vim.api.nvim_buf_line_count(0)
+			return "[" .. total_lines .. "] "
+		end,
+		hl = function()
+			return {
+				fg = "#aaaaaa", -- Light gray text
+				bg = safe_hl("Normal", "bg"),
+				bold = true,
+			}
+		end,
+	},
+	-- Encoding
 	{
 		provider = function()
 			local enc = (vim.bo.fenc ~= "" and vim.bo.fenc) or vim.o.enc
+			return enc .. " "
+		end,
+		hl = function()
+			return {
+				fg = "#00ff87", -- Bright green for encoding
+				bg = safe_hl("Normal", "bg"),
+				bold = true,
+			}
+		end,
+	},
+	-- Line:Col position
+	{
+		provider = function()
+			local line = vim.api.nvim_win_get_cursor(0)[1]
+			local col = vim.api.nvim_win_get_cursor(0)[2] + 1
+			return "[" .. line .. ":" .. col .. "] "
+		end,
+		hl = function()
+			return {
+				fg = "#d787ff", -- Purple/magenta for position
+				bg = safe_hl("Normal", "bg"),
+				bold = true,
+			}
+		end,
+	},
+	-- Position indicator (Top/Mid/Bot)
+	{
+		provider = function()
 			local line = vim.api.nvim_win_get_cursor(0)[1]
 			local total_lines = vim.api.nvim_buf_line_count(0)
-			local col = vim.api.nvim_win_get_cursor(0)[2] + 1
-			
-			-- Position indicator
+
 			local pos_indicator
 			if total_lines == 1 then
 				pos_indicator = "All"
@@ -404,20 +536,46 @@ local Ruler = {
 					pos_indicator = "Mid"
 				end
 			end
-			
-			-- Dynamic dial - moves right as you scroll down (9 positions)
+			return pos_indicator .. " "
+		end,
+		hl = function()
+			return {
+				fg = "#bb00ff", -- Purple for position
+				bg = safe_hl("Normal", "bg"),
+				bold = true,
+			}
+		end,
+	},
+	-- Dynamic dial
+	{
+		provider = function()
+			local line = vim.api.nvim_win_get_cursor(0)[1]
+			local total_lines = vim.api.nvim_buf_line_count(0)
 			local ratio = line / total_lines
 			local dial_pos = math.floor(ratio * 8 + 0.5) -- 0-8 positions
 			local dial_left = string.rep("═", dial_pos)
 			local dial_right = string.rep("═", 8 - dial_pos)
-			local dial = dial_left .. "╣" .. dial_right .. "═"
-			
-			return string.format("▌%d▐ %s ▌%d:%d▐ %s %s", total_lines, enc, line, col, pos_indicator, dial)
+			return dial_left .. "╣" .. dial_right .. "═"
 		end,
 		hl = function()
+			-- Color changes based on position (gradient from orange to red)
+			local line = vim.api.nvim_win_get_cursor(0)[1]
+			local total_lines = vim.api.nvim_buf_line_count(0)
+			local ratio = line / total_lines
+
+			local color
+			if ratio < 0.33 then
+				color = "#ffaa00" -- Orange at top
+			elseif ratio < 0.67 then
+				color = "#ff6600" -- Orange-red in middle
+			else
+				color = "#ff0000" -- Red at bottom
+			end
+
 			return {
-				fg = safe_hl("Normal", "bg"),
-				bg = safe_hl("Comment", "fg"),
+				fg = color,
+				bg = safe_hl("Normal", "bg"),
+				bold = true,
 			}
 		end,
 		on_click = {
@@ -491,7 +649,7 @@ local CodeCompanionAgent = {
 	},
 }
 
--- Macro recording indicator
+-- Macro recording indicator (Colorful - Red/Pink)
 local MacroRec = {
 	condition = function()
 		return vim.fn.reg_recording() ~= ""
@@ -506,7 +664,7 @@ local MacroRec = {
 		end,
 		hl = function()
 			return {
-				fg = safe_hl("Comment", "fg"),
+				fg = "#ff0066", -- Hot pink for recording
 				bg = safe_hl("Normal", "bg"),
 				bold = true,
 			}
@@ -514,7 +672,7 @@ local MacroRec = {
 	},
 }
 
--- File type with icons
+-- File type with icons (Colorful - Warm amber/orange)
 local FileType = {
 	condition = function(self)
 		return not conditions.buffer_matches({
@@ -548,12 +706,13 @@ local FileType = {
 		provider = function(self)
 			local ft = string.lower(vim.bo.filetype)
 			local icon = self.icons[ft] or "󱙺"
-			return "┣" .. icon .. " " .. ft .. "┫ "
+			return "┣ " .. icon .. " " .. ft .. " ┫ "
 		end,
 		hl = function()
 			return {
-				fg = safe_hl("Comment", "fg"),
+				fg = "#ff8800", -- Warm amber/orange Nixie glow
 				bg = safe_hl("Normal", "bg"),
+				bold = true,
 			}
 		end,
 	},
