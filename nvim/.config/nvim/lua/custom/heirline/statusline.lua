@@ -33,45 +33,32 @@ local MiddlePattern = {
 	end,
 }
 
--- Visual separators
-local LeftSlantStart = {
-	provider = "",
-	hl = function()
-		return {
-			fg = safe_hl("Normal", "bg"),
-			bg = safe_hl("StatusLine", "bg"),
-		}
+-- Nixie tube progress bar (9 segments)
+local NixieProgressBar = {
+	condition = function(self)
+		return not conditions.buffer_matches({
+			filetype = self.filetypes,
+		})
 	end,
-}
-local LeftSlantEnd = {
-	provider = "",
+	provider = function()
+		local line = vim.api.nvim_win_get_cursor(0)[1]
+		local total_lines = vim.api.nvim_buf_line_count(0)
+		local ratio = line / total_lines
+		local segments = math.floor(ratio * 9 + 0.5)
+		local filled = string.rep("▓", segments)
+		local empty = string.rep("░", 9 - segments)
+		return filled .. empty .. " "
+	end,
 	hl = function()
 		return {
-			fg = safe_hl("StatusLine", "bg"),
+			fg = "#ff8800", -- Warm orange glow
 			bg = safe_hl("Normal", "bg"),
 		}
 	end,
-}
-local RightSlantStart = {
-	provider = "",
-	hl = function()
-		return {
-			fg = safe_hl("StatusLine", "bg"),
-			bg = safe_hl("Normal", "bg"),
-		}
-	end,
-}
-local RightSlantEnd = {
-	provider = "",
-	hl = function()
-		return {
-			fg = safe_hl("Normal", "bg"),
-			bg = safe_hl("StatusLine", "bg"),
-		}
-	end,
+	update = { "CursorMoved", "CursorMovedI" },
 }
 
--- Mode indicator
+-- Mode indicator with Nixie tube label
 local VimMode = {
 	init = function(self)
 		self.mode = vim.fn.mode(1)
@@ -142,14 +129,14 @@ local VimMode = {
 	},
 	{
 		provider = function(self)
-			return " %2(" .. self.mode_names[self.mode] .. "%) "
+			return "┏IN-12┫ " .. self.mode_names[self.mode] .. " "
 		end,
 		hl = function(self)
 			return { fg = safe_hl("Normal", "bg"), bg = self.mode_color }
 		end,
 	},
 	{
-		provider = "",
+		provider = "┣",
 		hl = function(self)
 			return { fg = self.mode_color, bg = safe_hl("Normal", "bg") }
 		end,
@@ -168,10 +155,9 @@ local GitBranch = {
 				filetype = self.filetypes,
 			})
 		end,
-		LeftSlantStart,
 		{
 			provider = function(self)
-				return "  " .. (self.status_dict.head == "" and "main" or self.status_dict.head) .. " "
+				return "┫  " .. (self.status_dict.head == "" and "main" or self.status_dict.head) .. " "
 			end,
 			on_click = {
 				callback = function()
@@ -182,7 +168,7 @@ local GitBranch = {
 			hl = function()
 				return {
 					fg = safe_hl("Comment", "fg"),
-					bg = safe_hl("StatusLine", "bg"),
+					bg = safe_hl("Normal", "bg"),
 				}
 			end,
 		},
@@ -200,12 +186,11 @@ local GitBranch = {
 				hl = function()
 					return {
 						fg = safe_hl("diffAdded", "fg"),
-						bg = safe_hl("StatusLine", "bg"),
+						bg = safe_hl("Normal", "bg"),
 					}
 				end,
 			},
 		},
-		LeftSlantEnd,
 	},
 }
 
@@ -220,23 +205,22 @@ local FilePath = {
 		self.filename = vim.api.nvim_buf_get_name(0)
 	end,
 	{
-		LeftSlantStart,
 		{
 			provider = function(self)
 				local filepath = vim.fn.fnamemodify(self.filename, ":~:.")
 				if filepath == "" then
-					return " [No Name] "
+					return "┣[No Name]"
 				end
 				-- Smart truncation for long paths
 				if #filepath > 50 then
 					filepath = "..." .. filepath:sub(-47)
 				end
-				return " " .. filepath .. " "
+				return "┣" .. filepath
 			end,
 			hl = function()
 				return {
 					fg = safe_hl("Directory", "fg"),
-					bg = safe_hl("StatusLine", "bg"),
+					bg = safe_hl("Normal", "bg"),
 				}
 			end,
 			on_click = {
@@ -246,7 +230,15 @@ local FilePath = {
 				name = "sl_filepath_click",
 			},
 		},
-		LeftSlantEnd,
+		{
+			provider = "┫ ",
+			hl = function()
+				return {
+					fg = safe_hl("Directory", "fg"),
+					bg = safe_hl("Normal", "bg"),
+				}
+			end,
+		},
 	},
 }
 
@@ -279,7 +271,7 @@ local LspDiagnostics = {
 		end,
 		{
 			{
-				provider = "",
+				provider = "▌",
 			},
 			{
 				provider = function(self)
@@ -288,7 +280,7 @@ local LspDiagnostics = {
 				end,
 			},
 			{
-				provider = "",
+				provider = "▐",
 				hl = function()
 					return {
 						fg = safe_hl("DiagnosticError", "fg"),
@@ -311,7 +303,7 @@ local LspDiagnostics = {
 		end,
 		{
 			{
-				provider = "",
+				provider = "▌",
 			},
 			{
 				provider = function(self)
@@ -320,7 +312,7 @@ local LspDiagnostics = {
 				end,
 			},
 			{
-				provider = "",
+				provider = "▐ ",
 				hl = function()
 					return {
 						fg = safe_hl("DiagnosticWarn", "fg"),
@@ -332,21 +324,23 @@ local LspDiagnostics = {
 	},
 }
 
--- LSP attached indicator
+-- LSP attached indicator with server names
 local LspAttached = {
 	condition = conditions.lsp_attached,
 	static = {
 		lsp_attached = false,
+		server_names = {},
 		show_lsps = {
 			copilot = false,
 			efm = false,
 		},
 	},
 	init = function(self)
+		self.server_names = {}
 		for i, server in pairs(vim.lsp.get_clients({ bufnr = 0 })) do
 			if self.show_lsps[server.name] ~= false then
+				table.insert(self.server_names, server.name)
 				self.lsp_attached = true
-				return
 			end
 		end
 	end,
@@ -361,23 +355,24 @@ local LspAttached = {
 	},
 	{
 		condition = function(self)
-			return self.lsp_attached
+			return self.lsp_attached and #self.server_names > 0
 		end,
-		LeftSlantStart,
 		{
-			provider = "  ",
+			provider = function(self)
+				local servers = table.concat(self.server_names, ",")
+				return "┣" .. servers .. "┫ "
+			end,
 			hl = function()
 				return {
 					fg = safe_hl("Comment", "fg"),
-					bg = safe_hl("StatusLine", "bg"),
+					bg = safe_hl("Normal", "bg"),
 				}
 			end,
 		},
-		LeftSlantEnd,
 	},
 }
 
--- Position and ruler
+-- Position and ruler with encoding
 local Ruler = {
 	condition = function(self)
 		return not conditions.buffer_matches({
@@ -385,16 +380,40 @@ local Ruler = {
 		})
 	end,
 	{
-		provider = "",
-		hl = function()
-			return {
-				fg = safe_hl("Comment", "fg"),
-				bg = safe_hl("Normal", "bg"),
-			}
+		provider = function()
+			local enc = (vim.bo.fenc ~= "" and vim.bo.fenc) or vim.o.enc
+			local line = vim.api.nvim_win_get_cursor(0)[1]
+			local total_lines = vim.api.nvim_buf_line_count(0)
+			local col = vim.api.nvim_win_get_cursor(0)[2] + 1
+			
+			-- Position indicator
+			local pos_indicator
+			if total_lines == 1 then
+				pos_indicator = "All"
+			elseif line == 1 then
+				pos_indicator = "Top"
+			elseif line == total_lines then
+				pos_indicator = "Bot"
+			else
+				local ratio = line / total_lines
+				if ratio < 0.33 then
+					pos_indicator = "Top"
+				elseif ratio > 0.67 then
+					pos_indicator = "Bot"
+				else
+					pos_indicator = "Mid"
+				end
+			end
+			
+			-- Dynamic dial - moves right as you scroll down (9 positions)
+			local ratio = line / total_lines
+			local dial_pos = math.floor(ratio * 8 + 0.5) -- 0-8 positions
+			local dial_left = string.rep("═", dial_pos)
+			local dial_right = string.rep("═", 8 - dial_pos)
+			local dial = dial_left .. "╣" .. dial_right .. "═"
+			
+			return string.format("▌%d▐ %s ▌%d:%d▐ %s %s", total_lines, enc, line, col, pos_indicator, dial)
 		end,
-	},
-	{
-		provider = " %l:%c %P%/%L ",
 		hl = function()
 			return {
 				fg = safe_hl("Normal", "bg"),
@@ -438,7 +457,7 @@ local CodeCompanion = {
 		condition = function(self)
 			return self.processing
 		end,
-		provider = " ",
+		provider = " ",
 		hl = function()
 			return { fg = safe_hl("WarningMsg", "fg") }
 		end,
@@ -481,65 +500,63 @@ local MacroRec = {
 		"RecordingEnter",
 		"RecordingLeave",
 	},
-	RightSlantStart,
 	{
 		provider = function()
-			return " 󱎘 @" .. vim.fn.reg_recording() .. " "
+			return "┫ 󱎘 @" .. vim.fn.reg_recording() .. " ┣"
 		end,
 		hl = function()
 			return {
 				fg = safe_hl("Comment", "fg"),
-				bg = safe_hl("StatusLine", "bg"),
+				bg = safe_hl("Normal", "bg"),
 				bold = true,
 			}
 		end,
 	},
-	RightSlantEnd,
 }
 
--- File type and encoding
+-- File type with icons
 local FileType = {
 	condition = function(self)
 		return not conditions.buffer_matches({
 			filetype = self.filetypes,
 		})
 	end,
-	RightSlantStart,
+	static = {
+		-- Common filetype icons (warm orange glow theme)
+		icons = {
+			lua = "󰢱",
+			python = "",
+			javascript = "",
+			typescript = "",
+			rust = "",
+			go = "",
+			java = "",
+			c = "",
+			cpp = "",
+			html = "",
+			css = "",
+			json = "",
+			yaml = "",
+			markdown = "",
+			vim = "",
+			sh = "",
+			bash = "",
+			zsh = "",
+		},
+	},
 	{
-		provider = function()
-			return " " .. string.lower(vim.bo.filetype) .. " "
+		provider = function(self)
+			local ft = string.lower(vim.bo.filetype)
+			local icon = self.icons[ft] or "󱙺"
+			return "┣" .. icon .. " " .. ft .. "┫ "
 		end,
 		hl = function()
 			return {
 				fg = safe_hl("Comment", "fg"),
-				bg = safe_hl("StatusLine", "bg"),
+				bg = safe_hl("Normal", "bg"),
 			}
 		end,
 	},
-	RightSlantEnd,
-}
-
-local FileEncoding = {
-	condition = function(self)
-		return not conditions.buffer_matches({
-			filetype = self.filetypes,
-		})
-	end,
-	RightSlantStart,
-	{
-		provider = function()
-			local enc = (vim.bo.fenc ~= "" and vim.bo.fenc) or vim.o.enc
-			local chars = vim.fn.wordcount().chars
-			return " " .. enc .. " (" .. chars .. ") "
-		end,
-		hl = function()
-			return {
-				fg = safe_hl("Comment", "fg"),
-				bg = safe_hl("StatusLine", "bg"),
-			}
-		end,
-	},
-	RightSlantEnd,
 }
 
 -- Main statusline
@@ -575,16 +592,16 @@ local statusline = {
 	end,
 	{
 		VimMode,
+		NixieProgressBar,
 		GitBranch,
 		FilePath,
-		LspAttached,
+		FileType,
 		LspDiagnostics,
 		{ provider = "%=" },
 		CodeCompanionAgent,
 		CodeCompanion,
 		MacroRec,
-		FileType,
-		FileEncoding,
+		LspAttached,
 		Ruler,
 	},
 }
