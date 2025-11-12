@@ -13,13 +13,14 @@ function M.setup()
 	vim.diagnostic.config({
 		virtual_text = {
 			prefix = "●", -- Could be '■', '▎', 'x'
-			hl_mode = "combine",
+			-- hl_mode = "combine",
 		},
-		-- virtual_lines = true,
 		signs = true,
 		underline = true,
-		update_in_insert = false,
+		update_in_insert = true,
 		severity_sort = true,
+		-- virtual_lines = true,
+		float = true,
 	})
 
 	-- Set diagnostic highlights with undercurls

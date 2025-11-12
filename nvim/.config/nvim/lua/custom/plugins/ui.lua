@@ -51,11 +51,24 @@ return {
 					["cmp.entry.get_documentation"] = false,
 				},
 				hover = {
-					enabled = false,
+					enabled = true,
 					silent = false, -- set to true to not show a message if hover is not available
 					view = nil, -- when nil, use defaults from documentation
 					---@type NoiceViewOptions
-					opts = {}, -- merged with defaults from documentation
+					opts = {
+						border = {
+							style = "rounded",
+							padding = { 0, 1 },
+						},
+						position = {
+							row = 2,
+							col = 2,
+						},
+						size = {
+							max_width = 80,
+							max_height = 20,
+						},
+					},
 				},
 				signature = {
 					enabled = false,

@@ -9,18 +9,19 @@ return {
 		fm.setup({
 			theme = "retrowave",
 			glow = false,
-			transparent = true,
-			brightness = 100.0,
+			transparent = false,
+			brightness = 0.0,
 			true_colors = true,
 			styles = {
 				comments = { italic = true },
 				constants = { bold = true },
-				functions = { bold = true, blend = 34 },
+				functions = { bold = true },
 				keywords = { bold = true },
 				numbers = {},
 				parameters = {},
-				types = {}, -- types = { italic = true }, NOTE: NICE LOOKING
-				variables = {},
+				-- types = {},
+				types = { italic = true }, --  NOTE: NICE LOOKING
+				-- variables = {},
 			},
 		})
 	end,

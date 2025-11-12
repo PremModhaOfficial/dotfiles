@@ -10,9 +10,7 @@ return {
 		require("mcphub").setup({
 			-- Load native servers
 			native_servers = {
-				overseer = require("mcp_servers.overseer"),
 				lsp = require("mcp_servers.lsp"),
-				neotest = require("mcp_servers.neotest"),
 				dap = require("mcp_servers.dap"),
 			},
 

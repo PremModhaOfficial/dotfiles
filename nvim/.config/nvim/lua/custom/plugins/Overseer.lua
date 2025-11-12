@@ -1,5 +1,6 @@
 return {
 	"stevearc/overseer.nvim",
+	enabled = true,
 	cmd = {
 		"OverseerOpen",
 		"OverseerClose",
@@ -43,12 +44,12 @@ return {
 	},
   -- stylua: ignore
   keys = {
-    { "<leader>tw", "<cmd>OverseerToggle<cr>",      desc = "Task list" },
-    { "<leader>to", "<cmd>OverseerRun<cr>",         desc = "Run task" },
-    { "<leader>tq", "<cmd>OverseerQuickAction<cr>", desc = "Action recent task" },
-    { "<leader>ti", "<cmd>OverseerInfo<cr>",        desc = "Overseer Info" },
-    { "<leader>tb", "<cmd>OverseerBuild<cr>",       desc = "Task builder" },
-    { "<leader>tt", "<cmd>OverseerTaskAction<cr>",  desc = "Task action" },
-    { "<leader>tc", "<cmd>OverseerClearCache<cr>",  desc = "Clear cache" },
+    { "<leader>osw", "<cmd>OverseerToggle<cr>",      desc = "Overseer Task list" },
+    { "<leader>osr", "<cmd>OverseerRun<cr>",         desc = "Overseer Run task" },
+    { "<leader>osq", "<cmd>OverseerQuickAction<cr>", desc = "Overseer Quick action" },
+    { "<leader>osi", "<cmd>OverseerInfo<cr>",        desc = "Overseer Info" },
+    { "<leader>osb", "<cmd>OverseerBuild<cr>",       desc = "Overseer Task builder" },
+    { "<leader>ost", "<cmd>OverseerTaskAction<cr>",  desc = "Overseer Task action" },
+    { "<leader>osc", "<cmd>OverseerClearCache<cr>",  desc = "Overseer Clear cache" },
   },
 }

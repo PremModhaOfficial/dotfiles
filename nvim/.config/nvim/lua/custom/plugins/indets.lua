@@ -1,6 +1,6 @@
 return {
 	{
-		"echasnovski/mini.indentscope",
+		"nvim-mini/mini.indentscope",
 		version = false,
 		-- enabled = false,
 		-- No need to copy this inside `setup()`. Will be used automatically.
@@ -30,7 +30,7 @@ return {
 		-- end,
 	},
 	{ -- Collection of various small independent plugins/modules
-		"echasnovski/mini.nvim",
+		"nvim-mini/mini.nvim",
 		config = function()
 			-- Better Around/Inside textobjects
 			--

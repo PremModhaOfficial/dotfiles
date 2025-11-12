@@ -193,8 +193,8 @@ return { -- Autocompletion
 			completion = {
 				list = {
 					selection = {
-						auto_insert = true,
-						preselect = true,
+						auto_insert = false,
+						preselect = false,
 					},
 				},
 				trigger = {
@@ -312,6 +312,18 @@ return { -- Autocompletion
 				window = {
 					border = "rounded",
 				},
+			},
+		},
+
+		-- Signature help configuration
+		signature = {
+			enabled = true,
+			window = {
+				border = "double",
+				scrollbar = false,
+				direction_priority = { "n", "s" },
+				treesitter_highlighting = true,
+				show_documentation = false,
 			},
 		},
 	},

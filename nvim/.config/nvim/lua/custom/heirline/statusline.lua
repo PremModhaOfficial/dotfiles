@@ -31,9 +31,7 @@ local MiddlePattern = {
 			bg = safe_hl("Normal", "bg"),
 		}
 	end,
-}
-
--- Nixie tube progress bar - State Machine
+} -- Nixie tube progress bar - State Machine
 local NixieProgressBar = {
 	condition = function(self)
 		return not conditions.buffer_matches({
@@ -191,7 +189,7 @@ local VimMode = {
 	},
 	-- LED indicator (improved framed design)
 	{
-		provider = "=<=●=|>",
+		provider = "<|●|>",
 		hl = function(self)
 			return {
 				fg = self.mode_color,
@@ -683,23 +681,23 @@ local FileType = {
 		-- Common filetype icons (warm orange glow theme)
 		icons = {
 			lua = "󰢱",
-			python = "",
-			javascript = "",
-			typescript = "",
-			rust = "",
-			go = "",
-			java = "",
-			c = "",
-			cpp = "",
-			html = "",
-			css = "",
-			json = "",
-			yaml = "",
-			markdown = "",
-			vim = "",
-			sh = "",
-			bash = "",
-			zsh = "",
+			python = "",
+			javascript = "",
+			typescript = "",
+			rust = "",
+			go = "",
+			java = "",
+			c = "󰙱",
+			cpp = "",
+			html = "",
+			css = "",
+			json = "",
+			yaml = "",
+			markdown = "",
+			vim = "",
+			sh = "",
+			bash = "",
+			zsh = "Z",
 		},
 	},
 	{

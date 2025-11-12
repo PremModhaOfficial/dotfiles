@@ -98,6 +98,11 @@ return {
 				focusable = true,
 				backdrop = 60,
 			},
+			hover = {
+				border = "rounded",
+				title = "Hover",
+				title_pos = "center",
+			},
 		},
 	},
 	bigfile = { enabled = true },
@@ -187,7 +192,7 @@ return {
 			"<leader><space>",
 			function()
 				Snacks.picker.smart({
-					layout = "telescope",
+					layout = "right",
 				})
 			end,
 			desc = "Smart Find Files",
@@ -195,7 +200,9 @@ return {
 		{
 			"<leader>,",
 			function()
-				Snacks.picker.buffers()
+				Snacks.picker.buffers({
+					layout = "right",
+				})
 			end,
 			desc = "Buffers",
 		},
@@ -239,7 +246,9 @@ return {
 		{
 			"<leader>ff",
 			function()
-				Snacks.picker.files()
+				Snacks.picker.files({
+					layout = "ivy",
+				})
 			end,
 			desc = "Find Files",
 		},
@@ -724,4 +733,3 @@ return {
 		},
 	},
 }
-

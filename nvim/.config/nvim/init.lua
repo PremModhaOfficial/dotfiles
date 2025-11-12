@@ -23,7 +23,7 @@ function ColorschemeWithTransprancy(color, transparentByDefault, callback)
 		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
 	end
 	if not transparentByDefault then
-		return makeNone()
+		return makeNone
 	end
 end
 
@@ -570,11 +570,12 @@ vim.opt.termguicolors = true
 -- ColorschemeWithTransprancy("catppuccin", false)
 -- ("aurora", false)
 -- ("material", false)
-local resetColors = ColorschemeWithTransprancy("fluoromachine", false)
+vim.cmd.colorscheme("fluoromachine")
 
-vim.keymap.set("n", "<leader>cd", function()
-	resetColors()
-end)
+-- local resetColors = ColorschemeWithTransprancy("tokyodark", false)
+-- vim.keymap.set("n", "<leader>cd", function()
+-- 	resetColors()
+-- end)
 
 -- ("randomhue", true)
 -- ColorschemeWithTransprancy("gruvbox", false)

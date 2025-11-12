@@ -157,6 +157,9 @@ return { -- LSP Configuration & Plugins
 						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
 					end, "[T]oggle Inlay [H]ints")
 				end
+
+				-- Manual signature help keymap
+				vim.keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, { buffer = event.buf, desc = "LSP: Signature Help" })
 			end,
 		})
 
@@ -285,11 +288,37 @@ return { -- LSP Configuration & Plugins
 			gopls = {
 				settings = {
 					gopls = {
-						analyses = {
-							unusedparams = true,
-						},
-						staticcheck = true,
 						gofumpt = true,
+						codelenses = {
+							gc_details = false,
+							generate = true,
+							regenerate_cgo = true,
+							run_govulncheck = true,
+							test = true,
+							tidy = true,
+							upgrade_dependency = true,
+							vendor = true,
+						},
+						hints = {
+							assignVariableTypes = true,
+							compositeLiteralFields = true,
+							compositeLiteralTypes = true,
+							constantValues = true,
+							functionTypeParameters = true,
+							parameterNames = true,
+							rangeVariableTypes = true,
+						},
+						analyses = {
+							nilness = true,
+							unusedparams = true,
+							unusedwrite = true,
+							useany = true,
+						},
+						usePlaceholders = true,
+						completeUnimported = true,
+						staticcheck = true,
+						directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
+						semanticTokens = true,
 					},
 				},
 			},
@@ -373,5 +402,9 @@ return { -- LSP Configuration & Plugins
 				end,
 			},
 		})
+
+
+
+
 	end,
 }

@@ -6,7 +6,7 @@ return {
 		"nvim-lua/plenary.nvim",
 		"nvim-treesitter/nvim-treesitter",
 		-- { "nvim-telescope/telescope.nvim", cmd = "Telescope" },
-		{ "echasnovski/mini.diff" },
+		{ "nvim-mini/mini.diff" },
 		-- "Saghen/blink.cmp", -- Ensure blink.cmp is listed here
 		"j-hui/fidget.nvim",
 	},

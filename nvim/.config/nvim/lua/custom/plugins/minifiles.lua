@@ -4,6 +4,7 @@
 
 return {
 	"nvim-mini/mini.files",
+	dependencies = { "nvim-tree/nvim-web-devicons" },
 	opts = function(_, opts)
 		-- I didn't like the default mappings, so I modified them
 		-- Module mappings created only inside explorer.
@@ -85,6 +86,75 @@ return {
 	config = function(_, opts)
 		-- Set up mini.files
 		require("mini.files").setup(opts)
+
+		-- Set up icons with nvim-web-devicons
+		local MiniFiles = require("mini.files")
+		local devicons = require("nvim-web-devicons")
+
+		-- Hook into file explorer updates to add icons
+		local function add_icons_to_explorer()
+			local explorer_state = MiniFiles.get_explorer_state()
+			if not explorer_state or not explorer_state.cwd then
+				return
+			end
+
+			local cwd = explorer_state.cwd
+			local buf = vim.api.nvim_get_current_buf()
+
+			-- Clear previous extmarks
+			local ns_id = vim.api.nvim_create_namespace("MiniFilesIcons")
+			vim.api.nvim_buf_clear_namespace(buf, ns_id, 0, -1)
+
+			local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+
+			for i, line in ipairs(lines) do
+				-- Skip empty lines
+				if line:gsub("%s+", "") == "" then
+					goto continue
+				end
+
+				-- Extract filename - mini.files displays just the name
+				-- Remove any leading/trailing whitespace and directory markers
+				local entry_name = line:match("^%s*(.-)%s*$")
+				if not entry_name or entry_name == "" then
+					goto continue
+				end
+
+				-- Build full path to check if it's a directory
+				local entry_path = cwd .. "/" .. entry_name
+				local is_dir = vim.fn.isdirectory(entry_path) == 1
+
+				-- Get the icon
+				local icon, hl = devicons.get_icon(entry_name)
+
+				-- Use folder icon for directories
+				if is_dir then
+					icon = " "
+					hl = "MiniFilesDirectory"
+				end
+
+				-- Set the virtual text extmark
+				if icon then
+					vim.api.nvim_buf_set_extmark(buf, ns_id, i - 1, 0, {
+						virt_text = { { icon .. " ", hl or "Normal" } },
+						virt_text_pos = "inline",
+					})
+				end
+
+				::continue::
+			end
+		end
+
+		-- Set up autocmds for icon updates
+		vim.api.nvim_create_autocmd("User", {
+			pattern = "MiniFilesExplorerOpen",
+			callback = add_icons_to_explorer,
+		})
+
+		vim.api.nvim_create_autocmd("User", {
+			pattern = "MiniFilesExplorerUpdated",
+			callback = add_icons_to_explorer,
+		})
 
 		-- Integrate with Snacks rename
 		vim.api.nvim_create_autocmd("User", {
