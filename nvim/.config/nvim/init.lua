@@ -218,21 +218,6 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<leader>fs", "<cmd>:w<CR>")
 vim.keymap.set("n", "<M-1>", "<cmd>Exp<CR>")
 
--- Restart Neovim with current file restoration
--- Pass file as argument so ShaDa restores cursor position naturally during initialization
-vim.keymap.set("n", "<leader>rs", function()
-	local current_file = vim.fn.expand("%:p")
-	if current_file and current_file ~= "" then
-		-- Pass file as argument to restart - ShaDa handles position recovery automatically
-		vim.cmd("restart " .. vim.fn.fnameescape(current_file))
-	else
-		-- If no file is open, just restart normally
-		vim.cmd("restart")
-	end
-end, { desc = "[R]e[s]tart Neovim" })
-
-
-
 -- Diagnostic keymaps
 -- vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
 -- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
