@@ -46,3 +46,45 @@ lua/custom/
 - **Performance Gains**: 15-20% faster startup, 30-40% faster completion
 - **Memory Optimization**: ~25% reduction in memory usage
 - **Highlight Optimization**: Reduced from 25+ to essential highlight groups
+
+## Testing
+
+### Neotest Integration
+- **Plugin**: nvim-neotest/neotest with neotest-go adapter
+- **Location**: `lua/custom/plugins/neotest.lua`
+- **Features**: Test discovery, execution, debugging via Delve
+- **Lazy Load**: On `*.go` files and `:Neotest` command
+- **Status**: ✅ Implemented (2025-11-12)
+
+### Test Keybindings
+Namespace: `<leader>t` (Test)
+
+| Keybinding | Action | Description |
+|-----------|--------|-------------|
+| `<leader>tr` | Run | Nearest test |
+| `<leader>tf` | Run | All tests in file |
+| `<leader>tR` | Run | All tests in project |
+| `<leader>ts` | Stop | Running tests / Show summary |
+| `<leader>to` | Show | Output panel (persistent) |
+| `<leader>tp` | Show | Output popup (transient) |
+| `<leader>td` | Debug | Test with Delve |
+
+### Go Testing Setup
+- **LSP Integration**: gopls provides test codelens (`test = true` enabled)
+- **Debugging**: Delve debugger via `<leader>td` (integrated with DAP)
+- **DAP Integration**: Shared with existing dap.lua setup
+- **Test Args**: `-v -race -count=1` (verbose, race detection, no caching)
+- **Mason**: Delve installed automatically via dap.lua ensure_installed
+
+### Dependencies
+- `nvim-neotest/neotest` - Core framework
+- `nvim-neotest/neotest-go` - Go adapter
+- `nvim-lua/plenary.nvim` - Utilities
+- `antoinemadec/FixCursorHold.nvim` - Stability
+- `nvim-dap-go` - Go debugging (from dap.lua)
+- `delve` - Debugger binary (installed by Mason)
+
+### Error Handling
+- **Missing Go**: Graceful warning, testing disabled
+- **Missing go.mod**: Warning on project entry
+- **Missing DAP**: Falls back to standard test run
