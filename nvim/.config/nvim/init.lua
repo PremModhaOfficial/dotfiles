@@ -218,6 +218,11 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<leader>fs", "<cmd>:w<CR>")
 vim.keymap.set("n", "<M-1>", "<cmd>Exp<CR>")
 
+-- Restart Neovim
+-- Position recovery: ShaDa automatically restores the '"' mark (last cursor position)
+-- via the 'shada' setting ('100 saves marks for last 100 files)
+vim.keymap.set("n", "<leader>rs", "<cmd>restart<CR>", { desc = "[R]e[s]tart Neovim" })
+
 -- Diagnostic keymaps
 -- vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
 -- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
@@ -407,18 +412,18 @@ require("lazy").setup({
 					{ "<leader>th", "[T]oggle inlay [H]ints" },
 					{ "<leader>wd", "[W]orkspace [D]iagnostics" },
 
-					-- Snacks picker keybindings
-					{ "<leader><space>", "[F]ind Files (Smart)" },
-					{ "<leader>,", "[B]uffers" },
-					{ "<leader>/", "[G]rep" },
-					{ "<leader>ff", "[F]iles" },
-					{ "<leader>fg", "[G]it Files" },
-					{ "<leader>fp", "[P]rojects" },
-					{ "<leader>fr", "[R]ecent" },
-					{ "<leader>gy", "[G]it Branches" },
-					{ "<leader>gs", "[G]it Status" },
-					{ "<leader>sd", "[D]iagnostics" },
-					{ "<leader>sh", "[H]elp Pages" },
+					-- -- Snacks picker keybindings
+					-- { "<leader><space>", "[F]ind Files (Smart)" },
+					-- { "<leader>,", "[B]uffers" },
+					-- { "<leader>/", "[G]rep" },
+					-- { "<leader>ff", "[F]iles" },
+					-- { "<leader>fg", "[G]it Files" },
+					-- { "<leader>fp", "[P]rojects" },
+					-- { "<leader>fr", "[R]ecent" },
+					-- { "<leader>gy", "[G]it Branches" },
+					-- { "<leader>gs", "[G]it Status" },
+					-- { "<leader>sd", "[D]iagnostics" },
+					-- { "<leader>sh", "[H]elp Pages" },
 				})
 			end,
 		},
@@ -580,5 +585,3 @@ end)
 -- ColorschemeWithTransprancy("gruvbox", false)
 -- ("andromeda", false)
 require("config.undercurl").setup()
-
--- Snacks.toggle.inlay_hints()
