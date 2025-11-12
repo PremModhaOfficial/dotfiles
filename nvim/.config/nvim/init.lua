@@ -219,36 +219,17 @@ vim.keymap.set("n", "<leader>fs", "<cmd>:w<CR>")
 vim.keymap.set("n", "<M-1>", "<cmd>Exp<CR>")
 
 -- Restart Neovim with current file restoration
--- Opens the current file after restart and restores cursor position via ShaDa
+-- Pass file as argument so ShaDa restores cursor position naturally during initialization
 vim.keymap.set("n", "<leader>rs", function()
 	local current_file = vim.fn.expand("%:p")
 	if current_file and current_file ~= "" then
-		-- Save the file path to a temp location for reopening after restart
-		local restart_file = vim.fn.stdpath("run") .. "/restart_file"
-		vim.fn.writefile({ current_file }, restart_file)
-		vim.cmd("restart")
+		-- Pass file as argument to restart - ShaDa handles position recovery automatically
+		vim.cmd("restart " .. vim.fn.fnameescape(current_file))
 	else
 		-- If no file is open, just restart normally
 		vim.cmd("restart")
 	end
 end, { desc = "[R]e[s]tart Neovim" })
-
--- On startup, open the saved restart file if it exists
-vim.api.nvim_create_autocmd("VimEnter", {
-	group = vim.api.nvim_create_augroup("restore_on_restart", { clear = true }),
-	once = true,
-	callback = function()
-		local restart_file = vim.fn.stdpath("run") .. "/restart_file"
-		if vim.fn.filereadable(restart_file) == 1 then
-			local files = vim.fn.readfile(restart_file)
-			if files and #files > 0 and vim.fn.filereadable(files[1]) == 1 then
-				vim.cmd("edit " .. vim.fn.fnameescape(files[1]))
-				-- Delete the temp file after reading
-				os.remove(restart_file)
-			end
-		end
-	end,
-})
 
 
 
@@ -613,4 +594,3 @@ end)
 -- ("randomhue", true)
 -- ColorschemeWithTransprancy("gruvbox", false)
 -- ("andromeda", false)
-require("config.undercurl").setup()
