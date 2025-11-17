@@ -34,21 +34,6 @@ local MiddlePattern = {
 } -- Nixie tube progress bar - State Machine
 local NixieProgressBar = {
 	static = {
-		-- Stepped wave animation patterns for LSP progress (Option 15)
-		-- Fast traveling wave: 3-char peak builds, then travels left→right
-		-- Total cycle: 9 frames × 150ms = 1.35 seconds
-		wave_patterns = {
-			"⎯⎯⎯⎯⎯⎯⎯⎯",  -- Frame 0: Baseline (all flat)
-			"⎺⎯⎯⎯⎯⎯⎯⎯",  -- Frame 1: Peak starts building (1 char)
-			"⎺⎺⎯⎯⎯⎯⎯⎯",  -- Frame 2: Peak grows (2 chars)
-			"⎺⎺⎺⎯⎯⎯⎯⎯",  -- Frame 3: Full 3-char peak
-			"⎯⎺⎺⎺⎯⎯⎯⎯",  -- Frame 4: Peak drops left, travels right
-			"⎯⎯⎺⎺⎺⎯⎯⎯",  -- Frame 5: Continues traveling right
-			"⎯⎯⎯⎺⎺⎺⎯⎯",  -- Frame 6: Continues traveling right
-			"⎯⎯⎯⎯⎺⎺⎺⎯",  -- Frame 7: Continues traveling right
-			"⎯⎯⎯⎯⎯⎺⎺⎺",  -- Frame 8: Peak reaches end
-			-- Loops back to Frame 0 for continuous animation
-		},
 		filetypes = {
 			"^git.*",
 			"fugitive",
@@ -60,9 +45,6 @@ local NixieProgressBar = {
 			"snacks_dashboard",
 			"^toggleterm$",
 		},
-		-- Dedicated timer for LSP wave animation (shared across all component instances)
-		-- Automatically starts when LSP is active, stops when inactive for resource efficiency
-		lsp_timer = nil,
 	},
 	condition = function(self)
 		return not conditions.buffer_matches({
@@ -89,39 +71,20 @@ local NixieProgressBar = {
 			end
 		end
 
-	-- Check LSP progress (fast stepped wave animation when LSP is working)
+	-- Check LSP progress (animated spinner when LSP is working)
 	local lsp_clients = vim.lsp.get_clients({ bufnr = 0 })
 	for _, client in pairs(lsp_clients) do
 		-- Check if client has any active progress tokens
 		if client.progress and client.progress.pending and next(client.progress.pending) ~= nil then
 			self.state = "LSP_PROGRESS"
-			
-			-- Start dedicated 150ms timer for smooth animation (only if not already running)
-			-- Timer will continuously redraw statusline to animate the wave without cursor movement
-			if not self.lsp_timer then
-				self.lsp_timer = vim.loop.new_timer()
-				self.lsp_timer:start(0, 150, vim.schedule_wrap(function()
-					-- Force statusline redraw to update wave animation
-					vim.cmd("redrawstatus")
-				end))
-			end
-			
-			-- Fast stepped wave: 150ms per frame = 1.35s full cycle (9 frames)
-			local frame = math.floor((vim.loop.now() or 0) / 150) % 9
-			-- Store wave pattern string (8 chars: ⎯ flat, ⎺ raised)
-			self.wave_pattern = self.wave_patterns[frame + 1]  -- Lua is 1-indexed
+			-- Smooth left-to-right wave animation (completes in ~1.8 seconds)
+			local time = (vim.loop.now() or 0) / 200
+			local frame = math.floor(time) % 9
+			self.segments = frame + 1
 			self.color = "#bb00ff" -- Purple for LSP
 			self.label = " LSP"
 			return
 		end
-	end
-
-	-- If we reach here, LSP is NOT active - stop timer to save resources
-	-- This ensures the timer only runs when actively needed for smooth animation
-	if self.lsp_timer then
-		self.lsp_timer:stop()   -- Stop the callback from firing
-		self.lsp_timer:close()  -- Free the timer handle (prevents memory leaks)
-		self.lsp_timer = nil    -- Mark as inactive for next check
 	end
 
 		-- Check diagnostics (with urgent pulse if errors exist)
@@ -169,12 +132,6 @@ local NixieProgressBar = {
 		self.label = ""
 	end,
 	provider = function(self)
-		-- LSP state uses stepped wave animation (Unicode characters)
-		if self.state == "LSP_PROGRESS" and self.wave_pattern then
-			return "┣" .. self.wave_pattern .. "┫" .. self.label .. " "
-		end
-		
-		-- All other states use block-based display (▓ filled, ░ empty)
 		local filled = string.rep("▓", self.segments)
 		local empty = string.rep("░", 9 - self.segments)
 		return "┣" .. filled .. empty .. "┫" .. self.label .. " "

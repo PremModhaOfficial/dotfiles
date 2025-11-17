@@ -317,6 +317,11 @@ return {
 	"rebelot/heirline.nvim",
 	lazy = true,
 	config = function()
+		-- CRITICAL: Disable built-in ruler to prevent statusline assertion errors
+		vim.opt.ruler = false
+		vim.opt.showcmd = false
+		vim.opt.showmode = false
+		
 		local statu_scolumn = require("custom.heirline.statuscolumn")
 		local status_line = require("custom.heirline.statusline")
 
@@ -325,6 +330,13 @@ return {
 			statuscolumn = statu_scolumn,
 		})
 
-		print("Heirline loaded with middle pattern")
+		-- Animation timer: Update statusline every 200ms for smooth animations (5 FPS)
+		local timer = vim.loop.new_timer()
+		timer:start(0, 200, vim.schedule_wrap(function()
+			-- Redraw for smooth animations (LSP, pulse, breathing effects)
+			vim.cmd("redrawstatus")
+		end))
+
+		print("Heirline loaded with animations enabled")
 	end,
 }

@@ -1,0 +1,731 @@
+{
+  "project_context": {
+    "name": "Stepped Wave Animation for LSP Progress in Heirline Statusline",
+    "description": "Implement fast, continuous left-to-right traveling wave animation using Unicode stepped pattern (⎯⎺) for LSP progress state in NixieProgressBar component",
+    "files": [
+      "lua/custom/heirline/statusline.lua (NixieProgressBar lines 35-156)",
+      "lua/custom/heirline/init.lua (timer lines 333-338)"
+    ],
+    "user_requirements": {
+      "animation_type": "Stepped Wave (Option 15) - digital/retro style",
+      "speed": "Fast (150ms per frame)",
+      "scope": "LSP_PROGRESS state only",
+      "continuity": "Continuous left-to-right travel, no rest periods",
+      "preservation": "Keep ┣┫ brackets, ' LSP' label, #bb00ff color",
+      "frames": 9,
+      "pattern_chars": "⎯ (U+23AF base) and ⎺ (U+23BA peak)"
+    }
+  },
+  "nodes": [
+    {
+      "task_id": "R1",
+      "type": "research",
+      "description": "Research Heirline provider function capabilities and Unicode string handling",
+      "assigned_agent": "documentation_research_agent",
+      "tools": ["context7_get-library-docs", "deepwiki_mcp_get-deepwiki-index"],
+      "priority": "high",
+      "estimated_effort": "15-20 minutes",
+      "dependencies": [],
+      "execution_order": 1,
+      "deliverables": [
+        "Documentation on Heirline provider function behavior",
+        "Confirmation that provider can return dynamic Unicode strings",
+        "Details on component update triggers and timing",
+        "Information on string concatenation performance in provider functions"
+      ],
+      "validation_criteria": [
+        "Confirm provider function can handle Unicode characters U+23AF and U+23BA",
+        "Verify provider is called on every component update event",
+        "Understand if there are any special string escaping requirements"
+      ],
+      "metadata": {
+        "library_query": "heirline nvim statusline",
+        "focus_topics": ["provider function", "component updates", "unicode support", "performance"],
+        "deepwiki_repo": "rebelot/heirline.nvim"
+      }
+    },
+    {
+      "task_id": "R2",
+      "type": "research",
+      "description": "Test Unicode character rendering in terminal and investigate performance implications",
+      "assigned_agent": "terminal_testing_agent",
+      "tools": ["bash", "read"],
+      "priority": "high",
+      "estimated_effort": "10-15 minutes",
+      "dependencies": [],
+      "execution_order": 1,
+      "deliverables": [
+        "Confirmation that ⎯ (U+23AF) and ⎺ (U+23BA) render correctly",
+        "Screenshot or visual confirmation of character appearance",
+        "Fallback character options if needed (-, =, _)",
+        "Performance baseline for current 200ms timer"
+      ],
+      "validation_criteria": [
+        "Characters render without boxes or missing glyphs",
+        "Characters have distinct visual appearance (flat vs raised)",
+        "Terminal font supports Unicode block needed"
+      ],
+      "metadata": {
+        "test_commands": [
+          "echo 'Test wave: ⎯⎺⎯⎺⎯⎺⎯⎺'",
+          "printf '\\u23AF\\u23BA\\u23AF\\u23BA\\n'",
+          "lua -e \"print('⎯⎺⎯⎺⎯⎺⎯⎺')\""
+        ],
+        "fallback_chars": ["- and =", "_ and -", "▁ and ▔"]
+      }
+    },
+    {
+      "task_id": "R3",
+      "type": "research",
+      "description": "Analyze current LSP progress detection logic and timer architecture",
+      "assigned_agent": "code_analysis_agent",
+      "tools": ["serena_code_agent_find_symbol", "serena_code_agent_search_for_pattern"],
+      "priority": "medium",
+      "estimated_effort": "10 minutes",
+      "dependencies": [],
+      "execution_order": 1,
+      "deliverables": [
+        "Map of how LSP progress is detected (client.progress.pending)",
+        "Understanding of current animation timing (200ms global timer)",
+        "List of all update events that trigger NixieProgressBar refresh",
+        "Analysis of performance impact of changing timer to 150ms"
+      ],
+      "validation_criteria": [
+        "Identify exact vim.loop.now() calculation in LSP logic",
+        "Confirm which LSP events trigger updates (LspProgress, LspRequest)",
+        "Understand relationship between timer and update events"
+      ],
+      "metadata": {
+        "search_patterns": [
+          "vim.lsp.get_clients",
+          "client.progress.pending",
+          "vim.loop.now",
+          "timer:start"
+        ],
+        "files_to_analyze": [
+          "lua/custom/heirline/statusline.lua",
+          "lua/custom/heirline/init.lua"
+        ]
+      }
+    },
+    {
+      "task_id": "R4",
+      "type": "research",
+      "description": "Review existing statusline bugs and ensure fixes are compatible with wave animation",
+      "assigned_agent": "code_review_agent",
+      "tools": ["read", "serena_code_agent_get_symbols_overview"],
+      "priority": "low",
+      "estimated_effort": "10 minutes",
+      "dependencies": [],
+      "execution_order": 1,
+      "deliverables": [
+        "Summary of existing bugs in NixieProgressBar (from memory)",
+        "Confirmation that wave animation won't interfere with bug fixes",
+        "Note any state initialization issues that need addressing"
+      ],
+      "validation_criteria": [
+        "Verify self.label initialization in IDLE state",
+        "Check self.filetypes static table definition",
+        "Ensure segment scaling consistency"
+      ],
+      "metadata": {
+        "reference_file": ".serena/memories/neovim-heirline-statusline-analysis.md",
+        "bugs_to_check": [
+          "Missing self.label in IDLE state",
+          "Uninitialized self.filetypes",
+          "Inconsistent segment scaling"
+        ]
+      }
+    },
+    {
+      "task_id": "D1",
+      "type": "design",
+      "description": "Design wave pattern array with 9 frames and validate visual progression",
+      "assigned_agent": "algorithm_design_agent",
+      "tools": ["bash"],
+      "priority": "high",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["R2"],
+      "execution_order": 2,
+      "deliverables": [
+        "Lua table with 9 wave pattern strings (8 chars each)",
+        "Visual representation of all frames in sequence",
+        "Confirmation of smooth left-to-right travel",
+        "Pattern logic: plateau builds (3 frames) then travels right (6 frames)"
+      ],
+      "validation_criteria": [
+        "Each frame is exactly 8 characters (fits ┣┫ brackets)",
+        "Pattern shows clear wave progression",
+        "Loop from frame 9 back to frame 1 is seamless",
+        "Peak (⎺⎺⎺) moves right by 1 position each frame after building"
+      ],
+      "metadata": {
+        "pattern_design": {
+          "frame_0": "⎯⎯⎯⎯⎯⎯⎯⎯",
+          "frame_1": "⎺⎯⎯⎯⎯⎯⎯⎯",
+          "frame_2": "⎺⎺⎯⎯⎯⎯⎯⎯",
+          "frame_3": "⎺⎺⎺⎯⎯⎯⎯⎯",
+          "frame_4": "⎯⎺⎺⎺⎯⎯⎯⎯",
+          "frame_5": "⎯⎯⎺⎺⎺⎯⎯⎯",
+          "frame_6": "⎯⎯⎯⎺⎺⎺⎯⎯",
+          "frame_7": "⎯⎯⎯⎯⎺⎺⎺⎯",
+          "frame_8": "⎯⎯⎯⎯⎯⎺⎺⎺"
+        },
+        "algorithm": "Build 3-char peak left-to-right, then travel entire wave across, loop"
+      }
+    },
+    {
+      "task_id": "D2",
+      "type": "design",
+      "description": "Design frame calculation logic for 150ms timing with modulo 9",
+      "assigned_agent": "algorithm_design_agent",
+      "tools": ["bash"],
+      "priority": "high",
+      "estimated_effort": "10 minutes",
+      "dependencies": ["R1", "R3", "D1"],
+      "execution_order": 3,
+      "deliverables": [
+        "Lua code snippet for frame calculation: math.floor((vim.loop.now() or 0) / 150) % 9",
+        "Explanation of why 150ms timing creates fast animation",
+        "Comparison with current 200ms timing",
+        "Total animation cycle time: 9 frames × 150ms = 1.35 seconds"
+      ],
+      "validation_criteria": [
+        "Frame calculation produces integers 0-8",
+        "Timing aligns with 150ms per frame requirement",
+        "Works with existing vim.loop.now() approach",
+        "No floating point precision issues"
+      ],
+      "metadata": {
+        "formula": "local frame = math.floor((vim.loop.now() or 0) / 150) % 9",
+        "timing_comparison": {
+          "current_lsp": "200ms (1.8s full cycle)",
+          "new_wave": "150ms (1.35s full cycle)",
+          "speedup": "25% faster"
+        }
+      }
+    },
+    {
+      "task_id": "D3",
+      "type": "design",
+      "description": "Design implementation strategy to isolate wave animation to LSP state only",
+      "assigned_agent": "architecture_design_agent",
+      "tools": ["read"],
+      "priority": "medium",
+      "estimated_effort": "10 minutes",
+      "dependencies": ["R3", "R4"],
+      "execution_order": 3,
+      "deliverables": [
+        "Architectural decision: Add self.wave_pattern field vs separate provider logic",
+        "Implementation approach: Conditional in provider function",
+        "Strategy to preserve existing states (IDLE, MODIFIED, SEARCH, DIAGNOSTIC)",
+        "Testing approach to ensure no regression"
+      ],
+      "validation_criteria": [
+        "Wave animation only affects LSP_PROGRESS state",
+        "Other states continue using block-based display (▓░)",
+        "No changes to colors, labels, or brackets for LSP state",
+        "Minimal code changes (follow user preference for clean code)"
+      ],
+      "metadata": {
+        "implementation_approach": "Add conditional in provider function: if self.state == 'LSP_PROGRESS' and self.wave_pattern then return wave, else return blocks",
+        "code_locations": [
+          "Init function lines 74-88: Add self.wave_pattern assignment",
+          "Provider function lines 134-137: Add conditional check"
+        ]
+      }
+    },
+    {
+      "task_id": "I1",
+      "type": "implementation",
+      "description": "Create static wave patterns table in NixieProgressBar component",
+      "assigned_agent": "lua_developer_agent",
+      "tools": ["read", "edit"],
+      "priority": "high",
+      "estimated_effort": "10 minutes",
+      "dependencies": ["D1", "D2", "D3"],
+      "execution_order": 4,
+      "deliverables": [
+        "Add wave_patterns table to NixieProgressBar.static",
+        "9 pattern strings with verified Unicode characters",
+        "Comment explaining pattern progression"
+      ],
+      "validation_criteria": [
+        "Table is in static scope for performance (no recomputation)",
+        "Each pattern is exactly 8 characters",
+        "Patterns use ⎯ and ⎺ characters correctly",
+        "Code follows existing formatting style"
+      ],
+      "metadata": {
+        "code_location": "statusline.lua lines 36-48 (static table)",
+        "code_structure": "wave_patterns = { [0] = '⎯⎯⎯⎯⎯⎯⎯⎯', [1] = '⎺⎯⎯⎯⎯⎯⎯⎯', ... [8] = '⎯⎯⎯⎯⎯⎺⎺⎺' }"
+      }
+    },
+    {
+      "task_id": "I2",
+      "type": "implementation",
+      "description": "Modify LSP detection logic to calculate wave frame and store pattern",
+      "assigned_agent": "lua_developer_agent",
+      "tools": ["read", "edit"],
+      "priority": "high",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["I1", "D2"],
+      "execution_order": 5,
+      "deliverables": [
+        "Add frame calculation in LSP_PROGRESS branch (lines 74-88)",
+        "Store frame index and wave pattern in self.wave_pattern",
+        "Preserve existing self.state, self.color, self.label assignments",
+        "Add inline comment explaining 150ms timing"
+      ],
+      "validation_criteria": [
+        "Frame calculation: math.floor((vim.loop.now() or 0) / 150) % 9",
+        "self.wave_pattern = self.wave_patterns[frame]",
+        "No changes to other state variables",
+        "Code compiles without errors"
+      ],
+      "metadata": {
+        "code_location": "statusline.lua lines 74-88 (LSP progress detection)",
+        "existing_code": "local time = (vim.loop.now() or 0) / 200; local frame = math.floor(time) % 9; self.segments = frame + 1",
+        "new_code": "local frame = math.floor((vim.loop.now() or 0) / 150) % 9; self.wave_pattern = self.wave_patterns[frame]"
+      }
+    },
+    {
+      "task_id": "I3",
+      "type": "implementation",
+      "description": "Update provider function to use wave pattern for LSP_PROGRESS state",
+      "assigned_agent": "lua_developer_agent",
+      "tools": ["read", "edit"],
+      "priority": "high",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["I2"],
+      "execution_order": 6,
+      "deliverables": [
+        "Add conditional check for LSP_PROGRESS with wave_pattern",
+        "Return wave display: '┣' .. self.wave_pattern .. '┫' .. self.label .. ' '",
+        "Preserve existing block-based display for other states",
+        "Ensure no breaking changes to provider signature"
+      ],
+      "validation_criteria": [
+        "Conditional: if self.state == 'LSP_PROGRESS' and self.wave_pattern then",
+        "Wave display preserves brackets ┣┫ and ' LSP' label",
+        "Other states still use filled/empty block logic",
+        "Provider function remains pure (no side effects)"
+      ],
+      "metadata": {
+        "code_location": "statusline.lua lines 134-137 (provider function)",
+        "existing_logic": "local filled = string.rep('▓', self.segments); local empty = string.rep('░', 9 - self.segments); return '┣' .. filled .. empty .. '┫' .. self.label .. ' '",
+        "new_logic": "if self.state == 'LSP_PROGRESS' and self.wave_pattern then return '┣' .. self.wave_pattern .. '┫' .. self.label .. ' ' end; -- else existing logic"
+      }
+    },
+    {
+      "task_id": "T1",
+      "type": "testing",
+      "description": "Test LSP progress detection and wave animation trigger",
+      "assigned_agent": "qa_testing_agent",
+      "tools": ["bash"],
+      "priority": "high",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["I3"],
+      "execution_order": 7,
+      "deliverables": [
+        "Test command to trigger LSP activity",
+        "Verification that wave animation appears in statusline",
+        "Confirmation of 150ms frame rate (9 frames in ~1.35s)",
+        "Screenshot or recording of animation"
+      ],
+      "validation_criteria": [
+        "LSP state is detected when running :LspRestart or formatting",
+        "Wave pattern appears in statusline with ┣┫ brackets",
+        "Animation travels left to right continuously",
+        "Color is purple #bb00ff",
+        "Label shows ' LSP' suffix"
+      ],
+      "metadata": {
+        "test_commands": [
+          ":lua vim.print(vim.lsp.get_clients()[1].progress.pending)",
+          ":LspRestart",
+          ":w (save file to trigger LSP activity)",
+          "Run formatter or code action"
+        ],
+        "observation_points": [
+          "Animation speed feels fast but not too fast",
+          "Wave completes full cycle in ~1.35 seconds",
+          "Pattern is smooth and readable"
+        ]
+      }
+    },
+    {
+      "task_id": "T2",
+      "type": "testing",
+      "description": "Test all other states (IDLE, MODIFIED, SEARCH, DIAGNOSTIC) for regressions",
+      "assigned_agent": "qa_testing_agent",
+      "tools": ["bash"],
+      "priority": "high",
+      "estimated_effort": "20 minutes",
+      "dependencies": ["T1"],
+      "execution_order": 8,
+      "deliverables": [
+        "Verification that IDLE state shows breathing animation (unchanged)",
+        "Verification that MODIFIED state shows pulse animation (unchanged)",
+        "Verification that SEARCH state shows search progress (unchanged)",
+        "Verification that DIAGNOSTIC state shows error/warning pulse (unchanged)",
+        "Confirmation that all states still use ▓░ blocks"
+      ],
+      "validation_criteria": [
+        "IDLE: Gentle breathing with Comment color, no label",
+        "MODIFIED: Orange pulse with ' *' label",
+        "SEARCH: Green with ' X/Y' label",
+        "DIAGNOSTIC: Red/Yellow with ' E# W#' label",
+        "No visual glitches or nil errors"
+      ],
+      "metadata": {
+        "test_scenarios": {
+          "IDLE": "Open new buffer, observe breathing animation",
+          "MODIFIED": "Make edit, observe orange pulse",
+          "SEARCH": "Search with / command, observe search progress",
+          "DIAGNOSTIC": "Create syntax error, observe red pulse"
+        }
+      }
+    },
+    {
+      "task_id": "T3",
+      "type": "testing",
+      "description": "Test Unicode character rendering across different terminals and fonts",
+      "assigned_agent": "compatibility_testing_agent",
+      "tools": ["bash"],
+      "priority": "medium",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["T1"],
+      "execution_order": 8,
+      "deliverables": [
+        "Test rendering in user's primary terminal (likely WezTerm based on config)",
+        "Test in alternative terminals if available (kitty, alacritty, gnome-terminal)",
+        "Verify characters don't render as boxes or missing glyphs",
+        "Document any fallback needed for specific terminals"
+      ],
+      "validation_criteria": [
+        "⎯ (U+23AF) renders as flat horizontal line",
+        "⎺ (U+23BA) renders as raised horizontal line",
+        "Characters are visually distinct",
+        "No mojibake or encoding issues"
+      ],
+      "metadata": {
+        "terminals_to_test": ["WezTerm", "Kitty", "Alacritty"],
+        "fonts_to_verify": ["Nerd Fonts (required)", "JetBrains Mono", "Fira Code"]
+      }
+    },
+    {
+      "task_id": "T4",
+      "type": "testing",
+      "description": "Performance benchmarking: measure statusline redraw time and CPU impact",
+      "assigned_agent": "performance_testing_agent",
+      "tools": ["bash"],
+      "priority": "medium",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["T1", "T2"],
+      "execution_order": 9,
+      "deliverables": [
+        "Benchmark current 200ms timer vs proposed implementation",
+        "Measure provider function execution time",
+        "Check CPU usage during animation",
+        "Verify no lag or stuttering in normal editing"
+      ],
+      "validation_criteria": [
+        "Provider function executes in <1ms",
+        "No noticeable performance degradation",
+        "Animation doesn't interfere with typing or scrolling",
+        "CPU usage remains reasonable (<5% for statusline)"
+      ],
+      "metadata": {
+        "benchmark_commands": [
+          ":lua vim.loop.hrtime() -- before/after timing",
+          ":profile start profile.log",
+          ":profile func *",
+          "Monitor with htop during extended editing session"
+        ]
+      }
+    },
+    {
+      "task_id": "D4",
+      "type": "decision",
+      "description": "Decide whether to update global timer from 200ms to 150ms or keep local calculation",
+      "assigned_agent": "architecture_decision_agent",
+      "tools": ["read"],
+      "priority": "medium",
+      "estimated_effort": "10 minutes",
+      "dependencies": ["R3", "D2", "T4"],
+      "execution_order": 9,
+      "deliverables": [
+        "Decision document with pros/cons of each approach",
+        "Recommendation: Keep 200ms global timer and use 150ms in LSP calculation only",
+        "Rationale: Other animations (IDLE breathing, MODIFIED pulse) are tuned for 200ms",
+        "Alternative: If user prefers global change, document impact on all animations"
+      ],
+      "validation_criteria": [
+        "Decision is based on performance data from T4",
+        "Considers user preference for minimal changes",
+        "Evaluates impact on all statusline animations",
+        "Clear rationale provided"
+      ],
+      "metadata": {
+        "options": {
+          "A": "Keep 200ms global timer, use local 150ms calculation in LSP logic only",
+          "B": "Update global timer to 150ms, adjust all animation timings proportionally"
+        },
+        "recommendation": "Option A - minimal changes, no impact on existing animations",
+        "rationale": "LSP wave uses vim.loop.now() / 150 directly, independent of global timer frequency"
+      }
+    },
+    {
+      "task_id": "DOC1",
+      "type": "documentation",
+      "description": "Document wave animation implementation with inline comments",
+      "assigned_agent": "documentation_agent",
+      "tools": ["edit"],
+      "priority": "low",
+      "estimated_effort": "10 minutes",
+      "dependencies": ["I3", "T2"],
+      "execution_order": 10,
+      "deliverables": [
+        "Add comment block above wave_patterns table explaining design",
+        "Inline comment in LSP detection explaining 150ms timing",
+        "Comment in provider explaining conditional logic",
+        "Update any existing documentation references"
+      ],
+      "validation_criteria": [
+        "Comments explain WHY not just WHAT",
+        "Clear explanation of wave pattern progression",
+        "150ms timing rationale documented",
+        "Comments follow project style (from AGENTS.md)"
+      ],
+      "metadata": {
+        "comment_locations": [
+          "static.wave_patterns (before table definition)",
+          "LSP_PROGRESS branch (before frame calculation)",
+          "provider function (before conditional)"
+        ]
+      }
+    },
+    {
+      "task_id": "DOC2",
+      "type": "documentation",
+      "description": "Create implementation summary and update NIXIE_STATUSLINE_PLAN.md",
+      "assigned_agent": "documentation_agent",
+      "tools": ["read", "write"],
+      "priority": "low",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["DOC1", "T4"],
+      "execution_order": 11,
+      "deliverables": [
+        "Summary of changes made to statusline.lua",
+        "Before/after comparison of LSP animation",
+        "Performance impact notes",
+        "Update NIXIE_STATUSLINE_PLAN.md with wave animation details"
+      ],
+      "validation_criteria": [
+        "Comprehensive change summary",
+        "Clear visual examples of animation",
+        "Accurate performance metrics included",
+        "Future maintainers can understand implementation"
+      ],
+      "metadata": {
+        "files_to_update": [
+          "NIXIE_STATUSLINE_PLAN.md",
+          ".serena/memories/neovim-heirline-statusline-analysis.md"
+        ]
+      }
+    },
+    {
+      "task_id": "V1",
+      "type": "validation",
+      "description": "Final integration testing with real-world LSP workflows",
+      "assigned_agent": "qa_validation_agent",
+      "tools": ["bash"],
+      "priority": "high",
+      "estimated_effort": "20 minutes",
+      "dependencies": ["T1", "T2", "T3", "DOC1"],
+      "execution_order": 12,
+      "deliverables": [
+        "Test with multiple LSP servers (lua_ls, tsserver, rust-analyzer)",
+        "Test rapid LSP state changes (formatting, code actions, diagnostics)",
+        "Verify animation during long LSP operations (project-wide actions)",
+        "Confirm no race conditions or state pollution"
+      ],
+      "validation_criteria": [
+        "Wave animation appears consistently for LSP activity",
+        "No flickering or visual glitches",
+        "Smooth transitions between states",
+        "No errors in :messages or logs"
+      ],
+      "metadata": {
+        "test_workflows": [
+          "Format large file with LSP formatter",
+          "Run code action with multiple options",
+          "Trigger workspace diagnostics",
+          "Restart LSP server mid-editing"
+        ]
+      }
+    },
+    {
+      "task_id": "V2",
+      "type": "validation",
+      "description": "Create rollback plan and backup current configuration",
+      "assigned_agent": "devops_agent",
+      "tools": ["bash"],
+      "priority": "medium",
+      "estimated_effort": "10 minutes",
+      "dependencies": [],
+      "execution_order": 1,
+      "deliverables": [
+        "Backup copy of statusline.lua (timestamped)",
+        "Git commit with clear message",
+        "Rollback instructions if issues arise",
+        "Recovery procedure documentation"
+      ],
+      "validation_criteria": [
+        "Backup created before any changes",
+        "Git history shows clear commit message",
+        "Rollback steps are tested and documented",
+        "User can revert quickly if needed"
+      ],
+      "metadata": {
+        "backup_command": "cp lua/custom/heirline/statusline.lua lua/custom/heirline/statusline.lua.backup-$(date +%Y%m%d-%H%M%S)",
+        "rollback_steps": [
+          "git checkout HEAD -- lua/custom/heirline/statusline.lua",
+          "OR cp statusline.lua.backup-TIMESTAMP statusline.lua",
+          "Restart Neovim"
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {"from": "R2", "to": "D1"},
+    {"from": "R1", "to": "D2"},
+    {"from": "R3", "to": "D2"},
+    {"from": "D1", "to": "D2"},
+    {"from": "R3", "to": "D3"},
+    {"from": "R4", "to": "D3"},
+    {"from": "D1", "to": "I1"},
+    {"from": "D2", "to": "I1"},
+    {"from": "D3", "to": "I1"},
+    {"from": "I1", "to": "I2"},
+    {"from": "D2", "to": "I2"},
+    {"from": "I2", "to": "I3"},
+    {"from": "I3", "to": "T1"},
+    {"from": "T1", "to": "T2"},
+    {"from": "T1", "to": "T3"},
+    {"from": "T1", "to": "T4"},
+    {"from": "T2", "to": "T4"},
+    {"from": "R3", "to": "D4"},
+    {"from": "D2", "to": "D4"},
+    {"from": "T4", "to": "D4"},
+    {"from": "I3", "to": "DOC1"},
+    {"from": "T2", "to": "DOC1"},
+    {"from": "DOC1", "to": "DOC2"},
+    {"from": "T4", "to": "DOC2"},
+    {"from": "T1", "to": "V1"},
+    {"from": "T2", "to": "V1"},
+    {"from": "T3", "to": "V1"},
+    {"from": "DOC1", "to": "V1"}
+  ],
+  "execution_summary": {
+    "total_tasks": 18,
+    "parallel_tasks": 5,
+    "sequential_phases": 12,
+    "estimated_total_time": "3-4 hours",
+    "critical_path": ["R1", "D2", "I1", "I2", "I3", "T1", "T2", "DOC1", "V1"],
+    "high_priority_count": 10,
+    "medium_priority_count": 6,
+    "low_priority_count": 2
+  },
+  "agent_assignments": {
+    "documentation_research_agent": ["R1"],
+    "terminal_testing_agent": ["R2"],
+    "code_analysis_agent": ["R3"],
+    "code_review_agent": ["R4"],
+    "algorithm_design_agent": ["D1", "D2"],
+    "architecture_design_agent": ["D3"],
+    "architecture_decision_agent": ["D4"],
+    "lua_developer_agent": ["I1", "I2", "I3"],
+    "qa_testing_agent": ["T1", "T2"],
+    "compatibility_testing_agent": ["T3"],
+    "performance_testing_agent": ["T4"],
+    "documentation_agent": ["DOC1", "DOC2"],
+    "qa_validation_agent": ["V1"],
+    "devops_agent": ["V2"]
+  },
+  "risk_mitigation": {
+    "risks": [
+      {
+        "risk": "Unicode characters don't render in user's terminal",
+        "probability": "low",
+        "impact": "high",
+        "mitigation": "R2 tests rendering early; fallback characters documented in D1",
+        "contingency": "Use ASCII fallback: - and = characters"
+      },
+      {
+        "risk": "Performance degradation from 150ms timing",
+        "probability": "medium",
+        "impact": "medium",
+        "mitigation": "T4 benchmarks performance; D4 provides decision framework",
+        "contingency": "Keep 200ms timing, adjust animation to compensate"
+      },
+      {
+        "risk": "Wave animation interferes with other states",
+        "probability": "low",
+        "impact": "high",
+        "mitigation": "T2 comprehensively tests all states; D3 ensures isolation",
+        "contingency": "Revert changes using V2 rollback plan"
+      },
+      {
+        "risk": "LSP progress detection is unreliable",
+        "probability": "low",
+        "impact": "medium",
+        "mitigation": "R3 analyzes detection logic; V1 tests multiple LSP servers",
+        "contingency": "Add additional LSP event triggers or fallback to block animation"
+      },
+      {
+        "risk": "Existing bugs in NixieProgressBar cause issues",
+        "probability": "medium",
+        "impact": "medium",
+        "mitigation": "R4 reviews bugs; implementation avoids touching bug-prone areas",
+        "contingency": "Fix bugs before implementing wave animation (separate task)"
+      }
+    ]
+  },
+  "success_criteria_summary": [
+    "LSP state shows smooth traveling wave animation with ⎯⎺ characters",
+    "Animation completes left-to-right in ~1.35 seconds (9 frames × 150ms)",
+    "Wave pattern travels continuously without rest periods",
+    "All other states (IDLE, MODIFIED, SEARCH, DIAGNOSTIC) work unchanged",
+    "No performance degradation or visual glitches in any terminal",
+    "Unicode characters render correctly with no missing glyphs",
+    "Purple color #bb00ff and ' LSP' label preserved",
+    "┣┫ brackets preserved in wave display",
+    "Code is well-documented with inline comments",
+    "Rollback plan exists and is tested"
+  ],
+  "notes": {
+    "user_preferences": [
+      "Fast animation (150ms per frame)",
+      "LSP-exclusive scope (no other states affected)",
+      "Preserve existing design choices (brackets, label, color)",
+      "Clean code with minimal changes",
+      "Performance-first approach"
+    ],
+    "technical_constraints": [
+      "Heirline component architecture requires provider to return string",
+      "vim.loop.now() provides millisecond precision for timing",
+      "Update events trigger component re-evaluation",
+      "Static tables are cached for performance",
+      "Unicode support depends on terminal font (Nerd Fonts required)"
+    ],
+    "implementation_philosophy": [
+      "Isolate changes to minimize risk",
+      "Test early and often (R2 tests rendering before design)",
+      "Document decisions and rationale",
+      "Preserve existing working code",
+      "Follow project conventions from AGENTS.md"
+    ]
+  }
+}

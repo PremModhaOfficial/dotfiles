@@ -23,7 +23,7 @@ function ColorschemeWithTransprancy(color, transparentByDefault, callback)
 		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
 	end
 	if not transparentByDefault then
-		return makeNone
+		return makeNone()
 	end
 end
 
@@ -160,6 +160,10 @@ vim.opt.mouse = "a"
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Disable built-in ruler and showcmd to prevent conflicts with Heirline
+vim.opt.ruler = false
+vim.opt.showcmd = false
+
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
@@ -215,7 +219,7 @@ vim.opt.scrolloff = 3
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set("n", "<leader>fs", "<cmd>:w<CR>")
+-- vim.keymap.set("n", "<leader>fs", "<cmd>:w<CR>")
 vim.keymap.set("n", "<M-1>", "<cmd>Exp<CR>")
 
 -- Diagnostic keymaps
@@ -570,12 +574,12 @@ vim.opt.termguicolors = true
 -- ColorschemeWithTransprancy("catppuccin", false)
 -- ("aurora", false)
 -- ("material", false)
-vim.cmd.colorscheme("fluoromachine")
 
--- local resetColors = ColorschemeWithTransprancy("tokyodark", false)
--- vim.keymap.set("n", "<leader>cd", function()
--- 	resetColors()
--- end)
+-- NOTE: color schemes
+local resetColors = ColorschemeWithTransprancy("fluoromachine", false)
+vim.keymap.set("n", "<leader>cd", function()
+	resetColors()
+end)
 
 -- ("randomhue", true)
 -- ColorschemeWithTransprancy("gruvbox", false)

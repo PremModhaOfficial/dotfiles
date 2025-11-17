@@ -9,8 +9,8 @@ return {
 		fm.setup({
 			theme = "retrowave",
 			glow = false,
-			transparent = false,
-			brightness = 0.0,
+			transparent = true,
+			brightness = 100.0,
 			true_colors = true,
 			styles = {
 				comments = { italic = true },
