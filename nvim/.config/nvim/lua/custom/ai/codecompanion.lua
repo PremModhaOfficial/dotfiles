@@ -111,6 +111,9 @@ return {
 		},
 	},
 	init = function()
+		-- Disable blink.cmp integration to prevent module loading errors
+		vim.g.codecompanion_disable_blink = true
+
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = "codecompanion",
 			callback = function()

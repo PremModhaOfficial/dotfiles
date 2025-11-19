@@ -3,6 +3,7 @@ return {
 	config = function()
 		vim.g.material_style = "palenight"
 		require("material").setup({
+			-- Contrast settings
 			contrast = {
 				terminal = true, -- Enable contrast for the built-in terminal
 				sidebars = true, -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
@@ -13,6 +14,7 @@ return {
 				filetypes = {}, -- Specify which filetypes get the contrasted (darker) background
 			},
 
+			-- Style settings
 			styles = { -- Give comments style such as bold, italic, underline etc.
 				comments = { --[[ italic = true ]]
 				},
@@ -27,6 +29,7 @@ return {
 				types = {},
 			},
 
+			-- Plugin highlights
 			plugins = { -- Uncomment the plugins that you use to highlight them
 				-- Available plugins:
 				"blink",
@@ -42,10 +45,10 @@ return {
 				-- "hop",
 				-- "illuminate",
 				-- "indent-blankline",
-				"lspsaga",
+				-- "lspsaga",
 				"mini",
 				-- "neo-tree",
-				"neogit",
+				-- "neogit",
 				-- "neorg",
 				-- "neotest",
 				"noice",
@@ -57,10 +60,11 @@ return {
 				"rainbow-delimiters",
 				-- "sneak",
 				-- "telescope",
-				"trouble",
+				-- "trouble",
 				"which-key",
 			},
 
+			-- Disable settings
 			disable = {
 				colored_cursor = false, -- Disable the colored cursor
 				borders = false, -- Disable borders between vertically split windows
@@ -69,17 +73,22 @@ return {
 				eob_lines = false, -- Hide the end-of-buffer lines
 			},
 
+			-- High visibility settings
 			high_visibility = {
 				lighter = false, -- Enable higher contrast text for lighter style
 				darker = true, -- Enable higher contrast text for darker style
 			},
 
+			-- Lualine style
 			lualine_style = "stealth", -- Lualine style ( can be 'stealth' or 'default' )
 
+			-- Async loading
 			async_loading = true, -- Load parts of the theme asynchronously for faster startup (turned on by default)
 
+			-- Custom colors
 			custom_colors = nil, -- If you want to override the default colors, set this to a function
 
+			-- Custom highlights
 			custom_highlights = {}, -- Overwrite highlights with your own
 		})
 	end,

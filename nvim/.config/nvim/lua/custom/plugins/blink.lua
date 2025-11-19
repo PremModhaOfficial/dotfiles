@@ -117,6 +117,7 @@ return { -- Autocompletion
 			default = { "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
 				lua = { "lsp", "path", "snippets", "buffer", "lazydev" },
+				-- codecompanion = { "codecompanion" },
 			},
 			providers = {
 				lsp = {
@@ -152,12 +153,11 @@ return { -- Autocompletion
 					score_offset = 10,
 					async = true,
 				},
-				codecompanion = {
-					name = "CodeCompanion",
-					module = "blink-cmp-codecompanion",
-					score_offset = 9,
-					async = true,
-				},
+				-- codecompanion = {
+				-- 	name = "CodeCompanion",
+				-- 	module = "codecompanion.integrations.blink",
+				-- 	enabled = true,
+				-- },
 				copilot = {
 					name = "Copilot",
 					module = "blink-cmp-copilot",
@@ -239,19 +239,19 @@ return { -- Autocompletion
 			["<C-a>"] = {
 				function()
 					require("blink.cmp").show({
-						providers = { "avante", "codecompanion", "copilot" },
+						providers = { "avante", "copilot" },
 					})
 				end,
 				"fallback",
 			},
-			["<C-g>"] = {
-				function()
-					require("blink.cmp").show({
-						providers = { "codecompanion" },
-					})
-				end,
-				"fallback",
-			},
+			-- ["<C-g>"] = {
+			-- 	function()
+			-- 		require("blink.cmp").show({
+			-- 			providers = { "codecompanion" },
+			-- 		})
+			-- 	end,
+			-- 	"fallback",
+			-- },
 		},
 
 		completion = {
