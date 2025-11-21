@@ -27,12 +27,12 @@ config.keys = {
 }
 config.font_size = 18
 config.window_padding = {
-	left = 2,
-	right = 1,
-	top = 1,
-	bottom = 1,
+	left = 5,
+	right = 5,
+	top = 5,
+	bottom = 5,
 }
-config.window_background_opacity = 0.49
+config.window_background_opacity = 0.79
 -- config.dpi = 192
 config.adjust_window_size_when_changing_font_size = false
 

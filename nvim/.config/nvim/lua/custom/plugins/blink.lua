@@ -4,42 +4,35 @@ return { -- Autocompletion
 	event = "InsertEnter",
 	dependencies = {
 		"Kaiser-Yang/blink-cmp-avante",
-		"kristijanhusak/vim-dadbod-completion", --dada bot
+		"kristijanhusak/vim-dadbod-completion", -- dada bot
 		{
 			"xzbdmw/colorful-menu.nvim",
 			config = function()
-				require("colorful-menu").setup({})
+				require("colorful-menu").setup({
+					max_width = 60,
+				})
 			end,
 		},
-
 		{
 			"saghen/blink.compat",
-			---@module 'blink.compat'
-			---@type blink.compat.Config
-			opts = {
-				debug = true,
-			},
+			opts = { debug = true },
 		},
 		{
 			"folke/lazydev.nvim",
-			ft = "lua", -- only load on lua files
+			ft = "lua",
 			opts = {
 				library = {
-					-- See the configuration section for more details
-					-- Load luvit types when the `vim.uv` word is found
 					{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
 				},
 			},
 		},
 		{
 			"L3MON4D3/LuaSnip",
-			dependencies = {
-				"rafamadriz/friendly-snippets",
-			},
+			dependencies = { "rafamadriz/friendly-snippets" },
 			version = "v2.*",
 			build = "make install_jsregexp",
 			config = function()
-				_ = require("luasnip.loaders.from_vscode").lazy_load()
+				require("luasnip.loaders.from_vscode").lazy_load()
 			end,
 		},
 		"zbirenbaum/copilot-cmp",
@@ -50,46 +43,6 @@ return { -- Autocompletion
 
 	config = function(_, opts)
 		require("blink.cmp").setup(opts)
-
-		-- Optimized highlight groups - reduced from 25+ to 8 essential groups
-		local highlights = {
-			-- Core completion kinds
-			BlinkCmpKindText = { fg = "#a8c5f0", bg = "NONE" },
-			BlinkCmpKindMethod = { fg = "#85d3f2", bg = "NONE" },
-			BlinkCmpKindFunction = { fg = "#85d3f2", bg = "NONE" },
-			BlinkCmpKindConstructor = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindField = { fg = "#c49ec4", bg = "NONE" },
-			BlinkCmpKindVariable = { fg = "#dfb3e6", bg = "NONE" },
-			BlinkCmpKindClass = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindInterface = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindModule = { fg = "#a8c5f0", bg = "NONE" },
-			BlinkCmpKindProperty = { fg = "#c49ec4", bg = "NONE" },
-			BlinkCmpKindUnit = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindValue = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindEnum = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindKeyword = { fg = "#dfafdf", bg = "NONE" },
-			BlinkCmpKindSnippet = { fg = "#7ee787", bg = "NONE" },
-			BlinkCmpKindColor = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindFile = { fg = "#a8c5f0", bg = "NONE" },
-			BlinkCmpKindReference = { fg = "#c49ec4", bg = "NONE" },
-			BlinkCmpKindFolder = { fg = "#a8c5f0", bg = "NONE" },
-			BlinkCmpKindEnumMember = { fg = "#85d3f2", bg = "NONE" },
-			BlinkCmpKindConstant = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindStruct = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindEvent = { fg = "#c49ec4", bg = "NONE" },
-			BlinkCmpKindOperator = { fg = "#85d3f2", bg = "NONE" },
-			BlinkCmpKindTypeParameter = { fg = "#f19c65", bg = "NONE" },
-
-			-- AI provider highlights
-			BlinkCmpKindCopilot = { fg = "#6cc644", bg = "NONE" },
-			BlinkCmpKindCodeCompanion = { fg = "#f19c65", bg = "NONE" },
-			BlinkCmpKindAvante = { fg = "#85d3f2", bg = "NONE" },
-		}
-
-		-- Apply highlights efficiently
-		for hl_group, hl_config in pairs(highlights) do
-			vim.api.nvim_set_hl(0, hl_group, hl_config)
-		end
 	end,
 
 	---@module 'blink.cmp'
@@ -117,7 +70,6 @@ return { -- Autocompletion
 			default = { "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
 				lua = { "lsp", "path", "snippets", "buffer", "lazydev" },
-				-- codecompanion = { "codecompanion" },
 			},
 			providers = {
 				lsp = {
@@ -146,18 +98,12 @@ return { -- Autocompletion
 					module = "lazydev.integrations.blink",
 					score_offset = 100, -- show at a higher priority than lsp
 				},
-				-- AI providers with optimized scoring
 				avante = {
 					name = "Avante",
 					module = "blink-cmp-avante",
 					score_offset = 10,
 					async = true,
 				},
-				-- codecompanion = {
-				-- 	name = "CodeCompanion",
-				-- 	module = "codecompanion.integrations.blink",
-				-- 	enabled = true,
-				-- },
 				copilot = {
 					name = "Copilot",
 					module = "blink-cmp-copilot",
@@ -235,7 +181,6 @@ return { -- Autocompletion
 			},
 			["<S-C-l>"] = { "snippet_backward", "fallback" },
 
-			-- AI provider shortcuts
 			["<C-a>"] = {
 				function()
 					require("blink.cmp").show({
@@ -244,14 +189,6 @@ return { -- Autocompletion
 				end,
 				"fallback",
 			},
-			-- ["<C-g>"] = {
-			-- 	function()
-			-- 		require("blink.cmp").show({
-			-- 			providers = { "codecompanion" },
-			-- 		})
-			-- 	end,
-			-- 	"fallback",
-			-- },
 		},
 
 		completion = {
@@ -265,7 +202,6 @@ return { -- Autocompletion
 				create_undo_point = true,
 			},
 			menu = {
-				enabled = true,
 				border = "rounded",
 				scrolloff = 2,
 				scrollbar = true,
@@ -274,28 +210,24 @@ return { -- Autocompletion
 					if ctx.mode == "cmdline" then
 						return false
 					end
-
-					-- Always show in AI plugin buffers
 					local ai_filetypes = { "codecompanion", "Avante" }
 					for _, ft in ipairs(ai_filetypes) do
 						if vim.bo.filetype == ft then
 							return true
 						end
 					end
-
 					return ctx.mode ~= "cmdline"
 				end,
 				draw = {
-					align_to = "label",
-					padding = 1,
-					gap = 1,
-					treesitter = { "lsp", "snippets", "buffer" },
-					columns = {
-						{ "label", "label_description", gap = 1 },
-						{
-							"kind_icon",
-							"kind",
-							gap = 1,
+					columns = { { "kind_icon" }, { "label", gap = 1 } },
+					components = {
+						label = {
+							text = function(ctx)
+								return require("colorful-menu").blink_components_text(ctx)
+							end,
+							highlight = function(ctx)
+								return require("colorful-menu").blink_components_highlight(ctx)
+							end,
 						},
 					},
 				},
