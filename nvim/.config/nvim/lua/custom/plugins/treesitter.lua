@@ -11,7 +11,7 @@ return {
 			},
 		},
 		opts = {
-			ensure_installed = { "bash", "c", "diff", "go", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },
+			ensure_installed = { "bash", "c", "diff", "go", "gomod", "gowork", "gosum", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },
 			-- Autoinstall languages that are not installed
 			auto_install = true,
 			highlight = {
@@ -39,14 +39,17 @@ return {
 				strategy = {
 					[""] = rainbow_delimiters.strategy["global"],
 					vim = rainbow_delimiters.strategy["local"],
+					go = rainbow_delimiters.strategy["global"],
 				},
 				query = {
 					[""] = "rainbow-delimiters",
 					lua = "rainbow-blocks",
+					go = "rainbow-delimiters",
 				},
 				priority = {
 					[""] = 110,
 					lua = 210,
+					go = 110,
 				},
 				highlight = {
 					"RainbowDelimiterRed",

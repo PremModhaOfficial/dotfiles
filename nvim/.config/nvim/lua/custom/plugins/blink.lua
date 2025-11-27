@@ -161,10 +161,10 @@ return { -- Autocompletion
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide" },
 			["<C-y>"] = { "select_and_accept" },
-			["<C-p>"] = { "select_prev", "fallback" },
-			["<C-k>"] = { "select_prev", "fallback" },
-			["<C-n>"] = { "select_next", "fallback" },
-			["<C-j>"] = { "select_next", "fallback" },
+			["<C-p>"] = { "select_prev" },
+			["<C-k>"] = { "select_prev" },
+			["<C-n>"] = { "select_next" },
+			["<C-j>"] = { "select_next" },
 			["<C-b>"] = { "scroll_documentation_up", "fallback" },
 			["<C-f>"] = { "scroll_documentation_down", "fallback" },
 
@@ -192,6 +192,12 @@ return { -- Autocompletion
 		},
 
 		completion = {
+			list = {
+				selection = {
+					auto_insert = false,
+					preselect = false,
+				},
+			},
 			accept = {
 				auto_brackets = {
 					enabled = false, -- Use mini.pairs for bracket handling

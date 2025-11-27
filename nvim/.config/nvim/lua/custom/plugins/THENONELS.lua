@@ -19,10 +19,12 @@ return {
 			-- nls.builtins.formatting.black.with({ extra_args = { "--line-length", "80" }, }),
 			-- nls.builtins.formatting.clang_format,
 			nls.builtins.diagnostics.markdownlint_cli2,
+			-- Go language support
 			nls.builtins.code_actions.gomodifytags,
 			nls.builtins.code_actions.impl,
 			nls.builtins.formatting.goimports,
 			nls.builtins.formatting.gofumpt,
+			nls.builtins.diagnostics.golangci_lint,
 		})
 	end,
 }

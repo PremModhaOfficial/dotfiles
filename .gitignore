@@ -19,3 +19,5 @@ config/tmux/plugins
 nvim/.config/nvim/${OPENCODE_CHROMA_DATA_DIR:-./.mcp/chroma_data}
 nvim/.config/nvim/.serena/memories
 tmux/.config/tmux/plugins
+config/tmux/plugins
+nvim/.context

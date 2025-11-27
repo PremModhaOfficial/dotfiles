@@ -102,7 +102,7 @@ return { -- LSP Configuration & Plugins
 				-- Execute a code action, usually your cursor needs to be on top of an error
 				-- or a suggestion from your LSP for this to activate.
 				map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
-				xXmap("<M-Enter>", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "v" })
+				xXmap("<M-Enter>", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "v", "i" })
 
 				-- Opens a popup that displays documentation about the word under your cursor
 				--  See `:help K` for why this keymap.
@@ -159,7 +159,12 @@ return { -- LSP Configuration & Plugins
 				end
 
 				-- Manual signature help keymap
-				vim.keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, { buffer = event.buf, desc = "LSP: Signature Help" })
+				vim.keymap.set(
+					"i",
+					"<C-s>",
+					vim.lsp.buf.signature_help,
+					{ buffer = event.buf, desc = "LSP: Signature Help" }
+				)
 			end,
 		})
 
@@ -324,6 +329,31 @@ return { -- LSP Configuration & Plugins
 			},
 			-- Additional useful servers
 		}
+
+		-- Workaround for gopls semantic tokens issue
+		-- https://github.com/golang/go/issues/54531#issuecomment-1464982242
+		vim.api.nvim_create_autocmd("LspAttach", {
+			group = vim.api.nvim_create_augroup("gopls-semantic-tokens-workaround", { clear = true }),
+			callback = function(args)
+				local client = vim.lsp.get_client_by_id(args.data.client_id)
+				if client and client.name == "gopls" then
+					if not client.server_capabilities.semanticTokensProvider then
+						local semantic = client.config.capabilities.textDocument.semanticTokens
+						if semantic then
+							client.server_capabilities.semanticTokensProvider = {
+								full = true,
+								legend = {
+									tokenTypes = semantic.tokenTypes,
+									tokenModifiers = semantic.tokenModifiers,
+								},
+								range = true,
+							}
+						end
+					end
+				end
+			end,
+		})
+
 		for server, config in pairs(servers) do
 			-- passing config.capabilities to blink.cmp merges with the capabilities in your
 			-- `opts[server].capabilities, if you've defined it
@@ -385,6 +415,13 @@ return { -- LSP Configuration & Plugins
 			"eslint_d", -- Fast ESLint
 			"shellcheck", -- Shell script linting
 			"shfmt", -- Shell script formatting
+			-- Go development tools
+			"goimports", -- Go import management
+			"gofumpt", -- Stricter Go formatting
+			"gomodifytags", -- Go struct tag generator
+			"impl", -- Go interface implementation generator
+			"golangci-lint", -- Go linter
+			"delve", -- Go debugger
 		})
 		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -402,9 +439,5 @@ return { -- LSP Configuration & Plugins
 				end,
 			},
 		})
-
-
-
-
 	end,
 }
