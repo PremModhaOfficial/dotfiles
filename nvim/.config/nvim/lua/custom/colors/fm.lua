@@ -1,7 +1,7 @@
 return {
 	"maxmx03/fluoromachine.nvim",
 	lazy = false,
-	-- enabled = false,
+	enabled = false,
 	priority = 1000,
 	config = function()
 		local fm = require("fluoromachine")

@@ -576,7 +576,7 @@ vim.opt.termguicolors = true
 -- ("material", false)
 
 -- NOTE: color schemes
-local resetColors = ColorschemeWithTransprancy("fluoromachine", false)
+local resetColors = ColorschemeWithTransprancy("nightfly", false)
 
 vim.keymap.set("n", "<leader>cd", function()
 	resetColors()

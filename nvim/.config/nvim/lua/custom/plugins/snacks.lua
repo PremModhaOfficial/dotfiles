@@ -16,15 +16,7 @@ return {
 		dashboard = {
 			preset = {
 				-- Tech/Cyberpunk Header
-				header = [[
-███╗   ██╗███████╗██╗   ██╗██╗███╗   ███╗
-████╗  ██║██╔════╝██║   ██║██║████╗ ████║
-██╔██╗ ██║█████╗  ██║   ██║██║██╔████╔██║
-██║╚██╗██║██╔══╝  ╚██╗ ██╔╝██║██║╚██╔╝██║
-██║ ╚████║███████╗ ╚████╔╝ ██║██║ ╚═╝ ██║
-╚═╝  ╚═══╝╚══════╝  ╚═══╝  ╚═╝╚═╝     ╚═╝
-   SYSTEM ONLINE // PROTOCOL: OMEGA
-				]],
+				header = vim.fn.system([[curl -s https://png.pngtree.com/png-clipart/20250418/original/pngtree-a-beautifully-detailed-pink-lotus-flower-with-layered-petals-symbolizing-beauty-png-image_20727353.png | chafa --colors=none --size 80x20]]) .. "\n\nSYSTEM ONLINE // PROTOCOL: DHARMA",
 			},
 			sections = {
 				{ section = "header" },
@@ -76,7 +68,6 @@ return {
 			style = "fancy",
 			top_down = false, -- Bottom-up notifications (HUD style)
 			gap = 1,
-			margin = { top = 0, right = 1, bottom = 1 },
 		},
 		
 		quickfile = { enabled = true },
@@ -95,7 +86,6 @@ return {
 		
 		-- PICKER: "SEARCH CONSOLE"
 		picker = {
-			layout = { preset = "ivy" }, -- Bottom drawer console style
 			ui_select = true,
 			win = {
 				input = {
@@ -172,18 +162,14 @@ return {
 		{
 			"<leader><space>",
 			function()
-				Snacks.picker.smart({
-					layout = "ivy", -- Enforce console layout
-				})
+				Snacks.picker.smart()
 			end,
 			desc = "Smart Find Files",
 		},
 		{
 			"<leader>,",
 			function()
-				Snacks.picker.buffers({
-					layout = "ivy",
-				})
+				Snacks.picker.buffers()
 			end,
 			desc = "Buffers",
 		},
@@ -227,9 +213,7 @@ return {
 		{
 			"<leader>ff",
 			function()
-				Snacks.picker.files({
-					layout = "ivy",
-				})
+				Snacks.picker.files()
 			end,
 			desc = "Find Files",
 		},

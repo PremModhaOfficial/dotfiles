@@ -58,7 +58,7 @@ local Core = {
 	hl_cache = {},
 }
 
--- Optimized & Dimmable Highlight Getter
+-- AOD / Wireframe Logic: Swaps FG/BG on idle
 function Core.get_hl(name, attr)
 	local key = name .. "_" .. attr .. (Core.state.is_dimmed and "_dim" or "")
 	if Core.hl_cache[key] then return Core.hl_cache[key] end
@@ -66,9 +66,22 @@ function Core.get_hl(name, attr)
 	local hl = utils.get_highlight(name)
 	local result = hl and hl[attr] or (attr == "fg" and "#ffffff" or "#000000")
 	
-	-- Apply dimming if active
-	if Core.state.is_dimmed and attr == "fg" then
-		result = dim_hex(result, 0.4) -- Dim to 40% brightness
+	-- AOD MODE: Invert colors instead of just dimming
+	if Core.state.is_dimmed then
+		-- In Wireframe mode, usually we want the colored BG to become the colored FG
+		-- and the FG (usually white/black) to become transparent/black.
+		if attr == "fg" then
+			-- If asking for FG, give them the dim version of the original BG (if colorful)
+			local bg_orig = hl and hl.bg
+			if bg_orig and bg_orig ~= "NONE" then
+				result = dim_hex(bg_orig, 0.7) -- Use dimmed BG color as new FG
+			else
+				result = dim_hex(result, 0.5) -- Just dim the existing FG
+			end
+		elseif attr == "bg" then
+			-- If asking for BG, return Normal BG (effectively transparent/black)
+			result = utils.get_highlight("Normal").bg
+		end
 	end
 	
 	Core.hl_cache[key] = result
@@ -347,20 +360,38 @@ end))
 
 local VimMode = {
 	init = function(self) self.mode = Core.state.mode end,
+	-- AOD Logic: When dimmed, replace solid separators with thin lines or spaces
 	{
-		provider = "<|●|>",
-		hl = function(self) return { fg = self.mode.color, bg = Core.get_hl("Normal", "bg"), bold = true } end,
+		provider = function() return Core.state.is_dimmed and " " or "<|●|>" end,
+		hl = function(self) 
+			-- In AOD mode, use the main color as FG, transparent BG
+			local fg = self.mode.color
+			if Core.state.is_dimmed then fg = dim_hex(fg, 0.7) end
+			return { fg = fg, bg = Core.get_hl("Normal", "bg"), bold = true } 
+		end,
 	},
 	{
-		provider = "",
+		provider = function() return Core.state.is_dimmed and " " or "" end,
 		hl = function(self) return { fg = self.mode.color, bg = Core.get_hl("Normal", "bg") } end,
 	},
 	{
-		provider = function(self) return " " .. self.mode.name .. " " end,
-		hl = function(self) return { fg = Core.get_hl("Normal", "bg"), bg = self.mode.color } end,
+		provider = function(self) 
+			if Core.state.is_dimmed then 
+				return " " .. self.mode.name:sub(1,3) .. " " -- Short name in AOD
+			else 
+				return " " .. self.mode.name .. " " 
+			end 
+		end,
+		hl = function(self) 
+			if Core.state.is_dimmed then
+				return { fg = dim_hex(self.mode.color, 0.7), bg = Core.get_hl("Normal", "bg"), bold = true }
+			else
+				return { fg = Core.get_hl("Normal", "bg"), bg = self.mode.color, bold = true }
+			end
+		end,
 	},
 	{
-		provider = "┣",
+		provider = function() return Core.state.is_dimmed and " " or "┣" end,
 		hl = function(self) return { fg = self.mode.color, bg = Core.get_hl("Normal", "bg") } end,
 	},
 }
@@ -373,11 +404,15 @@ local Nixie = {
 		else
 			local filled = string.rep("▓", s.segments)
 			local empty = string.rep("░", 9 - s.segments)
-			return "┣" .. filled .. empty .. "┫" .. s.label .. " "
+			if Core.state.is_dimmed then
+				-- Minimalist Bar in AOD
+				return " " .. string.rep("·", 9) .. " "
+			else
+				return "┣" .. filled .. empty .. "┫" .. s.label .. " "
+			end
 		end
 	end,
 	hl = function()
-		-- Apply dimming manually here since component uses direct hex
 		local c = Core.state.nixie.color
 		if Core.state.is_dimmed then c = dim_hex(c, 0.4) end
 		return { fg = c, bg = Core.get_hl("Normal", "bg") }
@@ -387,7 +422,7 @@ local Nixie = {
 local Git = {
 	condition = function() return Core.state.git.exists end,
 	{
-		provider = function() return "┫  " .. Core.state.git.branch .. " " end,
+		provider = function() return (Core.state.is_dimmed and "   " or "┫  ") .. Core.state.git.branch .. " " end,
 		hl = { fg = Core.get_hl("Comment", "fg") },
 		on_click = { callback = function() Snacks.picker.git_branches() end, name = "sl_git" },
 	},
@@ -412,9 +447,8 @@ local File = {
 	{
 		provider = function(self)
 			local icon, color = require("nvim-web-devicons").get_icon_color(self.filename, self.ft)
-			-- Apply dimming to devicon color
 			if Core.state.is_dimmed and color then color = dim_hex(color, 0.4) end
-			return "┣ " .. (icon or "󰈔") .. " "
+			return (Core.state.is_dimmed and " " or "┣ ") .. (icon or "󰈔") .. " "
 		end,
 		hl = function(self)
 			local _, color = require("nvim-web-devicons").get_icon_color(self.filename, self.ft)
@@ -423,7 +457,7 @@ local File = {
 		end,
 	},
 	{
-		provider = function(self) return self.filename .. " ┫ " end,
+		provider = function(self) return self.filename .. (Core.state.is_dimmed and " " or " ┫ ") end,
 		hl = { fg = Core.get_hl("Directory", "fg"), bg = Core.get_hl("Normal", "bg") },
 	}
 }
@@ -432,11 +466,18 @@ local Ruler = {
 	provider = function()
 		local line = vim.api.nvim_win_get_cursor(0)[1]
 		local total = vim.api.nvim_buf_line_count(0)
-		local ratio = line / total
-		local dial_pos = math.floor(ratio * 8 + 0.5)
-		local left = string.rep("═", dial_pos)
-		local right = string.rep("═", 8 - dial_pos)
-		return string.format("[%d:%d] %s╣%s═", line, total, left, right)
+		
+		if Core.state.is_dimmed then
+			-- AOD: Simple numbers
+			return string.format(" %d:%d ", line, total)
+		else
+			-- Normal: Full Dial
+			local ratio = line / total
+			local dial_pos = math.floor(ratio * 8 + 0.5)
+			local left = string.rep("═", dial_pos)
+			local right = string.rep("═", 8 - dial_pos)
+			return string.format("[%d:%d] %s╣%s═", line, total, left, right)
+		end
 	end,
 	hl = function()
 		local line = vim.api.nvim_win_get_cursor(0)[1]
@@ -456,7 +497,6 @@ local Ruler = {
 	}
 }
 
--- UPDATED: LSP INFO WITH BOOT BARS
 local LspInfo = {
 	condition = function() return Core.state.lsp.active end,
 	provider = function() 
@@ -464,15 +504,14 @@ local LspInfo = {
 		for _, name in ipairs(Core.state.lsp.servers) do
 			local prog = Core.state.lsp.boot[name] or 100
 			if prog < 100 then
-				-- Render Boot Bar
-				local len = math.floor(prog / 20) -- 0 to 5
+				local len = math.floor(prog / 20)
 				local bar = string.rep("▓", len) .. string.rep("░", 5 - len)
 				table.insert(out, "[" .. bar .. "]")
 			else
 				table.insert(out, name)
 			end
 		end
-		return "┣ " .. table.concat(out, "+") .. " ┫ " 
+		return (Core.state.is_dimmed and " " or "┣ ") .. table.concat(out, "+") .. (Core.state.is_dimmed and " " or " ┫ ") 
 	end,
 	hl = function()
 		local c = "#00d7ff"
@@ -484,18 +523,29 @@ local LspInfo = {
 
 local LazyUpdates = {
 	condition = function() return require("lazy.status").has_updates() end,
-	provider = function() return "┣ 󰮯 " .. require("lazy.status").updates() .. " ┫ " end,
+	provider = function() return (Core.state.is_dimmed and " 󰮯 " or "┣ 󰮯 ") .. require("lazy.status").updates() .. (Core.state.is_dimmed and " " or " ┫ ") end,
 	hl = { fg = "#ff00ff", bold = true },
 }
 
 local Harpoon = {
 	condition = function() return Core.state.harpoon.active end,
-	provider = function() return Core.state.harpoon.string end,
+	provider = function() 
+		local s = Core.state.harpoon.string
+		if Core.state.is_dimmed then
+			return s:gsub("┣", " "):gsub("┫", " ")
+		end
+		return s
+	end,
 	hl = function()
 		local c = "#00d7ff"
 		if Core.state.is_dimmed then c = dim_hex(c, 0.4) end
 		return { fg = c, bold = true }
 	end
+}
+
+local SacredSymbols = {
+	provider = " ॐ  卐 ",
+	hl = { fg = "#ffaa00", bold = true },
 }
 
 --------------------------------------------------------------------------------
@@ -509,6 +559,7 @@ local statusline = {
 		return not conditions.buffer_matches({ filetype = self.disabled_ft })
 	end,
 	{
+		SacredSymbols,
 		VimMode,
 		Nixie,
 		Git,

@@ -61,95 +61,95 @@ return { -- Autocompletion
 			use_proximity = true,
 			sorts = function(ctx)
 				local filetype = vim.bo.filetype
-				if filetype == 'lua' then
-					return { 'exact', 'score', 'sort_text' }
-				elseif filetype == 'python' or filetype == 'typescript' or filetype == 'javascript' then
-					return { 'score', 'sort_text', 'label' }
-				elseif filetype == 'sql' then
-					return { 'score', 'kind', 'sort_text' }
+				if filetype == "lua" then
+					return { "exact", "score", "sort_text" }
+				elseif filetype == "python" or filetype == "typescript" or filetype == "javascript" then
+					return { "score", "sort_text", "label" }
+				elseif filetype == "sql" then
+					return { "score", "kind", "sort_text" }
 				else
-					return { 'score', 'sort_text' }
+					return { "score", "sort_text" }
 				end
 			end,
 			prebuilt_binaries = { download = true },
 		},
 
-	sources = {
-		default = { "lsp", "path", "snippets", "buffer" },
-		per_filetype = {
-			lua = { "lsp", "path", "snippets", "buffer", "lazydev", "ripgrep" },
-			python = { "lsp", "path", "snippets", "buffer", "ripgrep" },
-			typescript = { "lsp", "path", "snippets", "buffer", "ripgrep" },
-			javascript = { "lsp", "path", "snippets", "buffer", "ripgrep" },
-			jsx = { "lsp", "path", "snippets", "buffer", "ripgrep" },
-			tsx = { "lsp", "path", "snippets", "buffer", "ripgrep" },
-			sql = { "lsp", "path", "snippets", "buffer", "dadbod" },
-			mysql = { "lsp", "path", "snippets", "buffer", "dadbod" },
-			plsql = { "lsp", "path", "snippets", "buffer", "dadbod" },
-			rust = { "lsp", "path", "snippets", "buffer", "ripgrep" },
-			go = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+		sources = {
+			default = { "lsp", "path", "snippets", "buffer" },
+			per_filetype = {
+				lua = { "lsp", "path", "snippets", "buffer", "lazydev", "ripgrep" },
+				python = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+				typescript = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+				javascript = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+				jsx = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+				tsx = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+				sql = { "lsp", "path", "snippets", "buffer", "dadbod" },
+				mysql = { "lsp", "path", "snippets", "buffer", "dadbod" },
+				plsql = { "lsp", "path", "snippets", "buffer", "dadbod" },
+				rust = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+				go = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+			},
+			providers = {
+				lsp = {
+					name = "LSP",
+					module = "blink.cmp.sources.lsp",
+					score_offset = 99,
+				},
+				path = {
+					name = "Path",
+					module = "blink.cmp.sources.path",
+					score_offset = 3,
+				},
+				snippets = {
+					name = "Snip",
+					module = "blink.cmp.sources.snippets",
+					score_offset = -5,
+				},
+				-- SMART BUFFER: Disabled on large files (>1.5MB)
+				buffer = {
+					name = "Buffer",
+					module = "blink.cmp.sources.buffer",
+					max_items = 3,
+					min_keyword_length = 2,
+					enabled = function()
+						return vim.api.nvim_buf_get_offset(0, vim.api.nvim_buf_line_count(0)) < 1500000
+					end,
+				},
+				lazydev = {
+					name = "Lazy",
+					module = "lazydev.integrations.blink",
+					score_offset = 100,
+				},
+				dadbod = {
+					name = "DB",
+					module = "vim_dadbod_completion.blink",
+					score_offset = 5,
+				},
+				copilot = {
+					name = "AI",
+					module = "blink-cmp-copilot",
+					score_offset = 8,
+					async = true,
+				},
+				codecompanion = {
+					name = "AI",
+					module = "codecompanion.providers.completion.blink",
+					score_offset = 7,
+					async = true,
+					enabled = true,
+				},
+				-- SMART RIPGREP: Disabled on large files
+				ripgrep = {
+					name = "Rg",
+					module = "blink-ripgrep",
+					score_offset = 2,
+					async = true,
+					enabled = function()
+						return vim.api.nvim_buf_get_offset(0, vim.api.nvim_buf_line_count(0)) < 1500000
+					end,
+				},
+			},
 		},
-		providers = {
-			lsp = {
-				name = "LSP",
-				module = "blink.cmp.sources.lsp",
-				score_offset = 99,
-			},
-			path = {
-				name = "Path",
-				module = "blink.cmp.sources.path",
-				score_offset = 3,
-			},
-			snippets = {
-				name = "Snip",
-				module = "blink.cmp.sources.snippets",
-				score_offset = -5,
-			},
-			-- SMART BUFFER: Disabled on large files (>1.5MB)
-			buffer = {
-				name = "Buffer",
-				module = "blink.cmp.sources.buffer",
-				max_items = 3,
-				min_keyword_length = 2,
-				enabled = function()
-					return vim.api.nvim_buf_get_offset(0, vim.api.nvim_buf_line_count(0)) < 1500000
-				end,
-			},
-			lazydev = {
-				name = "Lazy",
-				module = "lazydev.integrations.blink",
-				score_offset = 100,
-			},
-			dadbod = {
-				name = "DB",
-				module = "vim_dadbod_completion.blink",
-				score_offset = 5,
-			},
-			copilot = {
-				name = "AI",
-				module = "blink-cmp-copilot",
-				score_offset = 8,
-				async = true,
-			},
-			codecompanion = {
-				name = "AI",
-				module = "codecompanion.providers.completion.blink",
-				score_offset = 7,
-				async = true,
-				enabled = true,
-			},
-			-- SMART RIPGREP: Disabled on large files
-			ripgrep = {
-				name = "Rg",
-				module = "blink-ripgrep",
-				score_offset = 2,
-				async = true,
-				enabled = function()
-					return vim.api.nvim_buf_get_offset(0, vim.api.nvim_buf_line_count(0)) < 1500000
-				end,
-			},
-		},
-	},
 
 		cmdline = {
 			enabled = true,
@@ -166,11 +166,19 @@ return { -- Autocompletion
 			},
 			sources = function()
 				local type = vim.fn.getcmdtype()
-				if type == "/" or type == "?" then return { "buffer" } end
+				if type == "/" or type == "?" then
+					return { "buffer" }
+				end
 				if type == ":" then
 					local cmdline = vim.fn.getcmdline()
-					if cmdline:match("^%s*[vg]rep") then return { "buffer" } else return { "cmdline" } end
-				elseif type == "@" then return { "cmdline" } end
+					if cmdline:match("^%s*[vg]rep") then
+						return { "buffer" }
+					else
+						return { "cmdline" }
+					end
+				elseif type == "@" then
+					return { "cmdline" }
+				end
 				return {}
 			end,
 			completion = {
@@ -195,11 +203,15 @@ return { -- Autocompletion
 			["<C-l>"] = { "snippet_forward", "fallback" },
 			["<S-C-l>"] = { "snippet_backward", "fallback" },
 			["<M-c>"] = {
-				function() require("blink.cmp").show({ providers = { "copilot" } }) end,
+				function()
+					require("blink.cmp").show({ providers = { "copilot" } })
+				end,
 				"fallback",
 			},
 			["<M-n>"] = {
-				function() require("blink.cmp").show({ providers = { "codecompanion" } }) end,
+				function()
+					require("blink.cmp").show({ providers = { "codecompanion" } })
+				end,
 				"fallback",
 			},
 		},
@@ -213,7 +225,7 @@ return { -- Autocompletion
 			},
 			accept = {
 				auto_brackets = {
-					enabled = false, 
+					enabled = false,
 					semantic_token_resolution = { enabled = true },
 				},
 				create_undo_point = true,
@@ -225,30 +237,40 @@ return { -- Autocompletion
 				direction_priority = { "s", "n" },
 				winblend = 10, -- 10% Transparency (Glassy Effect)
 				auto_show = function(ctx)
-					if ctx.mode == "cmdline" then return false end
+					if ctx.mode == "cmdline" then
+						return false
+					end
 					local ai_filetypes = { "codecompanion", "Avante" }
 					for _, ft in ipairs(ai_filetypes) do
-						if vim.bo.filetype == ft then return true end
+						if vim.bo.filetype == ft then
+							return true
+						end
 					end
 					return ctx.mode ~= "cmdline"
 				end,
 				draw = {
 					-- Added "source_name" to columns for better context
-					columns = { 
-						{ "kind_icon", gap = 1 }, 
-						{ "label", "label_description", gap = 1 }, 
-						{ "source_name" } 
+					columns = {
+						{ "kind_icon", gap = 1 },
+						{ "label", "label_description", gap = 1 },
+						{ "source_name" },
 					},
 					components = {
 						label = {
-							text = function(ctx) return require("colorful-menu").blink_components_text(ctx) end,
-							highlight = function(ctx) return require("colorful-menu").blink_components_highlight(ctx) end,
+							text = function(ctx)
+								return require("colorful-menu").blink_components_text(ctx)
+							end,
+							highlight = function(ctx)
+								return require("colorful-menu").blink_components_highlight(ctx)
+							end,
 						},
 						source_name = {
 							width = { max = 30 },
-							text = function(ctx) return string.format("[%s]", ctx.source_name) end,
+							text = function(ctx)
+								return string.format("[%s]", ctx.source_name)
+							end,
 							highlight = "BlinkCmpSource",
-						}
+						},
 					},
 				},
 			},
