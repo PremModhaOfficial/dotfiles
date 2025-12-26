@@ -10,6 +10,29 @@ return {
 	},
 	opts = function(_, opts)
 		local nls = require("null-ls")
+		local goconst = nls.builtins.diagnostics.golangci_lint.with({
+			command = "goconst",
+			args = { "./..." },
+			to_stdin = false,
+			from_stderr = false,
+			format = "line",
+			check_exit_code = function(code)
+				return code <= 1
+			end,
+			on_output = function(line, params)
+				local pattern = "(.+):(%d+):(.+)"
+				local file, lnum, msg = line:match(pattern)
+				if file and lnum and msg then
+					return {
+						row = tonumber(lnum),
+						col = 1,
+						message = msg,
+						severity = 2,
+						source = "goconst",
+					}
+				end
+			end,
+		})
 		opts.sources = vim.list_extend(opts.sources or {}, {
 			-- nls.builtins.diagnostics.hadolint,
 			-- nls.builtins.diagnostics.clippy,
@@ -25,6 +48,7 @@ return {
 			nls.builtins.formatting.goimports,
 			nls.builtins.formatting.gofumpt,
 			nls.builtins.diagnostics.golangci_lint,
+			goconst,
 		})
 	end,
 }

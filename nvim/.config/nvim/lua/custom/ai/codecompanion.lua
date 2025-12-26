@@ -12,7 +12,9 @@ return {
 	config = true,
 	---@module "codecompanion"
 	opts = {
-		log_level = "TRACE",
+		opts = {
+			log_level = "TRACE",
+		},
 		send_code = true,
 		display = {
 			diff = {
@@ -23,7 +25,7 @@ return {
 				provider = "mini_diff", -- Which diff provider to use: default|mini_diff
 			},
 		},
-		strategies = {
+		interactions = {
 			chat = {
 				adapter = "copilot",
 				picker = "snacks", -- Specify telescope explicitly for `/file` picker
@@ -109,20 +111,16 @@ return {
 				},
 			},
 		},
+		prompt_library = {},
 	},
 	init = function()
-		-- Disable blink.cmp integration to prevent module loading errors
-		vim.g.codecompanion_disable_blink = true
-
-		vim.api.nvim_create_autocmd("FileType", {
-			pattern = "codecompanion",
-			callback = function()
-				require("blink.cmp").setup({
-					sources = {
-						default = { "lsp", "path", "snippets", "buffer" },
-					},
-				})
-			end,
-		})
+		-- ╭─────────────────────────────────────────────────────────────────────╮
+		-- │ Blink.cmp Integration                                               │
+		-- │ CodeCompanion source is configured in blink.lua with:               │
+		-- │   - Conditional enabling for codecompanion filetypes                │
+		-- │   - <M-x> keymap to show CodeCompanion completions only             │
+		-- │   - <C-a> keymap to show all AI providers                           │
+		-- ╰─────────────────────────────────────────────────────────────────────╯
+		-- NOTE: vim.g.codecompanion_disable_blink is NOT set, allowing native integration
 	end,
 }

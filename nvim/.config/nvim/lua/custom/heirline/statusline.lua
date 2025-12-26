@@ -1,878 +1,524 @@
 local utils = require("heirline.utils")
 local conditions = require("heirline.conditions")
 
--- Optimized safe highlight getter with caching
-local hl_cache = {}
-local function safe_hl(name, attr)
-	local key = name .. "_" .. attr
-	if hl_cache[key] then
-		return hl_cache[key]
+--------------------------------------------------------------------------------
+-- UTILS: HEX COLOR DIMMER
+--------------------------------------------------------------------------------
+local function dim_hex(hex, factor)
+	if type(hex) == "number" then
+		hex = string.format("#%06x", hex)
 	end
+	if not hex or type(hex) ~= "string" or hex == "NONE" or hex:sub(1,1) ~= "#" then return hex end
+	local r = tonumber(hex:sub(2, 3), 16) or 255
+	local g = tonumber(hex:sub(4, 5), 16) or 255
+	local b = tonumber(hex:sub(6, 7), 16) or 255
+	r = math.floor(r * factor)
+	g = math.floor(g * factor)
+	b = math.floor(b * factor)
+	return string.format("#%02x%02x%02x", r, g, b)
+end
 
+--------------------------------------------------------------------------------
+-- PERFORMANCE CORE
+--------------------------------------------------------------------------------
+
+local Core = {
+	state = {
+		last_act = vim.loop.now(), -- Activity timestamp
+		is_dimmed = false,
+		
+		mode = { name = "NORMAL", color = "#ffffff", char = "n" },
+		git = { branch = "main", added = 0, changed = 0, removed = 0, exists = false },
+		diagnostics = { errors = 0, warnings = 0, has_any = false },
+		
+		-- LSP State with Boot Sequence
+		lsp = { 
+			active = false, 
+			servers = {}, -- list of names
+			boot = {}, -- table { "lua_ls" = 0..100 }
+			progress = false 
+		},
+		
+		-- Search with "Roller" effect
+		search = { 
+			count = 0, total = 0, active = false,
+			display_count = 0, display_total = 0 -- For animation
+		},
+		
+		harpoon = { count = 0, string = "", active = false },
+		
+		nixie = {
+			mode = "IDLE", 
+			segments = 0,
+			color = "#555555",
+			label = "",
+			wave_pattern = "⎯⎯⎯⎯⎯⎯⎯",
+		},
+	},
+	hl_cache = {},
+}
+
+-- Optimized & Dimmable Highlight Getter
+function Core.get_hl(name, attr)
+	local key = name .. "_" .. attr .. (Core.state.is_dimmed and "_dim" or "")
+	if Core.hl_cache[key] then return Core.hl_cache[key] end
+	
 	local hl = utils.get_highlight(name)
 	local result = hl and hl[attr] or (attr == "fg" and "#ffffff" or "#000000")
-	hl_cache[key] = result
+	
+	-- Apply dimming if active
+	if Core.state.is_dimmed and attr == "fg" then
+		result = dim_hex(result, 0.4) -- Dim to 40% brightness
+	end
+	
+	Core.hl_cache[key] = result
 	return result
 end
 
--- Clear cache when colors change
+-- Clear cache on theme change
 vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = function() Core.hl_cache = {} end,
+})
+
+--------------------------------------------------------------------------------
+-- CONTROLLER: EVENT LISTENERS
+--------------------------------------------------------------------------------
+
+-- 0. Activity Tracker (Focus Breather)
+local function interact()
+	Core.state.last_act = vim.loop.now()
+	if Core.state.is_dimmed then
+		Core.state.is_dimmed = false
+		Core.hl_cache = {} -- Clear cache to restore brightness
+		vim.cmd("redrawstatus")
+	end
+end
+vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "InsertEnter", "TextChanged", "CmdlineEnter" }, { 
+	callback = interact 
+})
+
+-- 1. Mode Listener
+local ModeNames = {
+	n = "NORMAL", i = "INSERT", v = "VISUAL", V = "VISUAL", ["\22"] = "VISUAL",
+	c = "COMMAND", s = "SELECT", S = "SELECT", ["\19"] = "SELECT",
+	R = "REPLACE", r = "...", ["!"] = "!", t = "TERM",
+}
+local function update_mode()
+	local m = vim.fn.mode(1)
+	local char = m:sub(1, 1)
+	Core.state.mode.char = char
+	Core.state.mode.name = ModeNames[m] or ModeNames[char] or "NORMAL"
+	local color_map = {
+		n = "Function", i = "String", v = "Constant", V = "Constant", ["\22"] = "Constant",
+		c = "Statement", s = "Type", S = "Type", ["\19"] = "Type", R = "String", ["!"] = "Error", t = "Error"
+	}
+	Core.state.mode.color = Core.get_hl(color_map[char] or "Normal", "fg")
+end
+vim.api.nvim_create_autocmd("ModeChanged", { callback = update_mode })
+update_mode()
+
+-- 2. Git Listener
+vim.api.nvim_create_autocmd("User", {
+	pattern = "GitSignsUpdate",
 	callback = function()
-		hl_cache = {}
+		local dict = vim.b.gitsigns_status_dict
+		if dict then
+			Core.state.git.exists = true
+			Core.state.git.branch = (dict.head == "" and "main" or dict.head)
+			Core.state.git.added = dict.added or 0
+			Core.state.git.changed = dict.changed or 0
+			Core.state.git.removed = dict.removed or 0
+		else
+			Core.state.git.exists = false
+		end
+		vim.cmd("redrawstatus")
 	end,
 })
 
--- Simple pattern component for middle section
-local MiddlePattern = {
-	provider = " ", -- Simple space for performance
-	hl = function()
-		return {
-			fg = safe_hl("Comment", "fg"),
-			bg = safe_hl("Normal", "bg"),
-		}
-	end,
-} -- Nixie tube progress bar - State Machine
-local NixieProgressBar = {
-	static = {
-		-- Stepped wave animation patterns for LSP progress (Option 15)
-		-- Fast traveling wave: 3-char peak builds, then travels left→right
-		-- Total cycle: 9 frames × 150ms = 1.35 seconds
-		wave_patterns = {
-			"⎯⎯⎯⎯⎯⎯⎯⎯", -- Frame 0: Baseline (all flat)
-			"⎺⎯⎯⎯⎯⎯⎯⎯", -- Frame 1: Peak starts building (1 char)
-			"⎺⎺⎯⎯⎯⎯⎯⎯", -- Frame 2: Peak grows (2 chars)
-			"⎺⎺⎺⎯⎯⎯⎯⎯", -- Frame 3: Full 3-char peak
-			"⎯⎺⎺⎺⎯⎯⎯⎯", -- Frame 4: Peak drops left, travels right
-			"⎯⎯⎺⎺⎺⎯⎯⎯", -- Frame 5: Continues traveling right
-			"⎯⎯⎯⎺⎺⎺⎯⎯", -- Frame 6: Continues traveling right
-			"⎯⎯⎯⎯⎺⎺⎺⎯", -- Frame 7: Continues traveling right
-			"⎯⎯⎯⎯⎯⎺⎺⎺", -- Frame 8: Peak reaches end
-			--
-			"⎯⎯⎯⎯⎯⎯⎺⎺", -- Frame 8: Peak reaches end
-			"⎯⎯⎯⎯⎯⎯⎯⎺", -- Frame 8: Peak reaches end
-			"⎯⎯⎯⎯⎯⎯⎯⎯", -- Frame 8: Peak reaches end
-			"⎯⎯⎯⎯⎯⎯⎯⎺", -- Frame 8: Peak reaches end
-			"⎯⎯⎯⎯⎯⎯⎺⎺", -- Frame 8: Peak reaches end
+-- 3. Diagnostic Listener
+local function update_diagnostics()
+	local err = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+	local warn = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+	Core.state.diagnostics.errors = err
+	Core.state.diagnostics.warnings = warn
+	Core.state.diagnostics.has_any = (err + warn) > 0
+end
+vim.api.nvim_create_autocmd("DiagnosticChanged", { callback = update_diagnostics })
 
-			"⎯⎯⎯⎯⎯⎺⎺⎺", -- Frame 8: Peak reaches end
-			"⎯⎯⎯⎯⎺⎺⎺⎯", -- Frame 7: Continues traveling right
-			"⎯⎯⎯⎺⎺⎺⎯⎯", -- Frame 6: Continues traveling right
-			"⎯⎯⎺⎺⎺⎯⎯⎯", -- Frame 5: Continues traveling right
-			"⎯⎺⎺⎺⎯⎯⎯⎯", -- Frame 4: Peak drops left, travels right
-			"⎺⎺⎺⎯⎯⎯⎯⎯", -- Frame 3: Full 3-char peak
-			"⎺⎺⎯⎯⎯⎯⎯⎯", -- Frame 2: Peak grows (2 chars)
-			"⎺⎯⎯⎯⎯⎯⎯⎯", -- Frame 1: Peak starts building (1 char)
-		},
-		filetypes = {
-			"^git.*",
-			"fugitive",
-			"alpha",
-			"^neo--tree$",
-			"^neotest--summary$",
-			"^neo--tree--popup$",
-			"^NvimTree$",
-			"snacks_dashboard",
-			"^toggleterm$",
-		},
-		-- Dedicated timer for LSP wave animation (shared across all component instances)
-		-- Automatically starts when LSP is active, stops when inactive for resource efficiency
-		lsp_timer = nil,
-	},
-	condition = function(self)
-		return not conditions.buffer_matches({
-			filetype = self.filetypes,
-		})
-	end,
-	init = function(self)
-		-- State priority: SEARCH > LSP_PROGRESS > DIAGNOSTIC > MODIFIED > IDLE
-		-- Updates: Timer (200ms) + TextChanged + DiagnosticChanged + LspAttach
-		self.state = "IDLE"
-		self.segments = 0
-		self.color = safe_hl("Comment", "fg")
-		self.label = ""
-
-		-- Check search state
-		if vim.v.hlsearch == 1 and vim.fn.searchcount then
-			local search = vim.fn.searchcount({ recompute = 1, maxcount = 999 })
-			if search and search.total and search.current and search.total > 0 then
-				self.state = "SEARCH"
-				self.segments = math.min(9, math.floor((search.current / search.total) * 9))
-				self.color = "#00ff00" -- Green for search
-				self.label = string.format(" %d/%d", search.current, search.total)
-				return
+-- 4. LSP Listener (With Boot Detection)
+vim.api.nvim_create_autocmd({ "LspProgress", "LspAttach", "LspDetach" }, {
+	callback = function(args)
+		local clients = vim.lsp.get_clients({ bufnr = 0 })
+		local names = {}
+		local is_progress = false
+		
+		for _, client in ipairs(clients) do
+			table.insert(names, client.name)
+			-- Init boot state if new
+			if not Core.state.lsp.boot[client.name] then
+				Core.state.lsp.boot[client.name] = 0
+			end
+			
+			if client.progress and client.progress.pending and next(client.progress.pending) then
+				is_progress = true
 			end
 		end
+		
+		Core.state.lsp.active = (#names > 0)
+		Core.state.lsp.servers = names
+		Core.state.lsp.progress = is_progress
+		if is_progress then vim.cmd("redrawstatus") end
+	end
+})
 
-		-- Check LSP progress (fast stepped wave animation when LSP is working)
-		local lsp_clients = vim.lsp.get_clients({ bufnr = 0 })
-		for _, client in pairs(lsp_clients) do
-			-- Check if client has any active progress tokens
-			if client.progress and client.progress.pending and next(client.progress.pending) ~= nil then
-				self.state = "LSP_PROGRESS"
-
-				-- Start dedicated 150ms timer for smooth animation (only if not already running)
-				-- Timer will continuously redraw statusline to animate the wave without cursor movement
-				if not self.lsp_timer then
-					self.lsp_timer = vim.loop.new_timer()
-					self.lsp_timer:start(
-						0,
-						150,
-						vim.schedule_wrap(function()
-							-- Force statusline redraw to update wave animation
-							vim.cmd("redrawstatus")
-						end)
-					)
-				end
-
-				-- Fast stepped wave: 150ms per frame = 1.35s full cycle (9 frames)
-				local frame = math.floor((vim.loop.now() or 0) / 150) % 22
-				-- Store wave pattern string (8 chars: ⎯ flat, ⎺ raised)
-				self.wave_pattern = self.wave_patterns[frame + 1] -- Lua is 1-indexed
-				self.color = "#bb00ff" -- Purple for LSP
-				self.label = " LSP"
-				return
-			end
+-- 5. Harpoon Listener
+local function update_harpoon()
+	if not package.loaded["harpoon"] then return end
+	local list = require("harpoon"):list()
+	local count = list:length()
+	local labels = { "J", "K", "L", ";" }
+	local current = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":.")
+	local out = ""
+	
+	for i, item in ipairs(list.items) do
+		local label = labels[i] or tostring(i)
+		if item.value == current then
+			out = out .. "[" .. label .. "]"
+		else
+			out = out .. label
 		end
+	end
+	
+	Core.state.harpoon.count = count
+	Core.state.harpoon.string = "┣󰛢" .. out .. "┫"
+	Core.state.harpoon.active = (count > 0)
+end
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, { callback = update_harpoon })
 
-		-- If we reach here, LSP is NOT active - stop timer to save resources
-		-- This ensures the timer only runs when actively needed for smooth animation
-		if self.lsp_timer then
-			self.lsp_timer:stop() -- Stop the callback from firing
-			self.lsp_timer:close() -- Free the timer handle (prevents memory leaks)
-			self.lsp_timer = nil -- Mark as inactive for next check
-		end
 
-		-- Check diagnostics (with urgent pulse if errors exist)
-		local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-		local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
-		local total_diag = errors + warnings
-		if total_diag > 0 then
-			self.state = "DIAGNOSTIC"
-			-- Scale segments based on severity (1-9 range)
-			local base_segments = math.min(9, math.max(1, math.floor((total_diag / 5) * 9)))
-			-- Add urgent pulse for errors (rapid blink)
-			if errors > 0 then
-				local pulse = math.floor((vim.loop.now() or 0) / 250) % 2
-				self.segments = math.max(1, base_segments + pulse)
-			else
-				self.segments = base_segments
-			end
-			self.color = errors > 0 and "#ff0000" or "#ffaa00" -- Red for errors, yellow for warnings
-			self.label = string.format(" E%d W%d", errors, warnings)
-			return
-		end
+--------------------------------------------------------------------------------
+-- ANIMATION SYSTEM (PHYSICS ENGINE)
+--------------------------------------------------------------------------------
 
-		-- Check modified state (with smooth pulse animation)
-		if vim.bo.modified then
-			self.state = "MODIFIED"
-			local changedtick = vim.b.changedtick or 0
-			-- Scale based on changes: 1 segment per 5 changes
-			local base_segments = math.min(9, math.max(1, math.floor(changedtick / 5)))
-			-- Add smooth breathing pulse (0→1→0 pattern)
-			local time = (vim.loop.now() or 0) / 500
-			local pulse = math.floor(math.abs(math.sin(time)) * 2)
-			self.segments = math.min(9, base_segments + pulse)
-			self.color = "#ff8800" -- Orange for modified
-			self.label = " *"
-			return
-		end
-
-		-- Default: IDLE state (with smooth breathing animation)
-		self.state = "IDLE"
-		local time = (vim.loop.now() or 0) / 1200
-		-- Gentle sine wave breathing: 0 → 2 → 0 (slower, more relaxed)
-		local breath = math.floor(math.abs(math.sin(time)) * 2.5)
-		self.segments = breath
-		self.color = safe_hl("Comment", "fg")
-		self.label = ""
-	end,
-	provider = function(self)
-		-- LSP state uses stepped wave animation (Unicode characters)
-		if self.state == "LSP_PROGRESS" and self.wave_pattern then
-			return "┣" .. self.wave_pattern .. "┫" .. self.label .. " "
-		end
-
-		-- All other states use block-based display (▓ filled, ░ empty)
-		local filled = string.rep("▓", self.segments)
-		local empty = string.rep("░", 9 - self.segments)
-		return "┣" .. filled .. empty .. "┫" .. self.label .. " "
-	end,
-	hl = function(self)
-		return {
-			fg = self.color,
-			bg = safe_hl("Normal", "bg"),
-		}
-	end,
-	update = {
-		"LspProgress", -- CRITICAL: Triggers on LSP progress changes
-		"LspRequest", -- Triggers on request state changes
-		"TextChanged",
-		"TextChangedI",
-		"BufWritePost",
-		"DiagnosticChanged",
-		"User",
-		"CursorHold",
-		"LspAttach",
-		"LspDetach",
-	},
+local Animation = {
+	timer = vim.loop.new_timer(),
+	density = { " ", "░", "▒", "▓", "█" },
 }
 
--- Mode indicator with color-changing LED dots
+Animation.timer:start(0, 80, vim.schedule_wrap(function()
+	local now = vim.loop.now()
+	local s = Core.state.nixie
+	local d = Core.state.diagnostics
+	local lsp = Core.state.lsp
+	local dirty = false
+	
+	-- A. FOCUS BREATHER (Dimming Check)
+	if not Core.state.is_dimmed and (now - Core.state.last_act > 5000) then
+		Core.state.is_dimmed = true
+		Core.hl_cache = {} -- Clear cache to force dim colors
+		dirty = true
+	end
+
+	-- B. SEARCH STATE (Combination Lock Roll)
+	if vim.v.hlsearch == 1 and vim.fn.searchcount then
+		if now % 500 < 80 then 
+			local res = vim.fn.searchcount({ recompute = 1, maxcount = 999 })
+			if res.total > 0 then
+				Core.state.search.active = true
+				Core.state.search.count = res.current
+				Core.state.search.total = res.total
+			else
+				Core.state.search.active = false
+			end
+		end
+	else
+		Core.state.search.active = false
+	end
+	
+	if Core.state.search.active then
+		-- Roll the numbers towards target
+		local cur = Core.state.search.display_count
+		local tgt = Core.state.search.count
+		if cur ~= tgt then
+			-- Step size proportional to difference (Zeno's slide)
+			local step = math.ceil(math.abs(tgt - cur) * 0.2)
+			if cur < tgt then cur = cur + step else cur = cur - step end
+			Core.state.search.display_count = cur
+			dirty = true
+		end
+		
+		-- Also roll total
+		local t_cur = Core.state.search.display_total
+		local t_tgt = Core.state.search.total
+		if t_cur ~= t_tgt then
+			local step = math.ceil(math.abs(t_tgt - t_cur) * 0.2)
+			if t_cur < t_tgt then t_cur = t_cur + step else t_cur = t_cur - step end
+			Core.state.search.display_total = t_cur
+			dirty = true
+		end
+	end
+
+	-- C. LSP BOOT SEQUENCE
+	if lsp.active then
+		for name, progress in pairs(lsp.boot) do
+			if progress < 100 then
+				-- Increment boot progress
+				lsp.boot[name] = math.min(100, progress + 4) -- +4% per 80ms (~2s boot)
+				dirty = true
+			end
+		end
+	end
+	
+	-- D. HARPOON POLLING
+	if package.loaded["harpoon"] then
+		local h_count = require("harpoon"):list():length()
+		if h_count ~= Core.state.harpoon.count then
+			update_harpoon()
+			dirty = true
+		end
+	end
+
+	-- E. MAIN NIXIE STATE
+	if Core.state.search.active then
+		s.mode = "SEARCH"
+		s.color = "#00ff00"
+		local ratio = Core.state.search.display_count / math.max(1, Core.state.search.display_total)
+		s.segments = math.min(9, math.floor(ratio * 9))
+		s.label = string.format(" %d/%d", Core.state.search.display_count, Core.state.search.display_total)
+
+	elseif lsp.progress then
+		s.mode = "LSP"
+		s.color = "#bb00ff"
+		s.label = " LSP"
+		-- Liquid Metal Shader
+		local t = now / 300
+		local p = ""
+		for i = 1, 10 do
+			local y = math.sin(t + (i * 0.4)) + math.sin(t * 1.7 + (i * 0.2)) 
+			local idx = math.floor((y + 2) / 4 * 5) + 1
+			idx = math.max(1, math.min(5, idx))
+			p = p .. Animation.density[idx]
+		end
+		s.wave_pattern = p
+		dirty = true
+
+	elseif d.has_any then
+		s.mode = "DIAGNOSTIC"
+		local pulse = (d.errors > 0) and (math.floor(now / 150) % 2) or 0
+		local base = math.min(9, math.floor(((d.errors + d.warnings) / 5) * 9))
+		s.segments = math.max(1, base + pulse)
+		s.color = (d.errors > 0) and "#ff0000" or "#ffaa00"
+		s.label = string.format(" E%d W%d", d.errors, d.warnings)
+
+	elseif vim.bo.modified then
+		s.mode = "MODIFIED"
+		local pulse = math.floor(math.abs(math.sin(now / 400)) * 2)
+		local tick = math.min(9, math.floor((vim.b.changedtick or 0) / 10))
+		s.segments = math.min(9, tick + pulse)
+		s.color = "#ff8800"
+		s.label = " *"
+
+	else
+		s.mode = "IDLE"
+		-- Heartbeat Capacitor
+		local cycle = 3000
+		local t = now % cycle
+		if t < 1000 then
+			local pos = math.floor((t / 1000) * 9) + 1
+			s.segments = pos
+			dirty = true
+		else
+			if s.segments ~= 0 then dirty = true end
+			s.segments = 0
+		end
+		s.color = Core.get_hl("Comment", "fg")
+		s.label = ""
+	end
+	
+	if dirty or s.mode ~= "IDLE" then
+		vim.cmd("redrawstatus")
+	end
+end))
+
+
+--------------------------------------------------------------------------------
+-- COMPONENTS (THE VIEW)
+--------------------------------------------------------------------------------
+
 local VimMode = {
-	init = function(self)
-		self.mode = vim.fn.mode(1)
-		local mode_char = self.mode:sub(1, 1)
-		local colors = self.mode_colors()
-		self.mode_color = colors[mode_char] or safe_hl("Normal", "fg")
-	end,
-	update = {
-		"ModeChanged",
-		callback = vim.schedule_wrap(function()
-			vim.cmd("redrawstatus")
-		end),
-	},
-	static = {
-		mode_names = {
-			n = "NORMAL",
-			no = "NORMAL",
-			nov = "NORMAL",
-			noV = "NORMAL",
-			["no\22"] = "NORMAL",
-			niI = "NORMAL",
-			niR = "NORMAL",
-			niV = "NORMAL",
-			nt = "NORMAL",
-			v = "VISUAL",
-			vs = "VISUAL",
-			V = "VISUAL",
-			Vs = "VISUAL",
-			["\22"] = "VISUAL",
-			["\22s"] = "VISUAL",
-			s = "SELECT",
-			S = "SELECT",
-			["\19"] = "SELECT",
-			i = "INSERT",
-			ic = "INSERT",
-			ix = "INSERT",
-			R = "REPLACE",
-			Rc = "REPLACE",
-			Rx = "REPLACE",
-			Rv = "REPLACE",
-			Rvc = "REPLACE",
-			Rvx = "REPLACE",
-			c = "COMMAND",
-			cv = "Ex",
-			r = "...",
-			rm = "M",
-			["r?"] = "?",
-			["!"] = "!",
-			t = "TERM",
-		},
-		mode_colors = function()
-			return {
-				n = safe_hl("Function", "fg"),
-				i = safe_hl("String", "fg"),
-				v = safe_hl("Constant", "fg"),
-				V = safe_hl("Constant", "fg"),
-				["\22"] = safe_hl("Constant", "fg"),
-				c = safe_hl("Statement", "fg"),
-				s = safe_hl("Type", "fg"),
-				S = safe_hl("Type", "fg"),
-				["\19"] = safe_hl("Type", "fg"),
-				r = safe_hl("String", "fg"),
-				R = safe_hl("String", "fg"),
-				["!"] = safe_hl("Error", "fg"),
-				t = safe_hl("Error", "fg"),
-			}
-		end,
-	},
-	-- LED indicator (improved framed design)
+	init = function(self) self.mode = Core.state.mode end,
 	{
 		provider = "<|●|>",
-		hl = function(self)
-			return {
-				fg = self.mode_color,
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
-		end,
+		hl = function(self) return { fg = self.mode.color, bg = Core.get_hl("Normal", "bg"), bold = true } end,
 	},
-	-- Left rounded separator for mode
 	{
 		provider = "",
-		hl = function(self)
-			return { fg = self.mode_color, bg = safe_hl("Normal", "bg") }
-		end,
+		hl = function(self) return { fg = self.mode.color, bg = Core.get_hl("Normal", "bg") } end,
 	},
-	-- Mode name with background
 	{
-		provider = function(self)
-			return " " .. self.mode_names[self.mode] .. " "
-		end,
-		hl = function(self)
-			return { fg = safe_hl("Normal", "bg"), bg = self.mode_color }
-		end,
+		provider = function(self) return " " .. self.mode.name .. " " end,
+		hl = function(self) return { fg = Core.get_hl("Normal", "bg"), bg = self.mode.color } end,
 	},
-	-- Separator
 	{
 		provider = "┣",
-		hl = function(self)
-			return { fg = self.mode_color, bg = safe_hl("Normal", "bg") }
-		end,
+		hl = function(self) return { fg = self.mode.color, bg = Core.get_hl("Normal", "bg") } end,
 	},
 }
 
--- Git branch information
-local GitBranch = {
-	condition = conditions.is_git_repo,
-	init = function(self)
-		self.status_dict = vim.b.gitsigns_status_dict
-	end,
-	{
-		condition = function(self)
-			return not conditions.buffer_matches({
-				filetype = self.filetypes,
-			})
-		end,
-		{
-			provider = function(self)
-				return "┫  " .. (self.status_dict.head == "" and "main" or self.status_dict.head) .. " "
-			end,
-			on_click = {
-				callback = function()
-					Snacks.picker.git_branches()
-				end,
-				name = "sl_git_click",
-			},
-			hl = function()
-				return {
-					fg = safe_hl("Comment", "fg"),
-					bg = safe_hl("Normal", "bg"),
-				}
-			end,
-		},
-		{
-			condition = function(self)
-				return self.status_dict.added ~= 0 or self.status_dict.changed ~= 0 or self.status_dict.removed ~= 0
-			end,
-			{
-				provider = function(self)
-					local added = self.status_dict.added or 0
-					local changed = self.status_dict.changed or 0
-					local removed = self.status_dict.removed or 0
-					return string.format("+%d ~%d -%d ", added, changed, removed)
-				end,
-				hl = function()
-					return {
-						fg = safe_hl("diffAdded", "fg"),
-						bg = safe_hl("Normal", "bg"),
-					}
-				end,
-			},
-		},
-	},
-}
-
--- File path display
-local FilePath = {
-	condition = function(self)
-		return not conditions.buffer_matches({
-			filetype = self.filetypes,
-		})
-	end,
-	init = function(self)
-		self.filename = vim.api.nvim_buf_get_name(0)
-		self.show_full_path = false
-	end,
-	{
-		{
-			provider = function(self)
-				local filepath = vim.fn.fnamemodify(self.filename, ":~:.")
-				if filepath == "" then
-					return "┣ [No Name] ┫ "
-				end
-
-				local display_path
-				if self.show_full_path then
-					-- Show full path when expanded
-					display_path = filepath
-				else
-					-- Show just filename by default
-					display_path = vim.fn.fnamemodify(filepath, ":t")
-				end
-
-				return "┣ " .. display_path .. " ┫ "
-			end,
-			on_click = {
-				callback = function(self)
-					self.show_full_path = not self.show_full_path
-					vim.cmd("redrawstatus")
-				end,
-				name = "sl_filepath_toggle",
-			},
-			hl = function()
-				return {
-					fg = safe_hl("Directory", "fg"),
-					bg = safe_hl("Normal", "bg"),
-				}
-			end,
-		},
-		{
-			provider = "┫ ",
-			hl = function()
-				return {
-					fg = safe_hl("Directory", "fg"),
-					bg = safe_hl("Normal", "bg"),
-				}
-			end,
-		},
-	},
-}
-
--- LSP diagnostics
-local LspDiagnostics = {
-	condition = conditions.has_diagnostics,
-	init = function(self)
-		self.errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-		self.warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
-		self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
-		self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
-	end,
-	on_click = {
-		callback = function()
-			Snacks.picker.diagnostics()
-		end,
-		name = "sl_diagnostics_click",
-	},
-	update = { "DiagnosticChanged" },
-	-- Errors
-	{
-		condition = function(self)
-			return self.errors > 0
-		end,
-		hl = function()
-			return {
-				fg = safe_hl("Normal", "bg"),
-				bg = safe_hl("DiagnosticError", "fg"),
-			}
-		end,
-		{
-			{
-				provider = "▌",
-			},
-			{
-				provider = function(self)
-					local sign = vim.fn.sign_getdefined("DiagnosticSignError")[1]
-					return (sign and sign.text or "E") .. self.errors
-				end,
-			},
-			{
-				provider = "▐",
-				hl = function()
-					return {
-						fg = safe_hl("DiagnosticError", "fg"),
-						bg = safe_hl("Normal", "bg"),
-					}
-				end,
-			},
-		},
-	},
-	-- Warnings
-	{
-		condition = function(self)
-			return self.warnings > 0
-		end,
-		hl = function()
-			return {
-				fg = safe_hl("Normal", "bg"),
-				bg = safe_hl("DiagnosticWarn", "fg"),
-			}
-		end,
-		{
-			{
-				provider = "▌",
-			},
-			{
-				provider = function(self)
-					local sign = vim.fn.sign_getdefined("DiagnosticSignWarn")[1]
-					return (sign and sign.text or "W") .. self.warnings
-				end,
-			},
-			{
-				provider = "▐ ",
-				hl = function()
-					return {
-						fg = safe_hl("DiagnosticWarn", "fg"),
-						bg = safe_hl("Normal", "bg"),
-					}
-				end,
-			},
-		},
-	},
-}
-
--- LSP attached indicator with server names (Colorful - Cyan/Blue)
-local LspAttached = {
-	condition = conditions.lsp_attached,
-	static = {
-		lsp_attached = false,
-		server_names = {},
-		show_lsps = {
-			copilot = false,
-			efm = false,
-		},
-	},
-	init = function(self)
-		self.server_names = {}
-		for i, server in pairs(vim.lsp.get_clients({ bufnr = 0 })) do
-			if self.show_lsps[server.name] ~= false then
-				table.insert(self.server_names, server.name)
-				self.lsp_attached = true
-			end
+local Nixie = {
+	provider = function()
+		local s = Core.state.nixie
+		if s.mode == "LSP" then
+			return "┣" .. s.wave_pattern .. "┫" .. s.label .. " "
+		else
+			local filled = string.rep("▓", s.segments)
+			local empty = string.rep("░", 9 - s.segments)
+			return "┣" .. filled .. empty .. "┫" .. s.label .. " "
 		end
 	end,
-	update = { "LspAttach", "LspDetach" },
-	on_click = {
-		callback = function()
-			vim.defer_fn(function()
-				vim.cmd("LspInfo")
-			end, 100)
-		end,
-		name = "sl_lsp_click",
-	},
-	{
-		condition = function(self)
-			return self.lsp_attached and #self.server_names > 0
-		end,
-		{
-			provider = function(self)
-				local servers = table.concat(self.server_names, "+")
-				return "┣ " .. servers .. " ┫ "
-			end,
-			hl = function()
-				return {
-					fg = "#00d7ff", -- Bright cyan/blue for active tech
-					bg = safe_hl("Normal", "bg"),
-					bold = true,
-				}
-			end,
-		},
-	},
+	hl = function()
+		-- Apply dimming manually here since component uses direct hex
+		local c = Core.state.nixie.color
+		if Core.state.is_dimmed then c = dim_hex(c, 0.4) end
+		return { fg = c, bg = Core.get_hl("Normal", "bg") }
+	end
 }
 
--- Position and ruler with encoding (Colorful - Green encoding, Purple position, Red/Orange dial)
-local Ruler = {
-	static = {
-		filetypes = {
-			"^git.*",
-			"fugitive",
-			"alpha",
-			"^neo--tree$",
-			"^neotest--summary$",
-			"^neo--tree--popup$",
-			"^NvimTree$",
-			"snacks_dashboard",
-			"^toggleterm$",
-		},
+local Git = {
+	condition = function() return Core.state.git.exists end,
+	{
+		provider = function() return "┫  " .. Core.state.git.branch .. " " end,
+		hl = { fg = Core.get_hl("Comment", "fg") },
+		on_click = { callback = function() Snacks.picker.git_branches() end, name = "sl_git" },
 	},
-	condition = function(self)
-		return not conditions.buffer_matches({
-			filetype = self.filetypes,
-		})
+	{
+		condition = function() 
+			local g = Core.state.git
+			return g.added ~= 0 or g.changed ~= 0 or g.removed ~= 0 
+		end,
+		provider = function()
+			local g = Core.state.git
+			return string.format("+%d ~%d -%d ", g.added, g.changed, g.removed)
+		end,
+		hl = { fg = Core.get_hl("diffAdded", "fg") }
+	}
+}
+
+local File = {
+	init = function(self)
+		self.filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
+		self.ft = vim.bo.filetype
 	end,
-	-- Total lines
-	{
-		provider = function()
-			local total_lines = vim.api.nvim_buf_line_count(0)
-			return "[" .. total_lines .. "] "
-		end,
-		hl = function()
-			return {
-				fg = "#aaaaaa", -- Light gray text
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
-		end,
-	},
-	-- Encoding
-	{
-		provider = function()
-			local enc = (vim.bo.fenc ~= "" and vim.bo.fenc) or vim.o.enc
-			return enc .. " "
-		end,
-		hl = function()
-			return {
-				fg = "#00ff87", -- Bright green for encoding
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
-		end,
-	},
-	-- Line:Col position
-	{
-		provider = function()
-			local line = vim.api.nvim_win_get_cursor(0)[1]
-			local col = vim.api.nvim_win_get_cursor(0)[2] + 1
-			return "[" .. line .. ":" .. col .. "] "
-		end,
-		hl = function()
-			return {
-				fg = "#d787ff", -- Purple/magenta for position
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
-		end,
-	},
-	-- Position indicator (Top/Mid/Bot)
-	{
-		provider = function()
-			local line = vim.api.nvim_win_get_cursor(0)[1]
-			local total_lines = vim.api.nvim_buf_line_count(0)
-
-			local pos_indicator
-			if total_lines == 1 then
-				pos_indicator = "All"
-			elseif line == 1 then
-				pos_indicator = "Top"
-			elseif line == total_lines then
-				pos_indicator = "Bot"
-			else
-				local ratio = line / total_lines
-				if ratio < 0.33 then
-					pos_indicator = "Top"
-				elseif ratio > 0.67 then
-					pos_indicator = "Bot"
-				else
-					pos_indicator = "Mid"
-				end
-			end
-			return pos_indicator .. " "
-		end,
-		hl = function()
-			return {
-				fg = "#bb00ff", -- Purple for position
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
-		end,
-	},
-	-- Dynamic dial
-	{
-		provider = function()
-			local line = vim.api.nvim_win_get_cursor(0)[1]
-			local total_lines = vim.api.nvim_buf_line_count(0)
-			local ratio = line / total_lines
-			local dial_pos = math.floor(ratio * 8 + 0.5) -- 0-8 positions
-			local dial_left = string.rep("═", dial_pos)
-			local dial_right = string.rep("═", 8 - dial_pos)
-			return dial_left .. "╣" .. dial_right .. "═"
-		end,
-		hl = function()
-			-- Color changes based on position (gradient from orange to red)
-			local line = vim.api.nvim_win_get_cursor(0)[1]
-			local total_lines = vim.api.nvim_buf_line_count(0)
-			local ratio = line / total_lines
-
-			local color
-			if ratio < 0.33 then
-				color = "#ffaa00" -- Orange at top
-			elseif ratio < 0.67 then
-				color = "#ff6600" -- Orange-red in middle
-			else
-				color = "#ff0000" -- Red at bottom
-			end
-
-			return {
-				fg = color,
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
-		end,
-		on_click = {
-			callback = function()
-				local line = vim.api.nvim_win_get_cursor(0)[1]
-				local total_lines = vim.api.nvim_buf_line_count(0)
-
-				if total_lines > 0 and math.floor((line / total_lines)) > 0.5 then
-					vim.cmd("normal! gg")
-				else
-					vim.cmd("normal! G")
-				end
-			end,
-			name = "sl_ruler_click",
-		},
-	},
-}
-
--- AI agents
-local CodeCompanion = {
-	static = {
-		processing = false,
-	},
-	update = {
-		"User",
-		pattern = "CodeCompanionRequest*",
-		callback = function(self, args)
-			if args.match == "CodeCompanionRequestStarted" then
-				self.processing = true
-			elseif args.match == "CodeCompanionRequestFinished" then
-				self.processing = false
-			end
-			vim.cmd("redrawstatus")
-		end,
-	},
-	{
-		condition = function(self)
-			return self.processing
-		end,
-		provider = " ",
-		hl = function()
-			return { fg = safe_hl("WarningMsg", "fg") }
-		end,
-	},
-}
-
-local CodeCompanionAgent = {
-	static = {
-		processing = false,
-	},
-	update = {
-		"User",
-		pattern = "CodeCompanionAgent*",
-		callback = function(self, args)
-			if args.match == "CodeCompanionAgentStarted" then
-				self.processing = true
-			elseif args.match == "CodeCompanionAgentFinished" then
-				self.processing = false
-			end
-			vim.cmd("redrawstatus")
-		end,
-	},
-	{
-		condition = function(self)
-			return self.processing
-		end,
-		provider = "󱙺 ",
-		hl = function()
-			return { fg = safe_hl("diffAdded", "fg") }
-		end,
-	},
-}
-
--- Macro recording indicator (Colorful - Red/Pink)
-local MacroRec = {
-	condition = function()
-		return vim.fn.reg_recording() ~= ""
-	end,
-	update = {
-		"RecordingEnter",
-		"RecordingLeave",
-	},
-	{
-		provider = function()
-			return "┫ 󱎘 @" .. vim.fn.reg_recording() .. " ┣"
-		end,
-		hl = function()
-			return {
-				fg = "#ff0066", -- Hot pink for recording
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
-		end,
-	},
-}
-
--- File type with icons (Colorful - Warm amber/orange)
-local FileType = {
-	condition = function(self)
-		return not conditions.buffer_matches({
-			filetype = self.filetypes,
-		})
-	end,
-	static = {
-		-- Common filetype icons (warm orange glow theme)
-		icons = {
-			lua = "󰢱",
-			python = "",
-			javascript = "",
-			typescript = "",
-			rust = "",
-			go = "",
-			java = "",
-			c = "󰙱",
-			cpp = "",
-			html = "",
-			css = "",
-			json = "",
-			yaml = "",
-			markdown = "",
-			vim = "",
-			sh = "",
-			bash = "",
-			zsh = "Z",
-		},
-	},
 	{
 		provider = function(self)
-			local ft = string.lower(vim.bo.filetype)
-			local icon = self.icons[ft] or "󱙺"
-			return "┣ " .. icon .. " " .. ft .. " ┫ "
+			local icon, color = require("nvim-web-devicons").get_icon_color(self.filename, self.ft)
+			-- Apply dimming to devicon color
+			if Core.state.is_dimmed and color then color = dim_hex(color, 0.4) end
+			return "┣ " .. (icon or "󰈔") .. " "
 		end,
-		hl = function()
-			return {
-				fg = "#ff8800", -- Warm amber/orange Nixie glow
-				bg = safe_hl("Normal", "bg"),
-				bold = true,
-			}
+		hl = function(self)
+			local _, color = require("nvim-web-devicons").get_icon_color(self.filename, self.ft)
+			if Core.state.is_dimmed and color then color = dim_hex(color, 0.4) end
+			return { fg = color or "#ff8800", bg = Core.get_hl("Normal", "bg") }
 		end,
 	},
+	{
+		provider = function(self) return self.filename .. " ┫ " end,
+		hl = { fg = Core.get_hl("Directory", "fg"), bg = Core.get_hl("Normal", "bg") },
+	}
 }
 
--- Main statusline
+local Ruler = {
+	provider = function()
+		local line = vim.api.nvim_win_get_cursor(0)[1]
+		local total = vim.api.nvim_buf_line_count(0)
+		local ratio = line / total
+		local dial_pos = math.floor(ratio * 8 + 0.5)
+		local left = string.rep("═", dial_pos)
+		local right = string.rep("═", 8 - dial_pos)
+		return string.format("[%d:%d] %s╣%s═", line, total, left, right)
+	end,
+	hl = function()
+		local line = vim.api.nvim_win_get_cursor(0)[1]
+		local total = vim.api.nvim_buf_line_count(0)
+		local r = line / total
+		local c = (r < 0.33) and "#ffaa00" or ((r < 0.67) and "#ff6600" or "#ff0000")
+		if Core.state.is_dimmed then c = dim_hex(c, 0.4) end
+		return { fg = c, bold = true }
+	end,
+	on_click = {
+		callback = function()
+			local l = vim.api.nvim_win_get_cursor(0)[1]
+			local t = vim.api.nvim_buf_line_count(0)
+			vim.cmd((l/t > 0.5) and "normal! gg" or "normal! G")
+		end,
+		name = "sl_ruler"
+	}
+}
+
+-- UPDATED: LSP INFO WITH BOOT BARS
+local LspInfo = {
+	condition = function() return Core.state.lsp.active end,
+	provider = function() 
+		local out = {}
+		for _, name in ipairs(Core.state.lsp.servers) do
+			local prog = Core.state.lsp.boot[name] or 100
+			if prog < 100 then
+				-- Render Boot Bar
+				local len = math.floor(prog / 20) -- 0 to 5
+				local bar = string.rep("▓", len) .. string.rep("░", 5 - len)
+				table.insert(out, "[" .. bar .. "]")
+			else
+				table.insert(out, name)
+			end
+		end
+		return "┣ " .. table.concat(out, "+") .. " ┫ " 
+	end,
+	hl = function()
+		local c = "#00d7ff"
+		if Core.state.is_dimmed then c = dim_hex(c, 0.4) end
+		return { fg = c, bold = true }
+	end,
+	on_click = { callback = function() vim.cmd("LspInfo") end, name = "sl_lsp_info" }
+}
+
+local LazyUpdates = {
+	condition = function() return require("lazy.status").has_updates() end,
+	provider = function() return "┣ 󰮯 " .. require("lazy.status").updates() .. " ┫ " end,
+	hl = { fg = "#ff00ff", bold = true },
+}
+
+local Harpoon = {
+	condition = function() return Core.state.harpoon.active end,
+	provider = function() return Core.state.harpoon.string end,
+	hl = function()
+		local c = "#00d7ff"
+		if Core.state.is_dimmed then c = dim_hex(c, 0.4) end
+		return { fg = c, bold = true }
+	end
+}
+
+--------------------------------------------------------------------------------
+-- ASSEMBLY
+--------------------------------------------------------------------------------
 local statusline = {
 	static = {
-		filetypes = {
-			"^git.*",
-			"fugitive",
-			"alpha",
-			"^neo--tree$",
-			"^neotest--summary$",
-			"^neo--tree--popup$",
-			"^NvimTree$",
-			"snacks_dashboard",
-			"^toggleterm$",
-		},
-		force_inactive_filetypes = {
-			"^aerial$",
-			"^alpha$",
-			"^chatgpt$",
-			"^frecency$",
-			"^lazy$",
-			"^lazyterm$",
-			"^netrw$",
-			"^TelescopePrompt$",
-			"^undotree$",
-		},
+		disabled_ft = { "^git.*", "fugitive", "alpha", "dashboard", "neo-tree", "toggleterm" }
 	},
 	condition = function(self)
-		return not conditions.buffer_matches({
-			filetype = self.force_inactive_filetypes,
-		})
+		return not conditions.buffer_matches({ filetype = self.disabled_ft })
 	end,
 	{
 		VimMode,
-		NixieProgressBar,
-		GitBranch,
-		FilePath,
-		FileType,
-		LspDiagnostics,
-		{ provider = "%=" },
-		CodeCompanionAgent,
-		CodeCompanion,
-		MacroRec,
-		LspAttached,
-		Ruler,
-	},
+		Nixie,
+		Git,
+		Harpoon,
+		File,
+		{ provider = "%=" }, -- Spacer
+		LazyUpdates,
+		LspInfo,
+		Ruler
+	}
 }
 
 return statusline

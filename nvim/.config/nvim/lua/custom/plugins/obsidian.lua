@@ -34,56 +34,15 @@ return {
 			template = "daily-template.md", -- You'll create this template
 		},
 
-		completion = {
-			nvim_cmp = false,
-			blink = true,
-			min_chars = 1,
-		},
+	completion = {
+		nvim_cmp = false,
+		blink = true,
+		min_chars = 1,
+	},
 
-
-
-		new_notes_location = "notes_subdir",
-
-		-- Enhanced note ID function for atomic notes
-		note_id_func = function(title)
-			local suffix = ""
-			if title ~= nil then
-				-- Clean title for atomic notes
-				suffix = title:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
-				-- Ensure it starts with a letter (good for linking)
-				if suffix:match("^%d") then
-					suffix = "note-" .. suffix
-				end
-			else
-				-- Generate meaningful ID for untitled notes
-				suffix = "untitled-" .. os.date("%Y%m%d-%H%M%S")
-			end
-			return suffix
-		end,
-
-		note_path_func = function(spec)
-			local path = spec.dir / tostring(spec.id)
-			return path:with_suffix(".md")
-		end,
-
-		wiki_link_func = function(opts)
-			return require("obsidian.util").wiki_link_id_prefix(opts)
-		end,
-
-		markdown_link_func = function(opts)
-			return require("obsidian.util").markdown_link(opts)
-		end,
-
-		preferred_link_style = "wiki",
-
-		image_name_func = function()
-			return string.format("%s-", os.date("%Y%m%d-%H%M%S"))
-		end,
-
-		disable_frontmatter = false,
-
-		-- Enhanced frontmatter for atomic notes
-		note_frontmatter_func = function(note)
+	frontmatter = {
+		enabled = true,
+		func = function(note)
 			if note.title then
 				note:add_alias(note.title)
 			end
@@ -105,6 +64,45 @@ return {
 
 			return out
 		end,
+	},
+
+	new_notes_location = "notes_subdir",
+
+		-- Enhanced note ID function for atomic notes
+	note_id_func = function(title)
+		local suffix = ""
+		if title ~= nil then
+			-- Clean title for atomic notes
+			suffix = title:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
+			-- Ensure it starts with a letter (good for linking)
+			if suffix:match("^%d") then
+				suffix = "note-" .. suffix
+			end
+		else
+			-- Generate meaningful ID for untitled notes
+			suffix = "untitled-" .. os.date("%Y%m%d-%H%M%S")
+		end
+		return suffix
+	end,
+
+	note_path_func = function(spec)
+		local path = spec.dir / tostring(spec.id)
+		return path:with_suffix(".md")
+	end,
+
+	wiki_link_func = function(opts)
+		return require("obsidian.util").wiki_link_id_prefix(opts)
+	end,
+
+	markdown_link_func = function(opts)
+		return require("obsidian.util").markdown_link(opts)
+	end,
+
+	preferred_link_style = "wiki",
+
+	image_name_func = function()
+		return string.format("%s-", os.date("%Y%m%d-%H%M%S"))
+	end,
 
 		-- TEMPLATES CONFIGURATION - This is crucial for atomic notes
 		templates = {
@@ -141,23 +139,26 @@ return {
 			end,
 		},
 
-		picker = {
-			name = "snacks.pick",
-			note_mappings = {
-				new = "<C-x>",
-				insert_link = "<C-l>",
-			},
-			tag_mappings = {
-				tag_note = "<C-x>",
-				insert_tag = "<C-l>",
-			},
+	picker = {
+		name = "snacks.pick",
+		note_mappings = {
+			new = "<C-x>",
+			insert_link = "<C-l>",
 		},
+		tag_mappings = {
+			tag_note = "<C-x>",
+			insert_tag = "<C-l>",
+		},
+	},
 
-		-- Optimized for atomic note workflow
+	-- Optimized for atomic note workflow
+	search = {
 		sort_by = "modified",
 		sort_reversed = true,
-		search_max_lines = 1000,
-		open_notes_in = "current",
+		max_lines = 1000,
+	},
+
+	open_notes_in = "current",
 
 		-- Enhanced callbacks for atomic note workflow
 		callbacks = {

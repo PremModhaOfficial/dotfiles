@@ -55,9 +55,7 @@ return {
 
 			-- Extension configurations
 			extensions = {
-				avante = {
-					make_slash_commands = true, -- Enable /mcp:server:prompt slash commands
-				},
+				-- Avante extension removed
 			},
 		})
 	end,

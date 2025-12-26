@@ -1,0 +1,26 @@
+INFO  2025-12-05T05:25:25 +185ms service=default version=1.0.133 args=["--print-logs"] opencode
+INFO  2025-12-05T06:29:14 +3829157ms service=models.dev file={} refreshing
+INFO  2025-12-05T07:31:18 +3723698ms service=models.dev file={} refreshing
+INFO  2025-12-05T08:31:20 +3602015ms service=models.dev file={} refreshing
+INFO  2025-12-05T09:40:58 +4178851ms service=models.dev file={} refreshing
+INFO  2025-12-05T10:40:59 +3601013ms service=models.dev file={} refreshing
+INFO  2025-12-05T11:44:24 +3804471ms service=models.dev file={} refreshing
+INFO  2025-12-05T12:45:32 +3667738ms service=models.dev file={} refreshing
+INFO  2025-12-07T06:50:28 +151496470ms service=models.dev file={} refreshing
+INFO  2025-12-07T08:20:31 +5403198ms service=models.dev file={} refreshing
+INFO  2025-12-07T09:20:31 +3600031ms service=models.dev file={} refreshing
+INFO  2025-12-07T10:25:43 +3911638ms service=models.dev file={} refreshing
+INFO  2025-12-07T13:45:49 +12005667ms service=models.dev file={} refreshing
+INFO  2025-12-07T14:45:49 +3600762ms service=models.dev file={} refreshing
+INFO  2025-12-08T04:27:06 +49276282ms service=models.dev file={} refreshing
+INFO  2025-12-08T05:27:06 +3600003ms service=models.dev file={} refreshing
+INFO  2025-12-08T07:09:40 +6154147ms service=models.dev file={} refreshing
+INFO  2025-12-08T08:23:08 +4408331ms service=models.dev file={} refreshing
+INFO  2025-12-08T10:04:31 +6082843ms service=models.dev file={} refreshing
+INFO  2025-12-08T12:26:30 +8518577ms service=models.dev file={} refreshing
+INFO  2025-12-08T13:28:41 +3731326ms service=models.dev file={} refreshing
+INFO  2025-12-09T04:23:10 +53669377ms service=models.dev file={} refreshing
+INFO  2025-12-09T05:23:15 +3604699ms service=models.dev file={} refreshing
+INFO  2025-12-09T06:50:49 +5253820ms service=models.dev file={} refreshing
+INFO  2025-12-09T07:50:49 +3600029ms service=models.dev file={} refreshing
+INFO  2025-12-09T09:55:36 +7486817ms service=models.dev file={} refreshing

@@ -10,8 +10,24 @@ return {
 			enabled = true,
 		},
 		bigfile = { enabled = true },
+		gh = { enabled = true },
+		
+		-- DASHBOARD: "MAINFRAME" THEME
 		dashboard = {
+			preset = {
+				-- Tech/Cyberpunk Header
+				header = [[
+███╗   ██╗███████╗██╗   ██╗██╗███╗   ███╗
+████╗  ██║██╔════╝██║   ██║██║████╗ ████║
+██╔██╗ ██║█████╗  ██║   ██║██║██╔████╔██║
+██║╚██╗██║██╔══╝  ╚██╗ ██╔╝██║██║╚██╔╝██║
+██║ ╚████║███████╗ ╚████╔╝ ██║██║ ╚═╝ ██║
+╚═╝  ╚═══╝╚══════╝  ╚═══╝  ╚═╝╚═╝     ╚═╝
+   SYSTEM ONLINE // PROTOCOL: OMEGA
+				]],
+			},
 			sections = {
+				{ section = "header" },
 				{
 					pane = 2,
 					{ section = "keys", gap = 1, padding = 1 },
@@ -19,21 +35,50 @@ return {
 				},
 			},
 		},
+
+		indent = {
+			enabled = false,
+			debug = false,
+			only_current = true,
+			only_scope = true,
+			scope = {
+				enabled = true,
+				underline = true,
+				only_current = true,
+				only_scope = true,
+			},
+			chunk = {
+				enabled = true,
+				only_current = true,
+				char = {
+					corner_top = "╭",
+					corner_bottom = "╰",
+					horizontal = "─",
+					vertical = "│",
+					arrow = ">",
+				},
+			},
+		},
 		input = { enabled = true },
+		
+		-- NOTIFIER: "HOLOGRAPHIC HUD"
 		notifier = {
 			enabled = true,
 			timeout = 3000,
 			level = vim.log.levels.INFO,
 			icons = {
-				error = "",
-				warn = "",
-				info = "",
-				debug = "",
-				trace = "",
+				error = " ",
+				warn = " ",
+				info = " ",
+				debug = " ",
+				trace = " ",
 			},
 			style = "fancy",
-			top_down = false,
+			top_down = false, -- Bottom-up notifications (HUD style)
+			gap = 1,
+			margin = { top = 0, right = 1, bottom = 1 },
 		},
+		
 		quickfile = { enabled = true },
 		scroll = { enabled = false },
 		statuscolumn = { enabled = true },
@@ -47,7 +92,10 @@ return {
 				injections = true,
 			},
 		},
+		
+		-- PICKER: "SEARCH CONSOLE"
 		picker = {
+			layout = { preset = "ivy" }, -- Bottom drawer console style
 			ui_select = true,
 			win = {
 				input = {
@@ -58,6 +106,7 @@ return {
 				},
 			},
 		},
+		
 		explorer = {
 			enabled = true,
 		},
@@ -67,29 +116,35 @@ return {
 			icon = "󰠮",
 			name = "Scratch",
 		},
+		
+		-- TERMINAL: "HEAVY EQUIPMENT"
 		terminal = {
 			enabled = true,
-			win = { style = "terminal" },
+			win = { 
+				style = "terminal",
+				border = "double", -- Heavy industrial border
+			},
 		},
+		
 		zen = {
 			enabled = true,
 			toggles = {
 				dim = true,
 				git_signs = false,
-				mini_indentscope = false,
 			},
 			zoom = {
 				toggles = {
 					dim = false,
 					git_signs = true,
-					mini_indentscope = true,
 				},
 			},
 		},
+		
+		-- GLOBAL STYLES (GLASS EFFECT)
 		styles = {
 			notification = {
 				border = "rounded",
-				wo = { wrap = true },
+				wo = { wrap = true, winblend = 20 }, -- Glassy notifications
 			},
 			snacks_image = {
 				relative = "editor",
@@ -103,96 +158,22 @@ return {
 				title = "Hover",
 				title_pos = "center",
 			},
-		},
-	},
-	bigfile = { enabled = true },
-	dashboard = {
-		sections = {
-			-- {
-			-- 	section = "terminal",
-			-- 	cmd = "chafa (swww query | awk -F ': ' '{print $5}') --format symbols --symbols vhalf --size 60x17 --stretch; sleep 1ms",
-			-- 	height = 17,
-			-- 	padding = 1,
-			-- },
-			{
-				pane = 2,
-				{ section = "keys", gap = 1, padding = 1 },
-				{ section = "startup" },
+			-- Apply glass effect to floating terminal
+			terminal = {
+				wo = { winblend = 10 },
 			},
 		},
 	},
-	-- indent = {
-	-- 	enabled = false,
-	-- 	char = "]",
-	-- 	-- debug = true,
-	-- 	only_current = true,
-	-- 	only_scope = true,
-	-- 	scope = {
-	-- 		char = " ",
-	-- 		hi = "None",
-	-- 		enabled = true,
-	-- 		underline = true,
-	-- 		only_current = true,
-	-- 		only_scope = true,
-	-- 	},
-	-- 	blank = {
-	-- 		char = "0",
-	-- 		hl = "None",
-	-- 	},
-	-- 	chunk = {
-	-- 		enabled = true,
-	-- 		only_current = true,
-	-- 		char = {
-	-- 			-- corner_top = "┌",
-	-- 			-- corner_bottom = "└",
-	-- 			corner_top = "╭",
-	-- 			corner_bottom = "╰",
-	-- 			horizontal = "─",
-	-- 			vertical = "│",
-	-- 			arrow = ">",
-	-- 		},
-	-- 	},
-	-- },
-	input = { enabled = true },
-	notifier = {
-		enabled = true,
-		timeout = 3000,
-		level = vim.log.levels.INFO,
-		icons = {
-			error = "",
-			warn = "",
-			info = "",
-			debug = "",
-			trace = "",
-		},
-		style = "fancy",
-		top_down = false,
-	},
-	quickfile = { enabled = true },
-	scroll = { enabled = false },
-	statuscolumn = { enabled = true },
-	words = { enabled = true },
-	scope = {
-		cursor = true,
-		enabled = true,
-		treesitter = {
-			enabled = true,
-			blocks = { enabled = true },
-			injections = true,
-		},
-		---
-	},
-	picker = {},
-	explorer = {},
+	
+	-- Keep your existing keymaps below
 	keys = {
 
 		-- Top Pickers & Explorer
-		--
 		{
 			"<leader><space>",
 			function()
 				Snacks.picker.smart({
-					layout = "right",
+					layout = "ivy", -- Enforce console layout
 				})
 			end,
 			desc = "Smart Find Files",
@@ -201,7 +182,7 @@ return {
 			"<leader>,",
 			function()
 				Snacks.picker.buffers({
-					layout = "right",
+					layout = "ivy",
 				})
 			end,
 			desc = "Buffers",
@@ -524,7 +505,7 @@ return {
 			desc = "Goto T[y]pe Definition",
 		},
 		{
-			"<leader>ss",
+			"<leader>sS",
 			function()
 				Snacks.picker.lsp_symbols()
 			end,
@@ -540,7 +521,7 @@ return {
 			desc = "LSP Workspace Symbols",
 		},
 		{
-			"<leader>sS",
+			"<leader>ss",
 			function()
 				Snacks.picker.lsp_workspace_symbols()
 			end,
@@ -665,6 +646,34 @@ return {
 				})
 			end,
 		},
+		{
+			"<leader>gi",
+			function()
+				Snacks.picker.gh_issues()
+			end,
+			desc = "GitHub Issues",
+		},
+		{
+			"<leader>gI",
+			function()
+				Snacks.picker.gh_issues({ all = true })
+			end,
+			desc = "All GitHub Issues",
+		},
+		{
+			"<leader>gp",
+			function()
+				Snacks.picker.gh_pull_requests()
+			end,
+			desc = "GitHub PRs",
+		},
+		{
+			"<leader>gP",
+			function()
+				Snacks.picker.gh_pull_requests({ all = true })
+			end,
+			desc = "All GitHub PRs",
+		},
 	},
 	init = function()
 		vim.api.nvim_create_autocmd("User", {
@@ -720,16 +729,4 @@ return {
 			end,
 		})
 	end,
-	styles = {
-		snacks_image = {
-			relative = "editor",
-			position = "float",
-			border = "double",
-			focusable = true,
-			backdrop = 2,
-			-- row = 0,
-			-- col = 80,
-			-- width/height are automatically set by the image size unless specified below
-		},
-	},
 }
