@@ -329,8 +329,11 @@ return { -- LSP Configuration & Plugins
 			},
 			-- Additional useful servers
 			marksman = {
+				filetypes = { "markdown" },  -- Only attach to markdown files
 				root_dir = function(fname)
-					return require("lspconfig.util").find_git_ancestor(fname) or vim.fn.getcwd()
+					if type(fname) ~= "string" then return vim.fn.getcwd() end
+					local util = require("lspconfig.util")
+					return util.find_git_ancestor(fname) or util.path.dirname(fname) or vim.fn.getcwd()
 				end,
 				settings = {
 					marksman = {
