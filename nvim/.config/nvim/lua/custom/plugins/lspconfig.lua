@@ -328,6 +328,23 @@ return { -- LSP Configuration & Plugins
 				},
 			},
 			-- Additional useful servers
+			marksman = {
+				root_dir = function(fname)
+					return require("lspconfig.util").find_git_ancestor(fname) or vim.fn.getcwd()
+				end,
+				settings = {
+					marksman = {
+						core = {
+							title_from_heading = true,  -- Treat # headings as titles
+						},
+						completion = {
+							wiki = {
+								style = "title-slug",  -- Preferred for Obsidian wiki links
+							},
+						},
+					},
+				},
+			},
 		}
 
 		-- Workaround for gopls semantic tokens issue

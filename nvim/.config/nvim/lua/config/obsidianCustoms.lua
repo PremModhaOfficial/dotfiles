@@ -31,18 +31,26 @@ function M.setup()
 		end,
 	})
 
-	-- Automatically update modified timestamp when saving
+	-- Auto-update modified timestamp and promote status on save
 	vim.api.nvim_create_autocmd("BufWritePre", {
 		group = obsidian_group,
 		pattern = { "*.md" },
 		callback = function()
 			local file_path = vim.fn.expand("%:p")
 			if string.find(file_path, "Conceptrone") then
+				-- Existing modified update
 				local lines = vim.api.nvim_buf_get_lines(0, 0, 20, false)
 				for i, line in ipairs(lines) do
 					if line:match("^modified:") then
-						local new_line = "modified: " .. os.date("%Y-%m-%d %H:%M:%S")
-						vim.api.nvim_buf_set_lines(0, i - 1, i, false, { new_line })
+						lines[i] = "modified: " .. os.date("%Y-%m-%d %H:%M:%S")
+						vim.api.nvim_buf_set_lines(0, i - 1, i, false, { lines[i] })
+						break
+					end
+				end
+				-- New: Auto-promote draft to reviewed
+				for i, line in ipairs(lines) do
+					if line:match("status: draft") and vim.bo.modified then
+						vim.api.nvim_buf_set_lines(0, i - 1, i, false, { "status: reviewed" })
 						break
 					end
 				end
@@ -95,7 +103,21 @@ function M.setup()
 		end
 	end, {})
 
-	-- Quick link insertion with search
+	-- Enhanced keymaps with leader prefix for better organization
+	vim.keymap.set("n", "<leader>on", ":ObsidianNew<CR>", { desc = "Create new note" })
+	vim.keymap.set("n", "<leader>os", ":ObsidianSearch<CR>", { desc = "Search notes" })
+	vim.keymap.set("n", "<leader>ol", ":ObsidianQuickSwitch<CR>", { desc = "Quick switch" })
+	vim.keymap.set("n", "<leader>ot", ":ObsidianTemplate<CR>", { desc = "Insert template" })
+	vim.keymap.set("n", "<leader>oa", ":ObsidianTags<CR>", { desc = "Browse tags" })
+	vim.keymap.set("n", "<leader>ob", ":ObsidianBacklinks<CR>", { desc = "Show backlinks" })
+
+	-- Atomic note specific
+	vim.keymap.set("n", "<leader>op", function()
+		vim.cmd("ObsidianPromoteStatus")
+	end, { desc = "Promote note status" })
+	vim.keymap.set("n", "<leader>or", ":ObsidianScheduleReview<CR>", { desc = "Schedule review" })
+
+	-- Quick link insertion with search (existing)
 	vim.keymap.set("n", "<leader>oL", function()
 		-- This will open search and allow you to insert a link to selected note
 		vim.cmd("Obsidian quick switch")
@@ -191,6 +213,14 @@ function M.setup()
 			-- Insert selected text as content
 		end
 	end, { desc = "Create Template-note from selection" })
+
+	-- Quick atomic note creation command
+	vim.api.nvim_create_user_command("ObsidianAtomic", function(opts)
+		local title = opts.args or vim.fn.input("Atomic note title: ")
+		if title ~= "" then
+			vim.cmd("ObsidianNew from template " .. title .. " atomic-note-template")
+		end
+	end, { nargs = "?" })
 end
 
 return M

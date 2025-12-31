@@ -6,10 +6,31 @@ return {
 	event = { "BufReadPre *.md", "BufNewFile *.md" },
 	cmd = { "ObsidianSearch", "ObsidianOpen", "ObsidianNew", "ObsidianQuickSwitch", "ObsidianFollowLink" },
 	dependencies = {
-		"nvim-lua/plenary.nvim",
+		{ "nvim-lua/plenary.nvim", lazy = true },
 		-- Optional: for better telescope integration
-		"nvim-telescope/telescope.nvim",
+		{ "nvim-telescope/telescope.nvim", lazy = true },
 		"bullets-vim/bullets.vim",
+		{
+			"HakonHarnes/img-clip.nvim",
+			event = "BufReadPre *.md",
+			opts = {
+				default = {
+					dir_path = "assets/imgs",
+					extension = "png",
+					file_name = "%Y-%m-%d-%H-%M-%S",
+					template = "![$CURSOR]($FILE_PATH)",
+					prompt_for_file_name = true,
+					drag_and_drop = { enabled = true },
+				},
+				filetypes = {
+					markdown = {
+						url_encode_path = true,
+						template = "![$CURSOR]($FILE_PATH)",
+						download_images = false,
+					},
+				},
+			},
+		},
 	},
 	opts = {
 		workspaces = {
@@ -48,11 +69,14 @@ return {
 			end
 
 			local out = {
-				id = note.id,
-				aliases = note.aliases,
-				tags = note.tags,
+				id = note.id or "",
+				aliases = note.aliases or {},
+				tags = note.tags or {},
 				created = os.date("%Y-%m-%d %H:%M:%S"),
 				modified = os.date("%Y-%m-%d %H:%M:%S"),
+				status = "draft",  -- Default for atomic notes
+				links = {},  -- For tracking outgoing links
+				backlinks = {},  -- Placeholder for future backlink integration
 			}
 
 			-- Preserve existing metadata
@@ -125,6 +149,14 @@ return {
 				isodate = function()
 					return os.date("%Y-%m-%d")
 				end,
+				-- Atomic note specific
+				status_options = "draft|reviewed|refined|mastered",
+				link_to_parent = function()
+					return "[[Parent Note]]"  -- Placeholder; customize per note
+				end,
+				atomic_id = function()
+					return string.format("atomic-%s", os.date("%Y%m%d%H%M%S"))
+				end,
 			},
 		},
 
@@ -156,6 +188,7 @@ return {
 		sort_by = "modified",
 		sort_reversed = true,
 		max_lines = 1000,
+		cache = true,  -- Enable caching for faster searches
 	},
 
 	open_notes_in = "current",
@@ -208,7 +241,7 @@ return {
 		-- Enhanced UI for better atomic note experience
 		ui = {
 			enable = false,
-			update_debounce = 200,
+			update_debounce = 300,  -- Increase for less frequent updates
 			max_file_length = 5000,
 			bullets = { char = "•", hl_group = "ObsidianBullet" },
 			external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
