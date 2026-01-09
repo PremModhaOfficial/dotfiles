@@ -146,6 +146,7 @@ semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 # duration = 1
 
 [window]
+decorations = "None"
 dynamic_padding = false
 opacity = 0.75
 title = "Alacritty"
