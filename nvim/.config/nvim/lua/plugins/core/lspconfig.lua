@@ -8,8 +8,8 @@ return {
 	"neovim/nvim-lspconfig",
 	dependencies = {
 		-- Automatically install LSPs and related tools to stdpath for Neovim
-		{ "williamboman/mason.nvim", config = true }, -- NOTE: Must be loaded before dependants
-		"williamboman/mason-lspconfig.nvim",
+		{ "mason-org/mason.nvim", config = true }, -- NOTE: Must be loaded before dependants
+		"mason-org/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		"saghen/blink.cmp",
 
@@ -295,6 +295,29 @@ return {
 					clangdFileStatus = true,
 				},
 			},
+			lua_ls = {
+				settings = {
+					Lua = {
+						runtime = {
+							version = "LuaJIT",
+						},
+						workspace = {
+							checkThirdParty = false,
+							library = {
+								vim.env.VIMRUNTIME,
+								"~/.local/share/nvim/lazy/fluoromachine.nvim",
+							},
+						},
+						hint = {
+							enable = true,
+						},
+						completion = {
+							callSnippet = "Replace",
+						},
+					},
+				},
+				capabilities = capabilities,
+			},
 			-- Go
 			gopls = {
 				settings = {
@@ -335,20 +358,22 @@ return {
 			},
 			-- Additional useful servers
 			marksman = {
-				filetypes = { "markdown" },  -- Only attach to markdown files
+				filetypes = { "markdown" }, -- Only attach to markdown files
 				root_dir = function(fname)
-					if type(fname) ~= "string" then return vim.fn.getcwd() end
+					if type(fname) ~= "string" then
+						return vim.fn.getcwd()
+					end
 					local util = require("lspconfig.util")
 					return util.find_git_ancestor(fname) or util.path.dirname(fname) or vim.fn.getcwd()
 				end,
 				settings = {
 					marksman = {
 						core = {
-							title_from_heading = true,  -- Treat # headings as titles
+							title_from_heading = true, -- Treat # headings as titles
 						},
 						completion = {
 							wiki = {
-								style = "title-slug",  -- Preferred for Obsidian wiki links
+								style = "title-slug", -- Preferred for Obsidian wiki links
 							},
 						},
 					},

@@ -1,19 +1,18 @@
 return {
 	"marko-cerovac/material.nvim",
 	config = function()
-		vim.g.material_style = "palenight"
+		-- vim.g.material_style = "palenight"
 		require("material").setup({
 			-- Contrast settings
 			contrast = {
 				terminal = true, -- Enable contrast for the built-in terminal
 				sidebars = true, -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
 				floating_windows = true, -- Enable contrast for floating windows
-				cursor_line = false, -- Enable darker background for the cursor line
+				cursor_line = true, -- Enable darker background for the cursor line
 				lsp_virtual_text = true, -- Enable contrasted background for lsp virtual text
 				non_current_windows = true, -- Enable contrasted background for non-current windows
 				filetypes = {}, -- Specify which filetypes get the contrasted (darker) background
 			},
-
 			-- Style settings
 			styles = { -- Give comments style such as bold, italic, underline etc.
 				comments = { --[[ italic = true ]]
@@ -56,7 +55,7 @@ return {
 				-- "nvim-navic",
 				-- "nvim-notify",
 				-- "nvim-tree",
-				-- "nvim-web-devicons",
+				"nvim-web-devicons",
 				"rainbow-delimiters",
 				-- "sneak",
 				-- "telescope",

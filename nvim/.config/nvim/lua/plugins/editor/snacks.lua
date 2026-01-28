@@ -17,12 +17,12 @@ return {
 		},
 		bigfile = { enabled = true },
 		gh = { enabled = true },
-		
+
 		-- DASHBOARD: "MAINFRAME" THEME
 		dashboard = {
 			preset = {
-				-- Tech/Cyberpunk Header
-				header = vim.fn.system([[curl -s https://png.pngtree.com/png-clipart/20250418/original/pngtree-a-beautifully-detailed-pink-lotus-flower-with-layered-petals-symbolizing-beauty-png-image_20727353.png | chafa --colors=none --size 80x20]]) .. "\n\nSYSTEM ONLINE // PROTOCOL: DHARMA",
+				-- 	-- Tech/Cyberpunk Header
+				-- 	header = vim.fn.system([[curl -s https://png.pngtree.com/png-clipart/20250418/original/pngtree-a-beautifully-detailed-pink-lotus-flower-with-layered-petals-symbolizing-beauty-png-image_20727353.png | chafa --colors=none --size 80x20]]) .. "\n\nSYSTEM ONLINE // PROTOCOL: DHARMA",
 			},
 			sections = {
 				{ section = "header" },
@@ -58,7 +58,7 @@ return {
 			},
 		},
 		input = { enabled = true },
-		
+
 		-- NOTIFIER: "HOLOGRAPHIC HUD"
 		notifier = {
 			enabled = true,
@@ -75,7 +75,7 @@ return {
 			top_down = false, -- Bottom-up notifications (HUD style)
 			gap = 1,
 		},
-		
+
 		quickfile = { enabled = true },
 		scroll = { enabled = false },
 		statuscolumn = { enabled = true },
@@ -89,7 +89,7 @@ return {
 				injections = true,
 			},
 		},
-		
+
 		-- PICKER: "SEARCH CONSOLE"
 		picker = {
 			ui_select = true,
@@ -102,7 +102,7 @@ return {
 				},
 			},
 		},
-		
+
 		explorer = {
 			enabled = true,
 		},
@@ -112,16 +112,16 @@ return {
 			icon = "󰠮",
 			name = "Scratch",
 		},
-		
+
 		-- TERMINAL: "HEAVY EQUIPMENT"
 		terminal = {
 			enabled = true,
-			win = { 
+			win = {
 				style = "terminal",
 				border = "double", -- Heavy industrial border
 			},
 		},
-		
+
 		zen = {
 			enabled = true,
 			toggles = {
@@ -135,7 +135,7 @@ return {
 				},
 			},
 		},
-		
+
 		-- GLOBAL STYLES (GLASS EFFECT)
 		styles = {
 			notification = {
@@ -160,7 +160,7 @@ return {
 			},
 		},
 	},
-	
+
 	-- Keep your existing keymaps below
 	keys = {
 

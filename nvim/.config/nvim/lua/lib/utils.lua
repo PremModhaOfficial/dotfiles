@@ -22,7 +22,7 @@ function M.colorscheme_with_transparency(color, transparent_by_default, callback
 		vim.cmd.colorscheme(color)
 	else
 		callback()
-		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
+		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE" })
 	end
 	if not transparent_by_default then
 		return make_none()

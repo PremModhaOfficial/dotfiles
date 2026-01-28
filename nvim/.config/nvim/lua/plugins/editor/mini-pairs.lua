@@ -49,64 +49,17 @@ return {
 	config = function(_, opts)
 	require("mini.pairs").setup(opts)
 
-	-- Highlight matching pairs (replaces blink.pairs highlights)
-	local highlight_augroup = vim.api.nvim_create_augroup("MiniPairsHighlight", { clear = true })
-	local highlight_ns = vim.api.nvim_create_namespace("MiniPairsHighlight")
-
-	vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-		group = highlight_augroup,
-		callback = function()
-			-- Clear previous highlights
-			vim.api.nvim_buf_clear_namespace(0, highlight_ns, 0, -1)
-
-			-- Only highlight in insert mode
-			if vim.fn.mode() ~= "i" then
-				return
-			end
-
-			local line = vim.api.nvim_get_current_line()
-			local col = vim.api.nvim_win_get_cursor(0)[2] + 1
-
-			-- Highlight matching pairs
-			local pairs = { { "(", ")" }, { "[", "]" }, { "{", "}" } }
-			for _, pair in ipairs(pairs) do
-				local open, close = pair[1], pair[2]
-
-				-- Check if cursor is on or after an opening bracket
-				if col > 1 and line:sub(col - 1, col - 1) == open then
-					-- Find matching closing bracket
-					local depth = 1
-					for i = col, #line do
-						local char = line:sub(i, i)
-						if char == open then
-							depth = depth + 1
-						elseif char == close then
-							depth = depth - 1
-							if depth == 0 then
-								-- Highlight the pair
-								vim.api.nvim_buf_set_extmark(0, highlight_ns, vim.fn.line(".") - 1, col - 2, {
-									end_col = col - 1,
-									hl_group = "MiniPairsOpen",
-									priority = 100,
-								})
-								vim.api.nvim_buf_set_extmark(0, highlight_ns, vim.fn.line(".") - 1, i - 1, {
-									end_col = i,
-									hl_group = "MiniPairsClose",
-									priority = 100,
-								})
-								break
-							end
-						end
-					end
-				end
-			end
-		end,
-	})
-
-	-- Define highlight groups
-	vim.api.nvim_set_hl(0, "MiniPairsOpen", { fg = "#0db9d7", bold = true })
-	vim.api.nvim_set_hl(0, "MiniPairsClose", { fg = "#c099ff", bold = true })
-	vim.api.nvim_set_hl(0, "MiniPairsUnmatched", { fg = "#ff6b6b", bold = true })
+	-- DISABLED: Bracket highlighting on CursorMoved was causing lag spikes
+	-- This callback ran on EVERY cursor movement, scanning entire line for bracket pairs
+	-- The performance cost was too high, especially during rapid edits (c, d, etc.)
+	-- If you want this feature back, uncomment below and profile with :profile
+	
+	-- vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+	-- 	group = highlight_augroup,
+	-- 	callback = function()
+	-- 		...
+	-- 	end,
+	-- })
 end,
 }
 

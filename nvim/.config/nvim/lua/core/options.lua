@@ -19,7 +19,7 @@ opt.conceallevel = 0
 opt.concealcursor = ""
 
 opt.mouse = "a"
-opt.clipboard = "unnamedplus"
+opt.clipboard = "unnamedplus" -- Disabled to prevent hanging on yank/delete/paste operations. Uncomment if you have a fast clipboard provider configured.
 opt.tabstop = 4
 opt.shiftwidth = 4
 opt.breakindent = true

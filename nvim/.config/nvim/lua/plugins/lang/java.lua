@@ -4,7 +4,7 @@ return {
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"mfussenegger/nvim-dap",
-		"williamboman/mason.nvim",
+		"mason-org/mason.nvim",
 	},
 	config = function()
 		local jdtls = require("jdtls")

@@ -231,11 +231,11 @@ return { -- Autocompletion
 				create_undo_point = true,
 			},
 			menu = {
-				border = "rounded",
+				border = { "", "", "", "▌", "", "", "", "▐" },
 				scrolloff = 2,
 				scrollbar = true,
 				direction_priority = { "s", "n" },
-				winblend = 10, -- 10% Transparency (Glassy Effect)
+				winblend = 0,
 				auto_show = function(ctx)
 					if ctx.mode == "cmdline" then
 						return false
@@ -249,7 +249,7 @@ return { -- Autocompletion
 					return ctx.mode ~= "cmdline"
 				end,
 				draw = {
-					-- Added "source_name" to columns for better context
+					padding = { 1, 1 },
 					columns = {
 						{ "kind_icon", gap = 1 },
 						{ "label", "label_description", gap = 1 },
@@ -284,8 +284,8 @@ return { -- Autocompletion
 				auto_show_delay_ms = 200, -- Snappier (was 500ms)
 				update_delay_ms = 50,
 				window = {
-					border = "rounded",
-					winblend = 10, -- 10% Transparency
+					border = { "▀", "▀", "▀", " ", "▄", "▄", "▄", " " },
+					winblend = 0,
 				},
 			},
 
@@ -298,10 +298,10 @@ return { -- Autocompletion
 		signature = {
 			enabled = true,
 			window = {
-				border = "double",
+				border = { "▀", "▀", "▀", " ", "▄", "▄", "▄", " " },
 				scrollbar = false,
 				direction_priority = { "n", "s" },
-				show_documentation = true, -- SHOW documentation (was false)
+				show_documentation = true,
 			},
 		},
 	},

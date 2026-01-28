@@ -10,26 +10,48 @@ return {
 				-- enabled = false,
 			},
 		},
-		opts = {
-			ensure_installed = { "bash", "c", "diff", "go", "gomod", "gowork", "gosum", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },
-			-- Autoinstall languages that are not installed
-			auto_install = true,
-			highlight = {
-				enable = true,
-				-- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-				--  If you are experiencing weird indenting issues, add the language to
-				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
-				additional_vim_regex_highlighting = { "ruby" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
-		},
-		config = function(_, opts)
+		config = function()
 			-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+			local ts = require("nvim-treesitter")
 
-			-- Prefer git instead of curl in order to improve connectivity in some environments
-			require("nvim-treesitter.install").prefer_git = true
-			---@diagnostic disable-next-line: missing-fields
-			require("nvim-treesitter.configs").setup(opts)
+			-- Setup install directory (optional, defaults to stdpath('data') .. '/site')
+			ts.setup({
+				install_dir = vim.fn.stdpath("data") .. "/site",
+			})
+
+			-- Install parsers (this is a no-op if already installed)
+			ts.install({
+				"bash",
+				"c",
+				"diff",
+				"go",
+				"gomod",
+				"gowork",
+				"gosum",
+				"html",
+				"lua",
+				"luadoc",
+				"markdown",
+				"vim",
+				"vimdoc",
+			})
+
+			-- Enable highlighting globally
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function()
+					local lang = vim.treesitter.language.get_lang(vim.bo.filetype)
+					if lang then
+						pcall(vim.treesitter.start)
+					end
+				end,
+			})
+
+			-- Enable indentation (experimental)
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function()
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end,
+			})
 
 			-----------------------------------------------------
 			-- This module contains a number of default definitions

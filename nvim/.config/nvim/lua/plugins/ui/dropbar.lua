@@ -156,13 +156,13 @@ return {
 		-- vim.ui.select = require("dropbar.utils.menu").select
 		local bar = require("dropbar.utils.bar")
 		require("which-key").add({
-			{
-				"<leader>db",
-				function()
-					bar.pick()
-				end,
-				desc = "[D]rop[B]ar Pick",
-			},
+			-- {
+			-- 	"<leader>db",
+			-- 	function()
+			-- 		bar.pick()
+			-- 	end,
+			-- 	desc = "[D]rop[B]ar Pick",
+			-- },
 			{
 				"<leader>dh",
 				function()

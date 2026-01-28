@@ -1,26 +1,26 @@
 return {
 	"maxmx03/fluoromachine.nvim",
 	lazy = false,
-	enabled = false,
+	-- enabled = false,
 	priority = 1000,
 	config = function()
-		local fm = require("fluoromachine")
+		local fluoromachine = require("fluoromachine")
 
-		fm.setup({
+		fluoromachine.setup({
 			theme = "retrowave",
 			glow = false,
 			transparent = true,
-			brightness = 100.0,
+			brightness = 0,
 			true_colors = true,
 			styles = {
 				comments = { italic = true },
 				constants = { bold = true },
 				functions = { bold = true },
 				keywords = { bold = true },
-				numbers = {},
-				parameters = {},
+				-- numbers = {},
+				-- parameters = {},
 				-- types = {},
-				types = { italic = true }, --  NOTE: NICE LOOKING
+				-- types = { italic = true }, --  NOTE: NICE LOOKING
 				-- variables = {},
 			},
 		})
