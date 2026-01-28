@@ -45,6 +45,8 @@ local Core = {
 			display_count = 0, display_total = 0 -- For animation
 		},
 		
+		macro = { recording = false, reg = "", buffer = {} },
+		
 		harpoon = { count = 0, string = "", active = false },
 		
 		nixie = {
@@ -208,6 +210,36 @@ local function update_harpoon()
 end
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, { callback = update_harpoon })
 
+-- 6. Macro Recording Listener
+-- Use a namespace to prevent duplicate listeners on reload
+local macro_ns = vim.api.nvim_create_namespace("heirline_macro")
+vim.on_key(nil, macro_ns) -- Clear previous listener
+
+vim.api.nvim_create_autocmd({ "RecordingEnter", "RecordingLeave" }, {
+	callback = function()
+		local reg = vim.fn.reg_recording()
+		Core.state.macro.recording = (reg ~= "")
+		Core.state.macro.reg = reg
+		if reg ~= "" then Core.state.macro.buffer = {} end
+		vim.cmd("redrawstatus")
+	end,
+})
+
+vim.on_key(function(key)
+	if Core.state.macro.recording then
+		local k = vim.fn.keytrans(key)
+		if k == "<Ignore>" then return end
+		
+		table.insert(Core.state.macro.buffer, k)
+		if #Core.state.macro.buffer > 12 then -- Match display width
+			table.remove(Core.state.macro.buffer, 1)
+		end
+		vim.schedule(function()
+			vim.cmd("redrawstatus")
+		end)
+	end
+end, macro_ns)
+
 
 --------------------------------------------------------------------------------
 -- ANIMATION SYSTEM (PHYSICS ENGINE)
@@ -246,6 +278,14 @@ Animation.timer:start(0, 80, vim.schedule_wrap(function()
 		end
 	else
 		Core.state.search.active = false
+	end
+
+	-- B2. MACRO POLLING (Fallback for missed events)
+	local rec_reg = vim.fn.reg_recording()
+	if (rec_reg ~= "") ~= Core.state.macro.recording then
+		Core.state.macro.recording = (rec_reg ~= "")
+		Core.state.macro.reg = rec_reg
+		dirty = true
 	end
 	
 	if Core.state.search.active then
@@ -298,6 +338,13 @@ Animation.timer:start(0, 80, vim.schedule_wrap(function()
 		local ratio = Core.state.search.display_count / math.max(1, Core.state.search.display_total)
 		s.segments = math.min(9, math.floor(ratio * 9))
 		s.label = string.format(" %d/%d", Core.state.search.display_count, Core.state.search.display_total)
+
+	elseif Core.state.macro.recording then
+		s.mode = "MACRO"
+		s.color = "#ff5555"
+		s.label = " REC @" .. Core.state.macro.reg
+		-- Tape Reel Animation: Cylcing 1-9
+		s.segments = (math.floor(now / 100) % 9) + 1
 
 	elseif lsp.progress then
 		s.mode = "LSP"
@@ -399,7 +446,13 @@ local VimMode = {
 local Nixie = {
 	provider = function()
 		local s = Core.state.nixie
-		if s.mode == "LSP" then
+		if s.mode == "MACRO" then
+			local b = Core.state.macro.buffer
+			local tape = table.concat(b, "")
+			local display = tape:sub(-12)
+			local pad = string.rep(" ", math.max(0, 12 - #display))
+			return "┣" .. pad .. display .. "┫" .. s.label .. " "
+		elseif s.mode == "LSP" then
 			return "┣" .. s.wave_pattern .. "┫" .. s.label .. " "
 		else
 			local filled = string.rep("▓", s.segments)
