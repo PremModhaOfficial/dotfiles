@@ -33,6 +33,9 @@ return {
 
 			highlights = {
 				Comment = { fg = "#696969", bg = "NONE", italic = true },
+				Whitespace = { fg = "NONE", bg = "NONE" },
+				NonText = { fg = "NONE", bg = "NONE" },
+				EndOfBuffer = { fg = "NONE", bg = "NONE" },
 			},
 
 			extensions = {
