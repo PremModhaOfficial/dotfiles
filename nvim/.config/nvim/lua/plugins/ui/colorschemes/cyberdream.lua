@@ -57,6 +57,5 @@ return {
 		})
 
 		vim.cmd("colorscheme cyberdream")
-		require("lib.utils").set_transparent_special_chars()
 	end,
 }
