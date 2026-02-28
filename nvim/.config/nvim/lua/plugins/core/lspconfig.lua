@@ -198,9 +198,6 @@ return {
 		require("neoconf").setup({ -- override any of the default settings here
 		})
 		local servers = {
-			jdtls = {
-				root_markers = { ".git", "pom.xml", "build.gradle" },
-			},
 			sqls = {
 				cmd = { "sqls", "-log-to-stderr" },
 				filetypes = { "sql", "mysql", "plsql" },
@@ -478,6 +475,7 @@ return {
 
 		require("mason-lspconfig").setup({
 			automatic_installation = false,
+			automatic_enable = { exclude = { "jdtls" } },
 			handlers = {
 				function(server_name)
 					local server = servers[server_name] or {}
@@ -488,6 +486,9 @@ return {
 					-- require("lspconfig")[server_name].setup(server)
 					vim.lsp.config(server_name, server)
 				end,
+				-- Disable mason-lspconfig from automatically configuring jdtls
+				-- nvim-jdtls handles this instead
+				["jdtls"] = function() end,
 			},
 		})
 	end,

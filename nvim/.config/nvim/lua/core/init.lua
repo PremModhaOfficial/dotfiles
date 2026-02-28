@@ -13,7 +13,7 @@ end)
 require("core.lazy")
 
 local utils = require("lib.utils")
-local reset_colors = utils.colorscheme_with_transparency("fluoromachine", false)
+local reset_colors = utils.colorscheme_with_transparency("cyberdream", false)
 
 vim.keymap.set("n", "<leader>cd", function()
 	reset_colors()

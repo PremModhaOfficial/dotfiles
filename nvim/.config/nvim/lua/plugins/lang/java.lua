@@ -7,6 +7,10 @@ return {
 		"mason-org/mason.nvim",
 	},
 	config = function()
+		-- Force disable the generic jdtls config from nvim-lspconfig
+		-- to prevent duplicate server instances
+		vim.lsp.enable("jdtls", false)
+
 		local jdtls = require("jdtls")
 		local home = os.getenv("HOME")
 		local jdtls_path = home .. "/.local/share/nvim/mason/packages/jdtls"

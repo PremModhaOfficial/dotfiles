@@ -19,9 +19,34 @@ opt.conceallevel = 0
 opt.concealcursor = ""
 
 opt.mouse = "a"
-opt.clipboard = "unnamedplus" -- Disabled to prevent hanging on yank/delete/paste operations. Uncomment if you have a fast clipboard provider configured.
+opt.clipboard = "unnamedplus"
+-- if vim.fn.has("wayland") == 1 or vim.env.WAYLAND_DISPLAY then
+-- 	vim.g.clipboard = {
+-- 		name = "wl-copy",
+-- 		copy = {
+-- 			["+"] = "wl-copy",
+-- 			["*"] = "wl-copy",
+-- 		},
+-- 		paste = {
+-- 			["+"] = "wl-paste",
+-- 			["*"] = "wl-paste",
+-- 		},
+-- 		cache_enabled = 0,
+-- 	}
+-- end
+-- OSC 52 fallback for reliable global clipboard
+if vim.fn.has("nvim-0.10") == 1 then
+	vim.api.nvim_create_autocmd("TextYankPost", {
+		callback = function()
+			if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
+				require("vim.ui.clipboard.osc52").copy("+")(vim.v.event.regcontents)
+			end
+		end,
+	})
+end
 opt.tabstop = 4
 opt.shiftwidth = 4
+opt.expandtab = true
 opt.breakindent = true
 opt.undofile = true
 opt.hlsearch = true

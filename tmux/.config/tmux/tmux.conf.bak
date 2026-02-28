@@ -71,26 +71,6 @@ bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
 bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
 
 # ==========================================
-# 2026 TMUX UPGRADE: NEW KEYBINDINGS
-# ==========================================
-# Session Manager (sesh) - Prefix + o
-bind-key o display-popup -E -w 80% -h 70% "sesh connect $(sesh list | fzf --prompt='Session: ')"
-
-# Popup Menu - Prefix + m (Session actions)
-bind-key m display-menu \
-    -T "Session Menu" \
-    -x C -y C \
-    "New Session"      n "run-shell 'tmux new-session -d -s \"$(read -p \"Session name: \" name; echo $name)\"'" \
-    "Kill Session"     k "confirm-before -p 'Kill session #{session_name}? (y/n)' kill-session" \
-    "Rename Session"   r "command-prompt -I '#{session_name}' -p '(rename session):' 'rename-session -- \"%%\"'" \
-    "" \
-    "Reload Config"    R "source-file ~/.config/tmux/tmux.conf; display-message 'Config reloaded!'" \
-    "Show Keybindings" \? "display-popup -E -w 80% -h 80% 'tmux list-keys | less'"
-
-# Keybindings Reference - Prefix + ?
-bind-key ? run-shell "tmux list-keys | less"
-
-# ==========================================
 # PLUGINS
 # ==========================================
 set -g @plugin 'tmux-plugins/tpm'
@@ -99,23 +79,6 @@ set -g @plugin 'tmux-plugins/tmux-yank'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @plugin 'christoomey/vim-tmux-navigator'
-set -g @plugin 'omerxx/tmux-floax'
-set -g @plugin 'fcsonline/tmux-thumbs'
-
-# ==========================================
-# PLUGIN CONFIG
-# ==========================================
-# Floating Terminal (tmux-floax)
-set -g @floax-bind 'p'
-set -g @floax-width '80%'
-set -g @floax-height '80%'
-set -g @floax-border-color 'cyan'
-set -g @floax-text-color 'blue'
-
-# Keyboard Copy Hints (tmux-thumbs)
-set -g @thumbs-key 't'
-set -g @thumbs-contrast 1
-set -g @thumbs-command 'echo -n {} | xclip -selection clipboard'
 
 # ==========================================
 # STATUS BAR (Minimalist & Fast)
@@ -142,6 +105,17 @@ set -g status-right "#{?client_prefix,#[fg=red]PREFIX ,}#[fg=colour238] | #[fg=y
 # ==========================================
 set -g @continuum-restore 'on'
 set -g @resurrect-strategy-nvim 'session'
+
+# SessionX (Modern Session Manager)
+# Replaces old 'tms' script
+set -g @plugin 'omerxx/tmux-sessionx'
+set -g @sessionx-bind 'o'
+set -g @sessionx-x-path '~/dotfiles'
+set -g @sessionx-window-height '85%'
+set -g @sessionx-window-width '75%'
+set -g @sessionx-zoxide-mode 'on'
+set -g @sessionx-filter-current 'false'
+set -g @sessionx-preview-enabled 'true'
 
 # Keep at bottom
 run '~/.tmux/plugins/tpm/tpm'

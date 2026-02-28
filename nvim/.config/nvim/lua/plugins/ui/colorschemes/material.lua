@@ -1,5 +1,6 @@
 return {
 	"marko-cerovac/material.nvim",
+	enabled = false,
 	config = function()
 		-- vim.g.material_style = "palenight"
 		require("material").setup({

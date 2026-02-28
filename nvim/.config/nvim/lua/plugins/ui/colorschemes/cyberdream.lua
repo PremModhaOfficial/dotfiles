@@ -33,9 +33,9 @@ return {
 
 			highlights = {
 				Comment = { fg = "#696969", bg = "NONE", italic = true },
-				Whitespace = { fg = "NONE", bg = "NONE" },
-				NonText = { fg = "NONE", bg = "NONE" },
-				EndOfBuffer = { fg = "NONE", bg = "NONE" },
+				Whitespace = { fg = "#0c1014", bg = "#0c1014" },
+				NonText = { fg = "#0c1014", bg = "#0c1014" },
+				EndOfBuffer = { fg = "#0c1014", bg = "#0c1014" },
 			},
 
 			extensions = {
@@ -60,5 +60,10 @@ return {
 		})
 
 		vim.cmd("colorscheme cyberdream")
+
+		local bg = "#0c1014"
+		vim.api.nvim_set_hl(0, "Whitespace", { fg = bg, bg = bg })
+		vim.api.nvim_set_hl(0, "NonText", { fg = bg, bg = bg })
+		vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = bg, bg = bg })
 	end,
 }

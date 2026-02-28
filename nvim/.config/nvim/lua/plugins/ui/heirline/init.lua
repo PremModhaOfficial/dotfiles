@@ -330,13 +330,5 @@ return {
 			statuscolumn = statu_scolumn,
 		})
 
-		-- Animation timer: Update statusline every 200ms for smooth animations (5 FPS)
-		local timer = vim.loop.new_timer()
-		timer:start(0, 200, vim.schedule_wrap(function()
-			-- Redraw for smooth animations (LSP, pulse, breathing effects)
-			vim.cmd("redrawstatus")
-		end))
-
-		print("Heirline loaded with animations enabled")
 	end,
 }

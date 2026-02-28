@@ -1,27 +1,49 @@
 local M = {}
 
-local function make_none()
-	local Normal = vim.api.nvim_get_hl(0, { name = "Normal" })
-	local NormalNC = vim.api.nvim_get_hl(0, { name = "NormalNC" })
-	local NormalFloat = vim.api.nvim_get_hl(0, { name = "NormalFloat" })
-	local Whitespace = vim.api.nvim_get_hl(0, { name = "Whitespace" })
-	local NonText = vim.api.nvim_get_hl(0, { name = "NonText" })
-	local EndOfBuffer = vim.api.nvim_get_hl(0, { name = "EndOfBuffer" })
+local transparency_groups = {
+	"Normal",
+	"NormalNC",
+	"NormalFloat",
+	"Whitespace",
+	"NonText",
+	"EndOfBuffer",
+	"MatchParen",
+	"Delimiter",
+	"@punctuation",
+	"@punctuation.bracket",
+	"@punctuation.delimiter",
+	"@punctuation.special",
+	"@tag.delimiter",
+}
 
-	vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-	vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-	vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-	vim.api.nvim_set_hl(0, "Whitespace", { fg = "none", bg = "none" })
-	vim.api.nvim_set_hl(0, "NonText", { fg = "none", bg = "none" })
-	vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = "none", bg = "none" })
+local function clear_bg(name)
+	local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name })
+	if not ok or not hl then return end
+	hl.bg = nil
+	pcall(vim.api.nvim_set_hl, 0, name, hl)
+end
 
-	return function()
-		vim.api.nvim_set_hl(0, "Normal", { bg = Normal.bg })
-		vim.api.nvim_set_hl(0, "NormalNC", { bg = NormalNC.bg })
-		vim.api.nvim_set_hl(0, "NormalFloat", { bg = NormalFloat.bg })
-		vim.api.nvim_set_hl(0, "Whitespace", { fg = Whitespace.fg, bg = Whitespace.bg })
-		vim.api.nvim_set_hl(0, "NonText", { fg = NonText.fg, bg = NonText.bg })
-		vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = EndOfBuffer.fg, bg = EndOfBuffer.bg })
+local function apply_transparency()
+	for _, name in ipairs(transparency_groups) do
+		clear_bg(name)
+	end
+end
+
+local transparency_enabled = false
+local saved_highlights = {}
+
+local function save_highlights()
+	saved_highlights = {}
+	for _, name in ipairs(transparency_groups) do
+		saved_highlights[name] = vim.api.nvim_get_hl(0, { name = name })
+	end
+end
+
+local function restore_highlights()
+	for _, name in ipairs(transparency_groups) do
+		if saved_highlights[name] then
+			vim.api.nvim_set_hl(0, name, saved_highlights[name])
+		end
 	end
 end
 
@@ -33,8 +55,25 @@ function M.colorscheme_with_transparency(color, transparent_by_default, callback
 		callback()
 		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE" })
 	end
+
 	if not transparent_by_default then
-		return make_none()
+		transparency_enabled = true
+		save_highlights()
+		apply_transparency()
+
+		vim.api.nvim_create_autocmd("ColorScheme", {
+			group = vim.api.nvim_create_augroup("TransparencyFix", { clear = true }),
+			callback = function()
+				if transparency_enabled then
+					vim.defer_fn(apply_transparency, 0)
+				end
+			end,
+		})
+
+		return function()
+			transparency_enabled = false
+			restore_highlights()
+		end
 	end
 end
 
