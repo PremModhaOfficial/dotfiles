@@ -205,6 +205,31 @@ return {
 					return vim.fs.root(fname, { ".git", "Makefile", "package.json" }) or vim.fn.getcwd()
 				end,
 			},
+			zls = {
+				settings = {
+					zig = {
+						enable_snippets = true,
+						enable_argument_placeholders = true,
+						completion_label_details = true,
+						enable_build_on_save = true,
+						build_on_save_args = {},
+						semantic_tokens = "full",
+						enable_inlay_hints = true,
+						inlay_hints_show_variable_type_hints = true,
+						inlay_hints_show_struct_literal_field_type = true,
+						inlay_hints_show_parameter_name = true,
+						inlay_hints_show_builtin = true,
+						inlay_hints_exclude_single_argument = true,
+						inlay_hints_hide_redundant_param_names = false,
+						inlay_hints_hide_redundant_param_names_last_token = true,
+						warn_style = true,
+						force_autofix = false,
+						highlight_global_var_declarations = true,
+						skip_std_references = false,
+						prefer_ast_check_as_child_process = true,
+					},
+				},
+			},
 			pyright = {
 				python = {
 					analysis = {

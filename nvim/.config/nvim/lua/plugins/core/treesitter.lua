@@ -37,11 +37,14 @@ return {
 				"vimdoc",
 			})
 
-			-- Enable highlighting globally
+			-- Auto-install parser on FileType if available
 			vim.api.nvim_create_autocmd("FileType", {
 				callback = function()
-					local lang = vim.treesitter.language.get_lang(vim.bo.filetype)
-					if lang then
+					local lang = vim.bo.filetype
+					local available = ts.get_available()
+					local has_parser = vim.tbl_contains(available, lang)
+					if has_parser then
+						ts.install(lang)
 						pcall(vim.treesitter.start)
 					end
 				end,
