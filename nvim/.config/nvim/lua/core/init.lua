@@ -12,9 +12,8 @@ end)
 
 require("core.lazy")
 
+require("lib.borderless").setup()
 local utils = require("lib.utils")
-local reset_colors = utils.colorscheme_with_transparency("cyberdream", false)
+local disable_transparency = utils.colorscheme_with_transparency("neon-cherrykiss-night", false)
 
-vim.keymap.set("n", "<leader>cd", function()
-	reset_colors()
-end)
+vim.keymap.set("n", "<leader>cd", disable_transparency, { desc = "Disable Transparency" })
