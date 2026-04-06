@@ -1,12 +1,24 @@
 return {
 	"kawre/leetcode.nvim",
 	-- build = ":TSUpdate html", -- if you have `nvim-treesitter` installed
-	lazy = false, -- Load immediately to ensure commands are available
+	lazy = false,
 	dependencies = {
-		-- "ibhagwan/fzf-lua",
 		"folke/snacks.nvim",
 		"nvim-lua/plenary.nvim",
 		"MunifTanjim/nui.nvim",
+	},
+	keys = {
+		{ "<leader>lq", "<cmd>Leet<cr>", desc = "LeetCode Menu" },
+		{ "<leader>ll", "<cmd>Leet list<cr>", desc = "LeetCode List All" },
+		{ "<leader>le", "<cmd>Leet list difficulty=easy<cr>", desc = "LeetCode Easy" },
+		{ "<leader>lm", "<cmd>Leet list difficulty=medium<cr>", desc = "LeetCode Medium" },
+		{ "<leader>lh", "<cmd>Leet list difficulty=hard<cr>", desc = "LeetCode Hard" },
+		{ "<leader>ld", "<cmd>Leet daily<cr>", desc = "LeetCode Daily" },
+		{ "<leader>lr", "<cmd>Leet random<cr>", desc = "LeetCode Random" },
+		{ "<leader>lc", "<cmd>Leet console<cr>", desc = "LeetCode Console" },
+		{ "<leader>li", "<cmd>Leet info<cr>", desc = "LeetCode Info" },
+		{ "<leader>ls", "<cmd>Leet submit<cr>", desc = "LeetCode Submit" },
+		{ "<leader>lt", "<cmd>Leet run<cr>", desc = "LeetCode Test/Run" },
 	},
 	---@module 'leetcode'
 	opts = {
@@ -14,8 +26,12 @@ return {
 			provider = nil,
 		},
 		storage = {
-			home = "~/projects/unsortedProjects/DSA/leetcode/",
-			cache = "~/projects/unsortedProjects/DSA/leetcode/cache/",
+			home = vim.fn.expand("~/projkts/leet/"),
+			cache = vim.fn.expand("~/projkts/leet/cache/"),
+		},
+		hooks = {
+			["enter"] = {},
+			["question_enter"] = {},
 		},
 	},
 }

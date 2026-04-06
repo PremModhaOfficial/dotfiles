@@ -639,30 +639,30 @@ return {
 		{
 			"<leader>gi",
 			function()
-				Snacks.picker.gh_issues()
+				Snacks.picker.gh_issue()
 			end,
-			desc = "GitHub Issues",
+			desc = "GitHub Issues (open)",
 		},
 		{
 			"<leader>gI",
 			function()
-				Snacks.picker.gh_issues({ all = true })
+				Snacks.picker.gh_issue({ state = "all" })
 			end,
-			desc = "All GitHub Issues",
+			desc = "GitHub Issues (all)",
 		},
 		{
 			"<leader>gp",
 			function()
-				Snacks.picker.gh_pull_requests()
+				Snacks.picker.gh_pr()
 			end,
-			desc = "GitHub PRs",
+			desc = "GitHub PRs (open)",
 		},
 		{
 			"<leader>gP",
 			function()
-				Snacks.picker.gh_pull_requests({ all = true })
+				Snacks.picker.gh_pr({ state = "all" })
 			end,
-			desc = "All GitHub PRs",
+			desc = "GitHub PRs (all)",
 		},
 	},
 	init = function()
