@@ -10,7 +10,7 @@
 # First line removes the path; second line sets it.  Without the first line,
 # your path gets massive and fish becomes very slow.
 set -e fish_user_paths
-set -U fish_user_paths $HOME/.bin  $HOME/.local/bin $HOME/.config/emacs/bin $HOME/Applications /var/lib/flatpak/exports/bin/ $fish_user_paths $HOME/projects/hyprdots/Configs/.local/share/bin
+set -U fish_user_paths $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $HOME/Applications /var/lib/flatpak/exports/bin/ $fish_user_paths $HOME/projects/hyprdots/Configs/.local/share/bin
 set -g fish_greeting
 
 if status is-interactive
@@ -25,8 +25,8 @@ end
 # alias lt='eza --icons=auto --tree' # list folder as tree
 # Changing "ls" to "eza"
 alias ls='eza -al --color=always --group-directories-first' # my preferred listing
-alias la='eza -a --color=always --group-directories-first'  # all files and dirs
-alias ll='eza -l --color=always --group-directories-first'  # long format
+alias la='eza -a --color=always --group-directories-first' # all files and dirs
+alias ll='eza -l --color=always --group-directories-first' # long format
 alias lt='eza -aT --color=always --group-directories-first' # tree listing
 alias l.='eza -a | egrep "^\."'
 alias l.='eza -al --color=always --group-directories-first ../' # ls on the PARENT directory
@@ -40,15 +40,16 @@ abbr .4 'cd ../../../..'
 abbr .5 'cd ../../../../..'
 
 abbr ta 'tmux a'
-abbr e 'nvim'
+abbr e nvim
 # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 abbr mkdir 'mkdir -p'
 
 ### EXPORT ###
-set fish_greeting                                 # Supresses fish's intro message
-set TERM "xterm-256color"                         # Sets the terminal type
-set EDITOR "nvim"                 # $EDITOR use Emacs in terminal
-set VISUAL "emacsclient -c -a emacs"              # $VISUAL use Emacs in GUI mode
+set fish_greeting # Supresses fish's intro message
+set TERM xterm-256color # Sets the terminal type
+set EDITOR nvim # $EDITOR use Emacs in terminal
+set VISUAL nvim # $VISUAL use Emacs in GUI mode
+# set VISUAL "emacsclient -c -a emacs" # $VISUAL use Emacs in GUI mode
 
 ### SET MANPAGER
 ### Uncomment only one of these!
@@ -61,8 +62,8 @@ set -x MANPAGER "nvim +Man!"
 
 ### SET EITHER DEFAULT EMACS MODE OR VI MODE ###
 function fish_user_key_bindings
-  # fish_default_key_bindings
-  fish_vi_key_bindings
+    # fish_default_key_bindings
+    fish_vi_key_bindings
 end
 ### END OF VI MODE ###
 
@@ -77,31 +78,33 @@ set fish_color_param brcyan
 
 # Functions needed for !! and !$
 function __history_previous_command
-  switch (commandline -t)
-  case "!"
-    commandline -t $history[1]; commandline -f repaint
-  case "*"
-    commandline -i !
-  end
+    switch (commandline -t)
+        case "!"
+            commandline -t $history[1]
+            commandline -f repaint
+        case "*"
+            commandline -i !
+    end
 end
 
 function __history_previous_command_arguments
-  switch (commandline -t)
-  case "!"
-    commandline -t ""
-    commandline -f history-token-search-backward
-  case "*"
-    commandline -i '$'
-  end
+    switch (commandline -t)
+        case "!"
+            commandline -t ""
+            commandline -f history-token-search-backward
+        case "*"
+            commandline -i '$'
+    end
 end
 
 # The bindings for !! and !$
-if [ "$fish_key_bindings" = "fish_vi_key_bindings" ];
-  bind -Minsert ! __history_previous_command
-  bind -Minsert '$' __history_previous_command_arguments
+if [ "$fish_key_bindings" = fish_vi_key_bindings ]
+
+    bind -Minsert ! __history_previous_command
+    bind -Minsert '$' __history_previous_command_arguments
 else
-  bind ! __history_previous_command
-  bind '$' __history_previous_command_arguments
+    bind ! __history_previous_command
+    bind '$' __history_previous_command_arguments
 end
 
 # Function for creating a backup file
@@ -117,8 +120,8 @@ end
 function copy
     set count (count $argv | tr -d \n)
     if test "$count" = 2; and test -d "$argv[1]"
-	set from (echo $argv[1] | trim-right /)
-	set to (echo $argv[2])
+        set from (echo $argv[1] | trim-right /)
+        set to (echo $argv[2])
         command cp -r $from $to
     else
         command cp $argv
@@ -170,9 +173,7 @@ end
 
 ### END OF FUNCTIONS ###
 
-
 ### ALIASES ###
-
 
 # vim and emacs
 alias vim='nvim'
@@ -180,14 +181,13 @@ alias emacs="emacsclient -c -a 'emacs'"
 alias em='/usr/bin/emacs -nw'
 alias rem="killall emacs || echo 'Emacs server not running'; /usr/bin/emacs --daemon" # Kill Emacs and restart daemon..
 
-
 # pacman and yay
-alias pacsyu='sudo pacman -Syu'                  # update only standard pkgs
-alias pacsyyu='sudo pacman -Syyu'                # Refresh pkglist & update standard pkgs
-alias parsua='paru -Sua --noconfirm'             # update only AUR pkgs (paru)
-alias parsyu='paru -Syu --noconfirm'             # update standard pkgs and AUR pkgs (paru)
-alias unlock='sudo rm /var/lib/pacman/db.lck'    # remove pacman lock
-alias orphan='sudo pacman -Rns (pacman -Qtdq)'  # remove orphaned packages (DANGEROUS!)
+alias pacsyu='sudo pacman -Syu' # update only standard pkgs
+alias pacsyyu='sudo pacman -Syyu' # Refresh pkglist & update standard pkgs
+alias parsua='paru -Sua --noconfirm' # update only AUR pkgs (paru)
+alias parsyu='paru -Syu --noconfirm' # update standard pkgs and AUR pkgs (paru)
+alias unlock='sudo rm /var/lib/pacman/db.lck' # remove pacman lock
+alias orphan='sudo pacman -Rns (pacman -Qtdq)' # remove orphaned packages (DANGEROUS!)
 
 # get fastest mirrors
 alias mirror="sudo reflector -f 30 -l 30 --number 10 --verbose --save /etc/pacman.d/mirrorlist"
@@ -196,8 +196,8 @@ alias mirrors="sudo reflector --latest 50 --number 20 --sort score --save /etc/p
 alias mirrora="sudo reflector --latest 50 --number 20 --sort age --save /etc/pacman.d/mirrorlist"
 
 # adding flags
-alias df='df -h'               # human-readable sizes
-alias free='free -m'           # show sizes in MB
+alias df='df -h' # human-readable sizes
+alias free='free -m' # show sizes in MB
 alias grep='grep --color=auto' # colorize output (good for log files)
 
 # ps
@@ -256,27 +256,32 @@ alias mocp="bash -c mocp"
 ### SETTING THE STARSHIP PROMPT ###
 # starship init fish | source
 function starship_transient_prompt_func
-  starship module character
+    starship module character
 end
 starship init fish | source
 enable_transience
 
 ### SETUP ZOXIDE ###
 zoxide init fish | source
-eww shell-completions --shell fish | source
 fzf --fish | source
 
-
 alias wi='wimi -1 1 && exit'
-alias ta='tmux a || tmux'
+alias t='tmux a || tmux'
 alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
 alias ob='obsidian --disable-gpu'
 alias pi="ping google.com"
 alias sds='sdn s'
 alias fd='fdfind'
 
+## carapace
+set -Ux CARAPACE_BRIDGES 'zsh,fish,bash,inshellisense' # optional
+set -x CARAPACE_UNFILTERED = 1
+carapace _carapace | source
+
 # function starship_transient_rprompt_func
 #   starship module time
 # end
 # starship init fish | source
 # enable_transience
+
+source ~/.config/fish/extra.fish
