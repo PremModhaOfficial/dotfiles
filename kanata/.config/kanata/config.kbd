@@ -32,56 +32,25 @@
   quote-num (tap-hold $tap-timeout $hold-timeout ' (layer-while-held numbers))
   caps-esc-num (tap-hold $tap-timeout $hold-timeout esc (layer-while-held numbers))
   rsft-toggle (tap-dance $tap-timeout (rsft caps))
-  
-  ;; Vim mode toggle (\ backslash OR ralt to switch)
-  vim-on (layer-switch vim)
-  vim-off (layer-switch base)
-  
-  ;; Vim insert mode helpers
-  vim-i @vim-off                              ;; i = exit vim (insert at cursor)
-  vim-a (multi rght @vim-off)                 ;; a = move right, then exit (append)
-  vim-o (multi end ret @vim-off)              ;; o = end of line, newline, exit (open below)
-  vim-I (multi home @vim-off)                 ;; I = start of line, exit (insert at beginning)
-  vim-A (multi end @vim-off)                  ;; A = end of line, exit (append at end)
-  vim-O (multi home up end ret @vim-off)      ;; O = open line above
 )
 
-;; Chord toggle: g+h simultaneously to enter/exit Vim mode
-;; (Using g+h instead of f+j to avoid conflicts with home-row mods)
-(defchordsv2
-  (g h) (switch
-    ((layer vim)) @vim-off break
-    () @vim-on break
-  ) 100 first-release ()
-)
+
 
 (deflayer base
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
-  tab  q    w    e    r    t    y    u    i    o    p    [    ]    @vim-on
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
   @caps-esc-num @a-ctrl @s-shift @d-alt @f-meta g    h    @j-meta @k-alt @l-shift @semicolon-ctrl @quote-num ret
   lsft z    x    c    v    b    n    m    ,    .    /    @rsft-toggle
-  lctl lmet lalt           spc            @vim-on rmet rctl
+  lctl lmet lalt           spc            ralt rmet rctl
 )
 
-;; Vim Normal Mode Layer
-;; Navigation: h=←, j=↓, k=↑, l=→, w=word-right, b=word-left, 0=home, 4($)=end
-;; Editing: d=cut(C-x), y=yank(C-c), p=paste(C-v), u=undo(C-z), C-r=redo(C-S-z), x=del
-;; Mode exit: i=insert, a=append, o=open below, I=insert at start, A=append at end, O=open above
-;; Toggle: \ or ralt = exit vim mode
-(deflayer vim
-  esc  _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    end  _    _    _    _    _    home _    _    _
-  _    _    C-rght _    C-S-z _    C-c  C-z  @vim-i @vim-o C-v  _    _    _
-  _    @vim-A _    C-x  _    _    left down up   rght _    _    _
-  _    _    del  _    _    C-left _    _    _    @vim-O _    _
-  _    _    _              _              @vim-off _    _
-)
+
 
 (deflayer numbers
   _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    (mwheel-up 50 120) (mwheel-down 50 120) _    _    _    _    _
   _    1    2    3    4    5    6    7    8    9    0    _    _
   _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _              _              _    _    _
