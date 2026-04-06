@@ -1,6 +1,6 @@
 return {
 	"tiagovla/tokyodark.nvim",
-	enabled = false,
+	-- enabled = false,
 	---@module "tokyodark"
 	opts = {
 		transparent_background = true, -- set background to transparent
@@ -10,6 +10,7 @@ return {
 			keywords = { bold = true }, -- style for keywords
 			identifiers = { bold = true }, -- style for identifiers
 			functions = { bold = true, italic = true }, -- style for functions
+			types = { italic = true },
 			variables = {}, -- style for variables
 			strings = {}, -- style for strings
 			-- folds = { bold = true, italic = true }, -- style for folds

@@ -1,6 +1,6 @@
 return {
 	"ray-x/aurora",
-	enabled = false,
+	-- enabled = false,
 	-- init = function()
 	-- 	vim.g.aurora_italic = 1
 	-- 	vim.g.aurora_transparent = 1

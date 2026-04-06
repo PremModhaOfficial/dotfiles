@@ -1,7 +1,7 @@
 return {
 	"bluz71/vim-nightfly-colors",
 	name = "nightfly",
-	enabled = false,
+	-- enabled = false,
 	lazy = false,
 	priority = 1000,
 	config = function()

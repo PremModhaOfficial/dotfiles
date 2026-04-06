@@ -1,7 +1,7 @@
 return {
 	"uloco/bluloco.nvim",
 	lazy = false,
-	enabled = false,
+	-- enabled = false,
 	priority = 1000,
 	dependencies = { "rktjmp/lush.nvim" },
 	config = function()

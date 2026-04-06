@@ -1,13 +1,16 @@
 return {
 	"maxmx03/fluoromachine.nvim",
+	---@module "fluoromachine"
 	lazy = true,
-	enabled = false,
+	enabled = true,
 	priority = 1000,
 	config = function()
 		local fluoromachine = require("fluoromachine")
 
 		fluoromachine.setup({
-			theme = "retrowave",
+
+			---@type fm.config.theme
+			theme = "delta",
 			glow = false,
 			transparent = true,
 			brightness = 0,
@@ -20,7 +23,7 @@ return {
 				-- numbers = {},
 				-- parameters = {},
 				-- types = {},
-				-- types = { italic = true }, --  NOTE: NICE LOOKING
+				types = { italic = true }, --  NOTE: NICE LOOKING
 				-- variables = {},
 			},
 		})

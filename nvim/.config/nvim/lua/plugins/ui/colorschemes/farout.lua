@@ -1,7 +1,7 @@
 return {
 	{
 		"fcpg/vim-farout",
-		enabled = false,
+		-- enabled = false,
 		-- init = function() vim.cmd([[ colorscheme farout ]]) end,
 	},
 }

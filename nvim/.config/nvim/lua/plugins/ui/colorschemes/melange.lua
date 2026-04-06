@@ -1,5 +1,5 @@
 return {
 	"savq/melange-nvim",
-	enabled = false,
+	-- enabled = false,
 	config = function() end,
 }

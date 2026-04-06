@@ -20,7 +20,7 @@ return {
 			invert_signs = false,
 			invert_tabline = true,
 			invert_intend_guides = true,
-			inverse = true, -- invert background for search, diffs, statuslines and errors
+			inverse = false, -- invert background for search, diffs, statuslines and errors
 			contrast = "soft", -- can be "hard", "soft" or empty string
 			palette_overrides = {},
 			overrides = {},
@@ -28,8 +28,5 @@ return {
 			transparent_mode = true,
 		})
 	end,
-	init = function()
-		vim.cmd([[colorscheme gruvbox]])
-		-- vim.cmd.hi("Comment gui=none")
-	end,
+	-- init = function() vim.cmd([[colorscheme gruvbox]]) -- vim.cmd.hi("Comment gui=none") end,
 }
