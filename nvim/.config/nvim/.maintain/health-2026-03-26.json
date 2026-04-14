@@ -1,0 +1,81 @@
+{
+  "date": "2026-03-26",
+  "neovim_version": "0.12.0-dev",
+  "total_plugins": 107,
+  "startup_time_ms": 183,
+  "checks": {
+    "lock-freshness": {
+      "status": "warn",
+      "stale_count": 2,
+      "fresh_count": 10,
+      "findings": [
+        "which-key.nvim: 149 days old (2025-10-28) — STALE",
+        "lazy.nvim: 99 days old (2025-12-17) — STALE (just over threshold)",
+        "blink.cmp: 11 days — OK",
+        "snacks.nvim: 5 days — OK",
+        "nvim-lspconfig: 6 days — OK",
+        "treesitter: 3 days — OK",
+        "codecompanion: 3 days — OK",
+        "conform: 16 days — OK",
+        "none-ls: 16 days — OK",
+        "rustaceanvim: 22 days — OK",
+        "mason: 78 days — OK",
+        "copilot.lua: 8 days — OK"
+      ]
+    },
+    "duplicate-functionality": {
+      "status": "warn",
+      "findings": [
+        "copilot-cmp AND blink-cmp-copilot both loaded in blink.lua (lines 42,44)",
+        "telescope.nvim still referenced in 5+ config files despite snacks.picker being primary",
+        "none-ls formatting (goimports, gofumpt) overlaps with conform.nvim"
+      ]
+    },
+    "orphan-config": {
+      "status": "ok",
+      "findings": [
+        "catppuccin — colorscheme (false positive)",
+        "nightfly — colorscheme (false positive)",
+        "rose-pine — colorscheme (false positive)",
+        "hererocks — luarocks dependency (false positive)",
+        "lazy.nvim — plugin manager itself (false positive)"
+      ],
+      "real_orphans": 0
+    },
+    "keymap-conflicts": {
+      "status": "warn",
+      "findings": [
+        "<leader>on (n): opencode.nvim (ai/opencode.lua:44) vs obsidian_extras (lib/obsidian_extras.lua:107) — REAL CONFLICT",
+        "<leader>op (n): obsidian_extras.lua:115 (PromoteStatus) vs obsidian_extras.lua:139 (TogglePreview) — SELF-CONFLICT, last wins",
+        "gD (n): lspconfig.lua:122 (vim.lsp.buf.declaration) vs snacks.lua:469 (Snacks.picker.lsp_declarations) — snacks overrides",
+        "<leader>ws (n): lspconfig.lua:105 (lsp_symbols) vs snacks.lua:505 (workspace_symbols) — DUPLICATE"
+      ]
+    },
+    "lsp-server-conflicts": {
+      "status": "warn",
+      "findings": [
+        "rust_analyzer: lspconfig.lua:277 AND rustaceanvim (rust.lua:26-77) — REAL CONFLICT, dual initialization risk",
+        "ts_ls: lspconfig.lua:250 only (typescript-tools disabled) — OK",
+        "jdtls: excluded from mason-lspconfig:478, disabled by java.lua:12 — OK"
+      ]
+    },
+    "mason-sync": {
+      "status": "ok",
+      "findings": [
+        "lua_ls in both servers table AND ensure_installed (harmless duplicate)",
+        "delve in both lspconfig ensure_installed AND dap ensure_installed (harmless duplicate)"
+      ]
+    },
+    "startup-time": {
+      "status": "ok",
+      "total_ms": 183,
+      "slowest_requires": [
+        {"module": "mason-nvim-dap.mappings.configurations", "ms": 10.2},
+        {"module": "luasnip", "ms": 6.9},
+        {"module": "litee.gh", "ms": 6.5},
+        {"module": "harpoon", "ms": 4.9},
+        {"module": "CopilotChat", "ms": 2.6}
+      ]
+    }
+  }
+}

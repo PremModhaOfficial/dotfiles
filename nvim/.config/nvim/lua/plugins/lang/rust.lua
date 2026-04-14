@@ -54,6 +54,9 @@ return {
 						},
 						-- Add clippy lints for Rust.
 						checkOnSave = true,
+						diagnostics = {
+							disabled = { "unlinked-file" },
+						},
 						procMacro = {
 							enable = true,
 							ignored = {

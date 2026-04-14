@@ -20,14 +20,22 @@ return {
 		{ "<leader>ls", "<cmd>Leet submit<cr>", desc = "LeetCode Submit" },
 		{ "<leader>lt", "<cmd>Leet run<cr>", desc = "LeetCode Test/Run" },
 	},
+	config = function(_, opts)
+		local home = opts.storage.home
+		local cache = opts.storage.cache
+		vim.fn.mkdir(home, "p")
+		vim.fn.mkdir(cache, "p")
+		require("leetcode").setup(opts)
+	end,
 	---@module 'leetcode'
 	opts = {
+		lang = "golang",
 		picker = {
 			provider = nil,
 		},
 		storage = {
-			home = vim.fn.expand("~/projkts/leet/"),
-			cache = vim.fn.expand("~/projkts/leet/cache/"),
+			home = vim.fn.expand("~/projects/unsortedProjects/DSA/leetcode/"),
+			cache = vim.fn.expand("~/projects/unsortedProjects/DSA/leetcode/cache/"),
 		},
 		hooks = {
 			["enter"] = {},

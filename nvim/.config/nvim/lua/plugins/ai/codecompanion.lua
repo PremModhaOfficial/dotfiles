@@ -1,7 +1,7 @@
 -- ============================================================================
 -- PLUGIN: Code Companion
 -- PURPOSE: AI-powered code assistant and chat interface
--- DEPENDENCIES: plenary, treesitter, mini.diff
+-- DEPENDENCIES: plenary, mini.diff
 -- ============================================================================
 
 return {
@@ -9,45 +9,47 @@ return {
 	event = "VeryLazy",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
-		"nvim-treesitter/nvim-treesitter",
-		-- { "nvim-telescope/telescope.nvim", cmd = "Telescope" },
 		{ "nvim-mini/mini.diff" },
-		-- "Saghen/blink.cmp", -- Ensure blink.cmp is listed here
-		-- "j-hui/fidget.nvim",
 	},
-	config = true,
 	---@module "codecompanion"
 	opts = {
 		opts = {
 			log_level = "TRACE",
 		},
-		send_code = true,
 		display = {
 			diff = {
-				enabled = true, -- Enable or disable diff functionality
-				close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
-				layout = "vertical", -- Controls split direction: vertical|horizontal split for default provider
-				opts = { "internal", "filler", "closeoff", "algorithm:patience", "followwrap", "linematch:120" }, -- Diff display options and algorithms
-				provider = "mini_diff", -- Which diff provider to use: default|mini_diff
+				enabled = true,
+				window = {
+					width = function()
+						return math.min(120, vim.o.columns - 10)
+					end,
+					height = function()
+						return vim.o.lines - 4
+					end,
+				},
+				word_highlights = {
+					additions = true,
+					deletions = true,
+				},
 			},
 		},
 		interactions = {
 			chat = {
 				adapter = "copilot",
-				picker = "snacks", -- Specify telescope explicitly for `/file` picker
-
-				diff = {
-					provider = "mini_diff",
-				},
 			},
 			inline = {
 				adapter = "copilot",
 			},
-			agent = {
+			cmd = {
 				adapter = "copilot",
 			},
 		},
 		adapters = {
+			acp = {
+				opts = {
+					show_presets = false,
+				},
+			},
 			http = {
 				copilot = function()
 					return require("codecompanion.adapters").extend("copilot", {

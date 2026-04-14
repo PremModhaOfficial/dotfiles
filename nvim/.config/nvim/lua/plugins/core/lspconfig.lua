@@ -298,8 +298,7 @@ return {
 					},
 				},
 			},
-			-- Rust (though you have rustaceanvim, this provides fallback)
-			rust_analyzer = {},
+			-- Rust: managed by rustaceanvim, do NOT configure here
 			-- C/C++
 			clangd = {
 				cmd = {
