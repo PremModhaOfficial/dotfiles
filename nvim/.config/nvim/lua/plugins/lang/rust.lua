@@ -19,7 +19,7 @@ return {
 	{
 		"mrcjkb/rustaceanvim",
 		-- enabled = false,
-		version = vim.fn.has("nvim-0.10.0") == 0 and "^4" or false,
+		version = false,
 		ft = { "rust" },
 		opts = {
 			tools = { code_actions = { ui_select_fallback = true } },

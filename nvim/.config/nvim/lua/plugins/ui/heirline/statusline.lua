@@ -39,7 +39,7 @@ end
 
 local Core = {
 	state = {
-		last_act = vim.loop.now(), -- Activity timestamp
+		last_act = vim.uv.now(), -- Activity timestamp
 		is_dimmed = false,
 
 		mode = { name = "NORMAL", color = "#ffffff", char = "n" },
@@ -132,7 +132,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 
 -- 0. Activity Tracker (Focus Breather)
 local function interact()
-	Core.state.last_act = vim.loop.now()
+	Core.state.last_act = vim.uv.now()
 	if Core.state.is_dimmed then
 		Core.state.is_dimmed = false
 		Core.hl_cache = {} -- Clear cache to restore brightness
@@ -206,8 +206,9 @@ vim.api.nvim_create_autocmd("User", {
 
 -- 3. Diagnostic Listener
 local function update_diagnostics()
-	local err = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-	local warn = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+	local counts = vim.diagnostic.count(0)
+	local err = counts[vim.diagnostic.severity.ERROR] or 0
+	local warn = counts[vim.diagnostic.severity.WARN] or 0
 	Core.state.diagnostics.errors = err
 	Core.state.diagnostics.warnings = warn
 	Core.state.diagnostics.has_any = (err + warn) > 0
@@ -228,7 +229,7 @@ vim.api.nvim_create_autocmd({ "LspProgress", "LspAttach", "LspDetach" }, {
 				Core.state.lsp.boot[client.name] = 0
 			end
 
-			if client.progress and client.progress.pending and next(client.progress.pending) then
+			if vim.lsp.status() ~= "" then
 				is_progress = true
 			end
 		end
@@ -307,7 +308,7 @@ end, macro_ns)
 --------------------------------------------------------------------------------
 
 local Animation = {
-	timer = vim.loop.new_timer(),
+	timer = vim.uv.new_timer(),
 	density = { " ", "░", "▒", "▓", "█" },
 }
 
@@ -325,7 +326,7 @@ Animation.timer:start(
 	0,
 	80,
 	vim.schedule_wrap(function()
-		local now = vim.loop.now()
+		local now = vim.uv.now()
 		local s = Core.state.nixie
 		local d = Core.state.diagnostics
 		local lsp = Core.state.lsp
@@ -655,7 +656,7 @@ local File = {
 	end,
 	{
 		provider = function(self)
-			return (Core.state.is_dimmed and " " or "┣ ") .. (self.icon or "󰈔") .. " "
+			return (Core.state.is_dimmed and " " or "┣ ") .. (self.icon or "") .. " "
 		end,
 		hl = function(self)
 			local color = self.icon_color
@@ -750,7 +751,7 @@ local LspInfo = {
 	end,
 	on_click = {
 		callback = function()
-			vim.cmd("LspInfo")
+			vim.cmd("checkhealth vim.lsp")
 		end,
 		name = "sl_lsp_info",
 	},
@@ -799,7 +800,7 @@ local SacredSymbols = {
 --------------------------------------------------------------------------------
 local statusline = {
 	static = {
-		disabled_ft = { "^git.*", "fugitive", "alpha", "dashboard", "neo-tree", "toggleterm" },
+		disabled_ft = { "^git.*", "fugitive", "alpha", "dashboard", "neo-tree", "toggleterm", "^k8s_" },
 	},
 	condition = function(self)
 		return not conditions.buffer_matches({ filetype = self.disabled_ft })

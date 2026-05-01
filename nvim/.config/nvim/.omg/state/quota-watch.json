@@ -1,0 +1,12 @@
+{
+  "turn_count": 17,
+  "last_session_id": "dada266b-1f9a-446b-b95c-08b325b3f3d5",
+  "last_event_key": "dada266b-1f9a-446b-b95c-08b325b3f3d5:transcript:4d0ee86c0cfd2d5675f30fc3d84640605ab4382d6503176df8434a40463d6812",
+  "last_transcript_hash": "4d0ee86c0cfd2d5675f30fc3d84640605ab4382d6503176df8434a40463d6812",
+  "last_model": "gemini-3-flash-preview",
+  "last_turn_total_tokens": 36603,
+  "last_session_total_tokens": 989505,
+  "cwd_mode": "parent-leaf",
+  "last_cwd_label": ".config/nvim",
+  "updated_at": "2026-04-15T11:47:11.304Z"
+}

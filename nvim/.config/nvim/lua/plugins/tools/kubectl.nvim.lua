@@ -11,13 +11,15 @@ return {
 	-- build = 'nix run .#build-plugin',
 	dependencies = "saghen/blink.download",
 	config = function()
-		require("kubectl").setup({})
+		require("kubectl").setup({
+			tab = false,
+		})
 
 		vim.keymap.set(
 			"n",
 			"<leader>k",
-			'<cmd>lua require("kubectl").toggle({ tab = true })<cr>',
-			{ noremap = true, silent = true, desc = "kubectl: toggle (tab)" }
+			'<cmd>lua require("kubectl").toggle({ tab = false })<cr>',
+			{ noremap = true, silent = true, desc = "kubectl: toggle" }
 		)
 	end,
 }

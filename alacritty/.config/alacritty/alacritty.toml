@@ -13,26 +13,26 @@ size = 17.0
 
 
 [font.bold]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Code"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
-style = "SemiBold"
+style = "Bold"
 
 [font.bold_italic]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Code"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
-style = "SemiBold Italic"
+style = "Bold Italic"
 #
 
 [font.italic]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Code"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "Italic"
 
 [font.normal]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Code"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "Regular"
@@ -134,6 +134,9 @@ mods = "Shift"
 # [mouse.url.launcher]
 # program = "xdg-open"
 
+[mouse]
+hide_when_typing = false
+
 [scrolling]
 history = 5000
 
@@ -143,6 +146,9 @@ semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
 # [terminal.shell]
 # program = "/"
+
+[terminal]
+osc52 = "OnlyCopy"
 
 # [visual_bell]
 # animation = "EaseOutExpo"
@@ -167,6 +173,6 @@ y = 0
 live_config_reload = true
 
 import = [
-"/home/prm/.config/alacritty/dank-theme.toml",
+"/home/prem-modha/.config/alacritty/dank-theme.toml",
 ]
 

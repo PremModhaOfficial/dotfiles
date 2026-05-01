@@ -332,7 +332,7 @@ end
 local function detect_project_type(project_root)
 	local cache_key = project_root
 	local cached = M.project_type_cache[cache_key]
-	local current_time = vim.loop.now()
+	local current_time = vim.uv.now()
 
 	if cached and (current_time - cached.timestamp) < M.cache_timeout then
 		return cached.project_type, cached.confidence
@@ -386,7 +386,7 @@ end
 local function find_verticles_in_project(project_root)
 	local cache_key = project_root
 	local cached = M.verticles_cache[cache_key]
-	local current_time = vim.loop.now()
+	local current_time = vim.uv.now()
 
 	if cached and (current_time - cached.timestamp) < M.cache_timeout then
 		return cached.verticles
@@ -649,7 +649,7 @@ local function find_main_classes_in_project(project_root)
 	-- Check cache first
 	local cache_key = project_root
 	local cached = M.main_classes_cache[cache_key]
-	local current_time = vim.loop.now()
+	local current_time = vim.uv.now()
 
 	if cached and (current_time - cached.timestamp) < M.cache_timeout then
 		return cached.classes

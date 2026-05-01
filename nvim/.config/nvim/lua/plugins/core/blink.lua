@@ -88,12 +88,11 @@ return { -- Autocompletion
 				plsql = { "lsp", "path", "snippets", "buffer", "dadbod" },
 				rust = { "lsp", "path", "snippets", "buffer", "ripgrep" },
 				go = { "lsp", "path", "snippets", "buffer", "ripgrep" },
-				-- Leetcode filetypes
-				leetcode = { "lsp", "path", "snippets", "buffer" },
-				["leetcode.java"] = { "lsp", "path", "snippets", "buffer" },
-				["leetcode.python"] = { "lsp", "path", "snippets", "buffer" },
-				["leetcode.cpp"] = { "lsp", "path", "snippets", "buffer" },
-			},
+			leetcode = { "lsp", "path", "snippets", "buffer" },
+			["leetcode.java"] = { "lsp", "path", "snippets", "buffer" },
+			["leetcode.python"] = { "lsp", "path", "snippets", "buffer" },
+			["leetcode.cpp"] = { "lsp", "path", "snippets", "buffer" },
+		},
 			providers = {
 				lsp = {
 					name = "LSP",

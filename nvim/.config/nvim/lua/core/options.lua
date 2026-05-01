@@ -35,15 +35,13 @@ opt.clipboard = "unnamedplus"
 -- 	}
 -- end
 -- OSC 52 fallback for reliable global clipboard
-if vim.fn.has("nvim-0.10") == 1 then
-	vim.api.nvim_create_autocmd("TextYankPost", {
-		callback = function()
-			if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
-				require("vim.ui.clipboard.osc52").copy("+")(vim.v.event.regcontents)
-			end
-		end,
-	})
-end
+vim.api.nvim_create_autocmd("TextYankPost", {
+	callback = function()
+		if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
+			require("vim.ui.clipboard.osc52").copy("+")(vim.v.event.regcontents)
+		end
+	end,
+})
 opt.tabstop = 4
 opt.shiftwidth = 4
 opt.expandtab = true

@@ -62,7 +62,7 @@ return {
 			callback = function(event)
 				-- Warn if go.mod doesn't exist in project root
 				local root = vim.fs.root(0, { "go.mod", ".git" })
-				if root and not vim.loop.fs_stat(vim.fn.fnamemodify(root .. "/go.mod", ":p")) then
+				if root and not vim.uv.fs_stat(vim.fn.fnamemodify(root .. "/go.mod", ":p")) then
 					vim.notify("go.mod not found - tests may fail. Ensure you're in a Go project.", vim.log.levels.WARN)
 				end
 			end,

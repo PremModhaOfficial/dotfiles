@@ -1,0 +1,224 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775718101825,
+  "projectRoot": "/home/prem-modha/dotfiles",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "Scripts": {
+      "path": "Scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 0,
+      "lastAccessed": 1775718101819,
+      "keyFiles": []
+    },
+    "alacritty": {
+      "path": "alacritty",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101822,
+      "keyFiles": []
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 0,
+      "lastAccessed": 1775718101822,
+      "keyFiles": []
+    },
+    "doom": {
+      "path": "doom",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101822,
+      "keyFiles": []
+    },
+    "dunst": {
+      "path": "dunst",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101822,
+      "keyFiles": []
+    },
+    "eww": {
+      "path": "eww",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101822,
+      "keyFiles": []
+    },
+    "fastfetch": {
+      "path": "fastfetch",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101822,
+      "keyFiles": []
+    },
+    "fish": {
+      "path": "fish",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101822,
+      "keyFiles": []
+    },
+    "hypr": {
+      "path": "hypr",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101823,
+      "keyFiles": []
+    },
+    "java": {
+      "path": "java",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775718101823,
+      "keyFiles": [
+        "javaFormatMotadata.xml"
+      ]
+    },
+    "kanata": {
+      "path": "kanata",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101823,
+      "keyFiles": []
+    },
+    "kitty": {
+      "path": "kitty",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101823,
+      "keyFiles": []
+    },
+    "mcphub": {
+      "path": "mcphub",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101823,
+      "keyFiles": []
+    },
+    "mpd": {
+      "path": "mpd",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101823,
+      "keyFiles": []
+    },
+    "ncmpcpp": {
+      "path": "ncmpcpp",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101823,
+      "keyFiles": []
+    },
+    "nix": {
+      "path": "nix",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101824,
+      "keyFiles": []
+    },
+    "nvim": {
+      "path": "nvim",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101824,
+      "keyFiles": []
+    },
+    "tmux": {
+      "path": "tmux",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101824,
+      "keyFiles": []
+    },
+    "wallust": {
+      "path": "wallust",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101824,
+      "keyFiles": []
+    },
+    "wezterm": {
+      "path": "wezterm",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101824,
+      "keyFiles": []
+    },
+    "yazi": {
+      "path": "yazi",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775718101824,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "nvim/.config/nvim/lua/plugins/tools/leetcode.lua",
+      "accessCount": 6,
+      "lastAccessed": 1775727672932,
+      "type": "file"
+    },
+    {
+      "path": "nvim/.config/nvim/lua/plugins/ai/codecompanion.lua",
+      "accessCount": 3,
+      "lastAccessed": 1775718537719,
+      "type": "file"
+    },
+    {
+      "path": "nvim/.config/nvim",
+      "accessCount": 3,
+      "lastAccessed": 1775727383696,
+      "type": "directory"
+    },
+    {
+      "path": "nvim/.config/nvim/lua/plugins/lang/rust.lua",
+      "accessCount": 3,
+      "lastAccessed": 1775727413293,
+      "type": "file"
+    },
+    {
+      "path": "nvim/.config/nvim/lua/plugins/core/lspconfig.lua",
+      "accessCount": 2,
+      "lastAccessed": 1775727543233,
+      "type": "file"
+    },
+    {
+      "path": "nvim/.config/nvim/lua/plugins/core/blink.lua",
+      "accessCount": 1,
+      "lastAccessed": 1775727530656,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
