@@ -2,8 +2,14 @@ local utils = require("heirline.utils")
 local conditions = require("heirline.conditions")
 
 --------------------------------------------------------------------------------
--- UTILS: HEX COLOR DIMMER
+-- TICK CONSTANTS
 --------------------------------------------------------------------------------
+local TICK_ACTIVE, TICK_IDLE, TICK_DIM = 80, 200, 500
+
+--------------------------------------------------------------------------------
+-- UTILS: HEX COLOR DIMMER (memoized)
+--------------------------------------------------------------------------------
+local dim_hex_cache = {}
 local function dim_hex(hex, factor)
 	if type(hex) == "number" then
 		hex = string.format("#%06x", hex)
@@ -11,13 +17,20 @@ local function dim_hex(hex, factor)
 	if not hex or type(hex) ~= "string" or hex == "NONE" or hex:sub(1, 1) ~= "#" then
 		return hex
 	end
+	local key = hex .. ":" .. factor
+	local cached = dim_hex_cache[key]
+	if cached then
+		return cached
+	end
 	local r = tonumber(hex:sub(2, 3), 16) or 255
 	local g = tonumber(hex:sub(4, 5), 16) or 255
 	local b = tonumber(hex:sub(6, 7), 16) or 255
 	r = math.floor(r * factor)
 	g = math.floor(g * factor)
 	b = math.floor(b * factor)
-	return string.format("#%02x%02x%02x", r, g, b)
+	local result = string.format("#%02x%02x%02x", r, g, b)
+	dim_hex_cache[key] = result
+	return result
 end
 
 --------------------------------------------------------------------------------
@@ -38,13 +51,17 @@ end
 --------------------------------------------------------------------------------
 
 local Core = {
+	dirty = false, -- coalesced redraw flag; autocmds set this, timer clears
 	state = {
-		last_act = vim.loop.now(), -- Activity timestamp
+		last_act = vim.uv.now(), -- Activity timestamp
 		is_dimmed = false,
 
 		mode = { name = "NORMAL", color = "#ffffff", char = "n" },
 		git = { branch = "main", added = 0, changed = 0, removed = 0, exists = false },
 		diagnostics = { errors = 0, warnings = 0, has_any = false },
+
+		-- File state (cached via BufEnter/BufFilePost — no per-render fnamemodify)
+		file = { name = "", ft = "", icon = "", icon_color = nil },
 
 		-- LSP State with Boot Sequence
 		lsp = {
@@ -70,6 +87,12 @@ local Core = {
 
 		harpoon = { count = 0, string = "", active = false },
 
+		-- Modified state (event-driven via BufModifiedSet)
+		modified = false,
+
+		-- CodeCompanion AI request state
+		cc = { active = false, adapter = "", model = "" },
+
 		nixie = {
 			mode = "IDLE",
 			segments = 0,
@@ -85,6 +108,12 @@ local Core = {
 local nixie_bars = {}
 for i = 0, 9 do
 	nixie_bars[i] = string.rep("▓", i) .. string.rep("░", 9 - i)
+end
+
+-- Pre-computed Ruler dial variants (9 positions: 0..8)
+local RULER_DIAL = {}
+for i = 0, 8 do
+	RULER_DIAL[i] = string.rep("═", i) .. "╣" .. string.rep("═", 8 - i) .. "═"
 end
 
 -- AOD / Wireframe Logic: Swaps FG/BG on idle
@@ -123,6 +152,7 @@ end
 vim.api.nvim_create_autocmd("ColorScheme", {
 	callback = function()
 		Core.hl_cache = {}
+		dim_hex_cache = {}
 	end,
 })
 
@@ -130,18 +160,36 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 -- CONTROLLER: EVENT LISTENERS
 --------------------------------------------------------------------------------
 
--- 0. Activity Tracker (Focus Breather)
+-- 0. Activity Tracker (Focus Breather) — one-shot uv timer replaces per-tick elapsed check
+local DIM_DELAY_MS = 5000
+local dim_timer = vim.uv.new_timer()
+local function arm_dim_timer()
+	dim_timer:stop()
+	dim_timer:start(
+		DIM_DELAY_MS,
+		0,
+		vim.schedule_wrap(function()
+			if not Core.state.is_dimmed then
+				Core.state.is_dimmed = true
+				Core.hl_cache = {}
+				Core.dirty = true
+			end
+		end)
+	)
+end
 local function interact()
-	Core.state.last_act = vim.loop.now()
+	Core.state.last_act = vim.uv.now()
 	if Core.state.is_dimmed then
 		Core.state.is_dimmed = false
-		Core.hl_cache = {} -- Clear cache to restore brightness
-		vim.cmd("redrawstatus")
+		Core.hl_cache = {}
+		Core.dirty = true
 	end
+	arm_dim_timer()
 end
 vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "InsertEnter", "TextChanged", "CmdlineEnter" }, {
 	callback = interact,
 })
+arm_dim_timer()
 
 -- 1. Mode Listener
 local ModeNames = {
@@ -200,23 +248,33 @@ vim.api.nvim_create_autocmd("User", {
 		else
 			Core.state.git.exists = false
 		end
-		vim.cmd("redrawstatus")
+		Core.dirty = true
 	end,
 })
 
--- 3. Diagnostic Listener
+-- 3. Diagnostic Listener (uses single vim.diagnostic.count call)
 local function update_diagnostics()
-	local err = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-	local warn = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+	local counts = vim.diagnostic.count(0)
+	local sev = vim.diagnostic.severity
+	local err = counts[sev.ERROR] or 0
+	local warn = counts[sev.WARN] or 0
 	Core.state.diagnostics.errors = err
 	Core.state.diagnostics.warnings = warn
 	Core.state.diagnostics.has_any = (err + warn) > 0
 end
-vim.api.nvim_create_autocmd("DiagnosticChanged", { callback = update_diagnostics })
+vim.api.nvim_create_autocmd({ "DiagnosticChanged", "BufEnter" }, { callback = update_diagnostics })
 
--- 4. LSP Listener (With Boot Detection)
+-- 4. LSP Listener (With Boot Detection + Detach GC)
 vim.api.nvim_create_autocmd({ "LspProgress", "LspAttach", "LspDetach" }, {
-	callback = function()
+	callback = function(args)
+		-- GC boot entry for detached client
+		if args.event == "LspDetach" and args.data and args.data.client_id then
+			local client = vim.lsp.get_client_by_id(args.data.client_id)
+			if client then
+				Core.state.lsp.boot[client.name] = nil
+			end
+		end
+
 		local clients = vim.lsp.get_clients({ bufnr = 0 })
 		local names = {}
 		local is_progress = false
@@ -237,12 +295,25 @@ vim.api.nvim_create_autocmd({ "LspProgress", "LspAttach", "LspDetach" }, {
 		Core.state.lsp.servers = names
 		Core.state.lsp.progress = is_progress
 		if is_progress then
-			vim.cmd("redrawstatus")
+			Core.dirty = true
 		end
 	end,
 })
 
--- 5. Harpoon Listener
+-- 5. File Listener (cached — avoids per-redraw fnamemodify + devicons lookup)
+local function update_file()
+	local bufname = vim.api.nvim_buf_get_name(0)
+	local name = vim.fn.fnamemodify(bufname, ":t")
+	local ft = vim.bo.filetype
+	Core.state.file.name = name
+	Core.state.file.ft = ft
+	local icon, icon_color = require("nvim-web-devicons").get_icon_color(name, ft)
+	Core.state.file.icon = icon or "󰈔"
+	Core.state.file.icon_color = icon_color or "#ff8800"
+end
+vim.api.nvim_create_autocmd({ "BufEnter", "BufFilePost", "BufWritePost" }, { callback = update_file })
+
+-- 6. Harpoon Listener
 local function update_harpoon()
 	if not package.loaded["harpoon"] then
 		return
@@ -268,7 +339,68 @@ local function update_harpoon()
 end
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, { callback = update_harpoon })
 
--- 6. Macro Recording Listener
+-- Register Harpoon extension listener (event-driven; replaces 2s timer poll)
+local function register_harpoon_listener()
+	local ok, harpoon = pcall(require, "harpoon")
+	if not ok then return false end
+	local ext_ok, Extensions = pcall(require, "harpoon.extensions")
+	if not ext_ok or not Extensions or not Extensions.extensions then return false end
+	local on_change = function()
+		update_harpoon()
+		Core.dirty = true
+	end
+	Extensions.extensions:add_listener({
+		ADD = on_change,
+		REMOVE = on_change,
+		LIST_CHANGE = on_change,
+		SELECT = on_change,
+	})
+	return true
+end
+if not register_harpoon_listener() then
+	-- Defer until harpoon loads
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "VeryLazy",
+		once = true,
+		callback = function()
+			vim.schedule(register_harpoon_listener)
+		end,
+	})
+end
+
+-- Modified state (BufModifiedSet replaces per-tick vim.bo.modified poll)
+vim.api.nvim_create_autocmd({ "BufModifiedSet", "BufEnter" }, {
+	callback = function()
+		Core.state.modified = vim.bo.modified
+		Core.dirty = true
+	end,
+})
+vim.api.nvim_create_autocmd("BufWritePost", {
+	callback = function()
+		Core.state.modified = false
+		Core.dirty = true
+	end,
+})
+
+-- 7. CodeCompanion AI Listener (event-driven, no poll)
+vim.api.nvim_create_autocmd("User", {
+	pattern = "CodeCompanionRequest*",
+	callback = function(args)
+		local s = Core.state.cc
+		if args.match == "CodeCompanionRequestStarted" or args.match == "CodeCompanionRequestStreaming" then
+			s.active = true
+			if args.data and args.data.adapter then
+				s.adapter = args.data.adapter.formatted_name or args.data.adapter.name or "AI"
+				s.model = args.data.adapter.model or ""
+			end
+		elseif args.match == "CodeCompanionRequestFinished" then
+			s.active = false
+		end
+		Core.dirty = true
+	end,
+})
+
+-- 8. Macro Recording Listener
 -- Use a namespace to prevent duplicate listeners on reload
 local macro_ns = vim.api.nvim_create_namespace("heirline_macro")
 vim.on_key(nil, macro_ns) -- Clear previous listener
@@ -281,10 +413,11 @@ vim.api.nvim_create_autocmd({ "RecordingEnter", "RecordingLeave" }, {
 		if reg ~= "" then
 			Core.state.macro.buffer = {}
 		end
-		vim.cmd("redrawstatus")
+		Core.dirty = true
 	end,
 })
 
+-- Capture macro keystrokes; mark dirty for next tick (no per-keystroke redraw)
 vim.on_key(function(key)
 	if Core.state.macro.recording then
 		local k = vim.fn.keytrans(key)
@@ -296,9 +429,7 @@ vim.on_key(function(key)
 		if #Core.state.macro.buffer > 12 then -- Match display width
 			table.remove(Core.state.macro.buffer, 1)
 		end
-		vim.schedule(function()
-			vim.cmd("redrawstatus")
-		end)
+		Core.dirty = true -- coalesce via timer tick
 	end
 end, macro_ns)
 
@@ -307,7 +438,7 @@ end, macro_ns)
 --------------------------------------------------------------------------------
 
 local Animation = {
-	timer = vim.loop.new_timer(),
+	timer = vim.uv.new_timer(),
 	density = { " ", "░", "▒", "▓", "█" },
 }
 
@@ -323,21 +454,17 @@ end
 
 Animation.timer:start(
 	0,
-	80,
+	TICK_ACTIVE,
 	vim.schedule_wrap(function()
-		local now = vim.loop.now()
+		local now = vim.uv.now()
 		local s = Core.state.nixie
 		local d = Core.state.diagnostics
 		local lsp = Core.state.lsp
 		local search = Core.state.search
-		local dirty = false
+		local pending_redraw = Core.dirty
 
-		-- A. FOCUS BREATHER (Dimming Check)
-		if not Core.state.is_dimmed and (now - Core.state.last_act > 5000) then
-			Core.state.is_dimmed = true
-			Core.hl_cache = {} -- Clear cache to force dim colors
-			dirty = true
-		end
+		-- A. FOCUS BREATHER: dim is now driven by one-shot uv timer (arm_dim_timer)
+		--    No per-tick elapsed check.
 
 		-- B. SEARCH STATE (Spring-Driven Roller)
 		if vim.v.hlsearch == 1 and vim.fn.searchcount then
@@ -357,18 +484,10 @@ Animation.timer:start(
 			search.active = false
 		end
 
-		-- B2. MACRO POLLING (Fallback for missed events)
-		local rec_reg = vim.fn.reg_recording()
-		if (rec_reg ~= "") ~= Core.state.macro.recording then
-			Core.state.macro.recording = (rec_reg ~= "")
-			Core.state.macro.reg = rec_reg
-			dirty = true
-		end
-
 		if search.active then
 			-- Spring-driven number roller (replaces Zeno's slide)
 			local dt = 0.08 -- 80ms in seconds
-			local frequency = 10 -- Tuning: higher = faster convergence
+			local frequency = 14 -- Settle ~350ms instead of ~640ms
 
 			-- Roll display_count towards count
 			if math.abs(search.display_count - search.count) > 0.5 then
@@ -376,7 +495,7 @@ Animation.timer:start(
 					spring_step(search.display_count, search.count, search.velocity_count, dt, frequency)
 				search.display_count = math.floor(new_pos + 0.5)
 				search.velocity_count = new_vel
-				dirty = true
+				pending_redraw = true
 			else
 				search.display_count = search.count
 				search.velocity_count = 0
@@ -388,7 +507,7 @@ Animation.timer:start(
 					spring_step(search.display_total, search.total, search.velocity_total, dt, frequency)
 				search.display_total = math.floor(new_pos + 0.5)
 				search.velocity_total = new_vel
-				dirty = true
+				pending_redraw = true
 			else
 				search.display_total = search.total
 				search.velocity_total = 0
@@ -403,19 +522,13 @@ Animation.timer:start(
 					local remaining = 100 - progress
 					local step = math.max(1, math.floor(remaining * 0.08))
 					lsp.boot[name] = math.min(100, progress + step)
-					dirty = true
+					pending_redraw = true
 				end
 			end
 		end
 
-		-- D. HARPOON POLLING (Throttled — only check every ~2s, autocmds handle the rest)
-		if package.loaded["harpoon"] and now % 2000 < 80 then
-			local h_count = require("harpoon"):list():length()
-			if h_count ~= Core.state.harpoon.count then
-				update_harpoon()
-				dirty = true
-			end
-		end
+		-- D. HARPOON: now event-driven via Extensions.extensions:add_listener (above).
+		--    No timer poll.
 
 		-- E. MAIN NIXIE STATE
 		if search.active then
@@ -444,7 +557,7 @@ Animation.timer:start(
 				chars[i] = Animation.density[idx]
 			end
 			s.wave_pattern = table.concat(chars)
-			dirty = true
+			pending_redraw = true
 		elseif d.has_any then
 			s.mode = "DIAGNOSTIC"
 			-- Elastic breathing: triple-pulse decay cycle instead of binary toggle
@@ -455,7 +568,7 @@ Animation.timer:start(
 			s.segments = math.max(1, math.min(9, math.floor(base + pulse * 3)))
 			s.color = (d.errors > 0) and "#ff0000" or "#ffaa00"
 			s.label = string.format(" E%d W%d", d.errors, d.warnings)
-		elseif vim.bo.modified then
+		elseif Core.state.modified then
 			s.mode = "MODIFIED"
 			-- Heat Gauge: intensity correlates with how much the buffer changed
 			local tick = vim.b.changedtick or 0
@@ -473,33 +586,37 @@ Animation.timer:start(
 			local combined = drift * 0.7 + secondary * 0.3
 			local new_segments = math.floor(combined * 4) -- Gentle 0-3 range
 			if new_segments ~= s.segments then
-				dirty = true
+				pending_redraw = true
 			end
 			s.segments = new_segments
 			s.color = Core.get_hl("Comment", "fg")
 			s.label = ""
 		end
 
-		if dirty or s.mode ~= "IDLE" then
+		-- COALESCED REDRAW (single call per tick max)
+		if pending_redraw or s.mode ~= "IDLE" then
 			vim.cmd("redrawstatus")
+			Core.dirty = false
 		end
 
 		-- ADAPTIVE TICK RATE: slow down when idle, speed up when animating
-		if s.mode == "IDLE" and not dirty and Core.state.is_dimmed then
-			Animation.timer:set_repeat(500) -- 2 FPS when fully idle + dimmed
-		elseif s.mode == "IDLE" and not dirty then
-			Animation.timer:set_repeat(200) -- 5 FPS when idle but active
+		if s.mode == "IDLE" and not pending_redraw and Core.state.is_dimmed then
+			Animation.timer:set_repeat(TICK_DIM)
+		elseif s.mode == "IDLE" and not pending_redraw then
+			Animation.timer:set_repeat(TICK_IDLE)
 		else
-			Animation.timer:set_repeat(80) -- 12.5 FPS during animations
+			Animation.timer:set_repeat(TICK_ACTIVE)
 		end
 	end)
 )
 
--- Cleanup timer on exit to prevent ghost timers on :source or config reload
+-- Cleanup timers on exit to prevent ghost timers on :source or config reload
 vim.api.nvim_create_autocmd("VimLeavePre", {
 	callback = function()
 		Animation.timer:stop()
 		Animation.timer:close()
+		dim_timer:stop()
+		dim_timer:close()
 	end,
 })
 
@@ -625,7 +742,12 @@ local Git = {
 		end,
 		on_click = {
 			callback = function()
-				Snacks.picker.git_branches()
+				local ok = pcall(function()
+					Snacks.picker.git_branches()
+				end)
+				if not ok then
+					vim.cmd("Git branches")
+				end
 			end,
 			name = "sl_git",
 		},
@@ -647,29 +769,23 @@ local Git = {
 }
 
 local File = {
-	init = function(self)
-		self.filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
-		self.ft = vim.bo.filetype
-		-- Cache icon + color once in init (was called twice: provider + hl)
-		self.icon, self.icon_color = require("nvim-web-devicons").get_icon_color(self.filename, self.ft)
-	end,
+	-- All work cached in Core.state.file via BufEnter/BufFilePost/BufWritePost autocmd.
+	-- Component init is a no-op — zero per-render fnamemodify / devicons calls.
 	{
-		provider = function(self)
-			return (Core.state.is_dimmed and " " or "┣ ") .. (self.icon or "󰈔") .. " "
+		provider = function()
+			return (Core.state.is_dimmed and " " or "┣ ") .. Core.state.file.icon .. " "
 		end,
-		hl = function(self)
-			local color = self.icon_color
+		hl = function()
+			local color = Core.state.file.icon_color
 			if Core.state.is_dimmed and color then
 				color = dim_hex(color, 0.4)
 			end
-			return {
-				fg = color or "#ff8800",
-			}
+			return { fg = color or "#ff8800" }
 		end,
 	},
 	{
-		provider = function(self)
-			return self.filename .. (Core.state.is_dimmed and " " or " ┫ ")
+		provider = function()
+			return Core.state.file.name .. (Core.state.is_dimmed and " " or " ┫ ")
 		end,
 		-- Dynamic hl function: updates on colorscheme change (was static table)
 		hl = function()
@@ -679,26 +795,23 @@ local File = {
 }
 
 local Ruler = {
-	provider = function()
-		local line = vim.api.nvim_win_get_cursor(0)[1]
-		local total = vim.api.nvim_buf_line_count(0)
-
+	init = function(self)
+		self.line = vim.api.nvim_win_get_cursor(0)[1]
+		self.total = vim.api.nvim_buf_line_count(0)
+	end,
+	provider = function(self)
 		if Core.state.is_dimmed then
 			-- AOD: Simple numbers
-			return string.format(" %d:%d ", line, total)
+			return string.format(" %d:%d ", self.line, self.total)
 		else
-			-- Normal: Full Dial
-			local ratio = line / total
-			local dial_pos = math.floor(ratio * 8 + 0.5)
-			local left = string.rep("═", dial_pos)
-			local right = string.rep("═", 8 - dial_pos)
-			return string.format("[%d:%d] %s╣%s═", line, total, left, right)
+			-- Normal: pre-computed dial variant (no string.rep per render)
+			local ratio = self.line / math.max(1, self.total)
+			local dial_pos = math.max(0, math.min(8, math.floor(ratio * 8 + 0.5)))
+			return string.format("[%d:%d] %s", self.line, self.total, RULER_DIAL[dial_pos])
 		end
 	end,
-	hl = function()
-		local line = vim.api.nvim_win_get_cursor(0)[1]
-		local total = vim.api.nvim_buf_line_count(0)
-		local r = line / total
+	hl = function(self)
+		local r = self.line / math.max(1, self.total)
 		local c = (r < 0.33) and "#ffaa00" or ((r < 0.67) and "#ff6600" or "#ff0000")
 		if Core.state.is_dimmed then
 			c = dim_hex(c, 0.4)
@@ -788,10 +901,22 @@ local Harpoon = {
 	end,
 }
 
-local SacredSymbols = {
-	-- provider = " ॐ  卐 ",
-	provider = "卐",
-	hl = { fg = "#ffaa00", bold = true },
+local CodeCompanion = {
+	condition = function()
+		return Core.state.cc.active
+	end,
+	provider = function()
+		local s = Core.state.cc
+		local body = "󱙺 " .. s.adapter
+		return (Core.state.is_dimmed and " " or "┣ ") .. body .. (Core.state.is_dimmed and " " or " ┫ ")
+	end,
+	hl = function()
+		local c = "#ff9ec8"
+		if Core.state.is_dimmed then
+			c = dim_hex(c, 0.4)
+		end
+		return { fg = c, bold = true }
+	end,
 }
 
 --------------------------------------------------------------------------------
@@ -805,13 +930,13 @@ local statusline = {
 		return not conditions.buffer_matches({ filetype = self.disabled_ft })
 	end,
 	{
-		-- SacredSymbols,
 		VimMode,
 		Nixie,
 		Git,
 		Harpoon,
 		File,
 		{ provider = "%=" }, -- Spacer
+		CodeCompanion,
 		LazyUpdates,
 		LspInfo,
 		Ruler,
