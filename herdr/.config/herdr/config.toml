@@ -1,0 +1,80 @@
+# ── herdr config (tmux parity) ───────────────────────────────────
+# Replicates a tricked-out tmux setup: Ctrl+Space prefix,
+# Alt+Shift+H/L tab nav, Alt+[/] workspace nav, catppuccin, etc.
+#
+# Keybindings reference:
+#
+#   [[keys.command]]
+#   type = "plugin_action" → invokes a plugin action script (action.sh)
+#   type = "shell"         → runs inline shell command (no TTY issues)
+#   type = "pane"          → opens a temporary pane (may have TTY issues)
+#
+#   prefix+o → herdr-sesh plugin action (opens floating picker overlay)
+#   prefix+f → herdr-plus projects (deprecated in favor of tv-based picker)
+#
+# Plugin wiring (config.toml is NOT enough):
+#   Plugin files live in ~/.config/herdr/plugins/local/herdr-sesh/
+#   After editing plugin files: `herdr plugin unlink herdr-sesh`
+#     then `herdr plugin link ~/.config/herdr/plugins/local/herdr-sesh`
+#   Config.toml changes only need `herdr server reload-config`
+#
+# Connected files:
+#   plugins/local/herdr-sesh/herdr-plugin.toml — manifest, defines panes & actions
+#   plugins/local/herdr-sesh/action.sh         — invoked by prefix+o
+#   plugins/local/herdr-sesh/pane.sh           — runs tv in overlay pane
+#   ~/.config/television/cable/herdr-sesh.toml — tv channel for project picker
+# ──────────────────────────────────────────────────────────────────
+
+onboarding = false
+
+[terminal]
+default_shell = "/usr/bin/fish"
+
+[keys]
+prefix = "ctrl+space"
+# Tab navigation: Alt+Shift+H/L to match tmux M-H (which = Alt+Shift+h on this keyboard)
+previous_tab = "alt+shift+h"
+next_tab = "alt+shift+l"
+# Workspace navigation: Alt+[/]
+previous_workspace = "alt+["
+next_workspace = "alt+]"
+workspace_picker = "prefix+w"
+
+[[keys.command]]
+key = "prefix+alt+t"
+type = "plugin_action"
+command = "jt.command-palette.open"
+description = "Command palette"
+
+[[keys.command]]
+key = "prefix+f"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.projects"
+description = "herdr-plus projects"
+
+[[keys.command]]
+key = "prefix+o"
+type = "plugin_action"
+command = "herdr-sesh.open"
+description = "TV Sessionizer: pick directory in floating window"
+
+[theme]
+name = "catppuccin"
+
+[ui]
+sidebar_width = 26
+hide_tab_bar_when_single_tab = true
+confirm_close = true
+pane_borders = true
+pane_gaps = true
+show_agent_labels_on_pane_borders = true
+
+[ui.toast]
+delivery = "system"
+delay_seconds = 1
+
+[ui.sound]
+enabled = false
+
+[experimental]
+pane_history = true

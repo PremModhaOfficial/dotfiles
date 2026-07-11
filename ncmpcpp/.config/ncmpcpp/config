@@ -1,3 +1,4 @@
+❯ cat config
 # mpd stuff
 mpd_host = "localhost"
 mpd_port = "6600"
@@ -73,3 +74,4 @@ ignore_leading_the = "yes"
 mouse_support = "no"
 empty_tag_marker = "-"
 enable_window_title = "yes"
+

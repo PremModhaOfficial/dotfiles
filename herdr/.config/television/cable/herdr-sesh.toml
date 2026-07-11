@@ -1,0 +1,31 @@
+# ── tv channel: herdr-sesh ───────────────────────────────────────
+# Thin channel: source command + preview + one-line workspace action.
+# The exec call in pane.sh delegates entirely to tv.
+#
+# Why the action is needed: tv's execute mode runs the command but
+# restarts tv afterward. The workspace create/focus forces herdr to
+# close the overlay pane, which terminates tv. Capturing tv output
+# in a subshell (SELECTED=$(tv ...)) would hang forever.
+#
+# Connected: pane.sh → runs `exec tv herdr-sesh`
+#            ~/.local/bin/herdr-sesh → standalone CLI script
+# ──────────────────────────────────────────────────────────────────
+
+[metadata]
+name = "herdr-sesh"
+description = "Project directory picker for herdr"
+
+[source]
+command = "fd -H -t d -d 5 '^\\.git$' ~/Projects ~/dotfiles ~/.config -E '.cache' -E '.local' -E herdr/plugins 2>/dev/null | while read -r d; do dirname \"$d\"; done; find ~/Projects ~/dotfiles -maxdepth 2 -type d 2>/dev/null"
+no_sort = true
+
+[preview]
+command = "ls -la --color=always '{}'"
+
+[keybindings]
+enter = "actions:herdr-open"
+
+[actions.herdr-open]
+description = "Focus or create herdr workspace for selected path"
+command = "herdr workspace focus '{split:/:-1}' 2>/dev/null || herdr workspace create --cwd '{}' --label '{split:/:-1}' --focus"
+mode = "execute"

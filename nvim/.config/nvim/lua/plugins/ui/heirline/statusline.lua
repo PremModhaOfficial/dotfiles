@@ -346,7 +346,7 @@ Animation.timer:start(
 			if now - search._last_recompute > 500 then
 				search._last_recompute = now
 				local res = vim.fn.searchcount({ recompute = 1, maxcount = 999 })
-				if res.total > 0 then
+				if res.total and res.total > 0 then
 					search.active = true
 					search.count = res.current
 					search.total = res.total

@@ -1,0 +1,39 @@
+# ── Plugin manifest ──────────────────────────────────────────────
+# id / name / version / description / platforms
+# min_herdr_version: requires v0.7.0+ for overlay placement
+#
+# [[panes]]
+#   placement = "overlay" → floating window, not a split.
+#     Only works when opened via action script, not directly.
+#   command = ["bash", "pane.sh"] — keep as relative path.
+#     Do NOT use e.g. ["bash", "$HERDR_PLUGIN_ROOT/pane.sh"]:
+#     bash does NOT expand env vars passed as a single argv item.
+#     The working directory is the plugin root, so plain "pane.sh" works.
+#
+# [[actions]]
+#   contexts = ["workspace"] → keybinding must be type = "plugin_action"
+#   command = ["bash", "action.sh"] — action.sh then opens the overlay pane.
+#
+# ⚠ After editing this file: `herdr plugin unlink herdr-sesh`
+#   then `herdr plugin link ~/.config/herdr/plugins/local/herdr-sesh`
+#   for changes to take effect.
+# ──────────────────────────────────────────────────────────────────
+
+id = "herdr-sesh"
+name = "TV Sessionizer"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Floating directory picker using tv — sesh for herdr"
+platforms = ["linux", "macos"]
+
+[[panes]]
+id = "picker"
+title = "TV Sessionizer"
+placement = "overlay"
+command = ["bash", "pane.sh"]
+
+[[actions]]
+id = "open"
+title = "TV Sessionizer: pick directory"
+contexts = ["workspace"]
+command = ["bash", "action.sh"]
