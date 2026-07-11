@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# ── herdr-sesh (standalone CLI) ──────────────────────────────────
+# Like tmux-sessionizer/sesh: list project dirs, pick one, print its path.
+# For CLI use: cd "$(herdr-sesh)" or pipe into other commands.
+#
+# Uses tv's dirs channel for standalone pick-and-print behavior.
+# The herdr overlay pane variant (pane.sh) uses a custom channel
+# with a workspace action instead — different mechanism for overlay.
+#
+# Connected: ~/.config/television/cable/herdr-sesh.toml → overlay-only channel
+#            ~/.config/herdr/plugins/local/herdr-sesh/pane.sh → overlay variant
+# ──────────────────────────────────────────────────────────────────
+set -eo pipefail
+
+# Build path list from project roots
+{
+  fd -H -t d -d 5 '\.git$' "$HOME/Projects" "$HOME/dotfiles" "$HOME/.config" \
+    -E '.cache' -E '.local' -E herdr/plugins 2>/dev/null \
+    | sed 's|/\.git$||' \
+    | sort -u
+  find "$HOME/Projects" "$HOME/dotfiles" -maxdepth 2 -type d 2>/dev/null
+} | sort -u > /tmp/herdr-sesh-src.$$
+
+SELECTED=$(tv dirs \
+  --source-command "cat /tmp/herdr-sesh-src.$$" \
+  --preview-command "ls -la --color=always '{}'" \
+  </dev/tty 2>/dev/null || true)
+
+rm -f /tmp/herdr-sesh-src.$$
+
+[[ -z "$SELECTED" ]] && exit 0
+
+echo "$SELECTED"

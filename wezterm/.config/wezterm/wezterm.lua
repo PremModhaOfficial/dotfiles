@@ -11,7 +11,7 @@ config.font = wezterm.font_with_fallback({
 	-- { family = "VictorMono NF", weight = "SemiBold" },
 	-- { family = "VictorMono Nerd Font Mono", weight = "SemiBold" },
 	-- { family = "Iosevkaterm NF", weight = "Regular" },
-	-- "JetBrainsMono Nerd Font Mono",
+	"JetBrainsMono Nerd Font Mono",
 	"Noto Color Emoji", -- Add fallback for emojis
 })
 

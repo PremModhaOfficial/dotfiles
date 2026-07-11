@@ -21,4 +21,19 @@ nvim/.config/nvim/.serena/memories
 tmux/.config/tmux/plugins
 config/tmux/plugins
 nvim/.context
+
+# herdr — auto-generated files, don't track
+herdr/.config/herdr/plugins.json
+herdr/.config/herdr/session.json
+herdr/.config/herdr/herdr-server.log
+herdr/.config/herdr/plugins/config/
+herdr/.config/television/cache/
+
 config/tmux/plugins
+/alacritty/.config/alacritty/dank-theme.toml
+/kitty/.config/kitty/dank-tabs.conf
+/kitty/.config/kitty/dank-theme.conf
+/wezterm/.config/wezterm/colors/dank-theme.toml
+/kitty/.config/kitty/dank-tabs.conf
+/kitty/.config/kitty/dank-theme.conf
+/wezterm/.config/wezterm/colors/dank-theme.toml

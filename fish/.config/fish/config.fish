@@ -269,7 +269,7 @@ alias wi='wimi -1 1 && exit'
 alias t='tmux a || tmux'
 alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
 alias ob='obsidian --disable-gpu'
-alias pi="ping google.com"
+#alias pi="ping google.com"
 alias sds='sdn s'
 alias fd='fdfind'
 
@@ -283,5 +283,6 @@ carapace _carapace | source
 # end
 # starship init fish | source
 # enable_transience
-
-source ~/.config/fish/extra.fish
+set -gx SSH_AUTH_SOCK "$HOME/.bitwarden-ssh-agent.sock"
+export PATH="/root/.bun/bin:$PATH"
+#source ~/.config/fish/extra.fish
