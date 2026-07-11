@@ -37,3 +37,4 @@ config/tmux/plugins
 /kitty/.config/kitty/dank-tabs.conf
 /kitty/.config/kitty/dank-theme.conf
 /wezterm/.config/wezterm/colors/dank-theme.toml
+dank-theme.toml
