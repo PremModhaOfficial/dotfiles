@@ -1,5 +1,6 @@
 return {
 	"folke/sidekick.nvim",
+	-- disabled intentionally
 	enabled = false,
 	opts = {
 		-- add any options here

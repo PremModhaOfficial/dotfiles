@@ -1,6 +1,7 @@
 return {
 	{
 		"zbirenbaum/copilot.lua",
+		-- disabled intentionally
 		enabled = false,
 		dependencies = {
 			-- { "copilotlsp-nvim/copilot-lsp" }, -- you'd probably want to configure image.nvim manually instead of doing this

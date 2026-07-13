@@ -13,26 +13,26 @@ size = 17.0
 
 
 [font.bold]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Mono NF"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "SemiBold"
 
 [font.bold_italic]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Mono NF"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "SemiBold Italic"
 #
 
 [font.italic]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Mono NF"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "Italic"
 
 [font.normal]
-family = "CaskaydiaMono Nerd Font"
+family = "Cascadia Mono NF"
 # family = "Iosevkaterm Nerd Font"
 # family = "JetBrainsMono Nerd Font"
 style = "Regular"

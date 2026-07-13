@@ -1,6 +1,7 @@
 return {
   "stevearc/conform.nvim",
-  lazy = false,
+  event = { "BufWritePre" },
+  cmd = { "ConformInfo" },
   keys = {
     {
       "<leader>DF",
@@ -24,7 +25,7 @@ return {
       lua = { "stylua" },
       python = { "isort", "black" },
       javascript = { "eslint", "prettierd", "prettier", stop_after_first = true },
-      typrscript = { "prettierd", "prettier", "eslint", stop_after_first = true },
+      typescript = { "prettierd", "prettier", "eslint", stop_after_first = true },
     },
   },
 }

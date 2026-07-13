@@ -1,0 +1,16 @@
+default_text_model = "deepseek-ai/deepseek-v4-pro"
+provider = "nvidia-nim"
+reasoning_effort = "auto"
+
+[projects."/home/prem-modha/.config/deepseek"]
+trust_level = "trusted"
+
+[projects."/home/prem-modha/sandbox"]
+trust_level = "trusted"
+
+[projects."/home/prem-modha/sandbox/nvidia-nim"]
+trust_level = "trusted"
+
+[providers.nvidia_nim]
+api_key = "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"
+base_url = "https://integrate.api.nvidia.com/v1"

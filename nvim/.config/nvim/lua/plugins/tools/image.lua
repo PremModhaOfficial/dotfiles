@@ -43,7 +43,7 @@ return {
 		})
 
 		local function should_hijack_buffer(bufnr)
-			local buftype = vim.api.nvim_buf_get_option(bufnr, "buftype")
+			local buftype = vim.bo[bufnr].buftype
 			local bufname = vim.api.nvim_buf_get_name(bufnr)
 
 			if buftype ~= "" then

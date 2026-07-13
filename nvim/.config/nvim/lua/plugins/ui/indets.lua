@@ -62,36 +62,3 @@ return {
 		end,
 	},
 }
--- }
---
---
--- return {
--- 	"lukas-reineke/indent-blankline.nvim",
--- 	main = "ibl",
--- 	---@module "ibl"
--- 	---@type ibl.config
---
--- 	config = function()
--- 		local ibl = require("ibl")
--- 		-- create the highlight groups in the highlight setup hook, so they are reset
--- 		-- every time the colorscheme changes
---
--- 		---@type ibl.config
--- 		ibl.config = {
--- 			enabled = true,
--- 			-- indent = { char = "", },
--- 			---@type ibl.config.scope
--- 			scope = {
--- 				enabled = true,
--- 				char = "│",
--- 				-- char = "",
--- 				show_exact_scope = true,
--- 				-- highlight = highlight,
--- 			},
--- 		}
---
--- 		ibl.setup(ibl.config)
--- 	end,
---
--- },
---

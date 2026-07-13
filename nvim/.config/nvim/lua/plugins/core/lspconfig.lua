@@ -71,10 +71,6 @@ return {
 					vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 				end
 
-				map("<leader>rN", function()
-					vim.lsp.buf.rename()
-				end, "[R]e[n]ame (project)")
-
 				map("<leader>rn", function()
 					vim.lsp.buf.rename()
 				end, "[R]e[n]ame")
@@ -298,8 +294,7 @@ return {
 					},
 				},
 			},
-			-- Rust (though you have rustaceanvim, this provides fallback)
-			rust_analyzer = {},
+			-- Rust: owned by rustaceanvim (plugins/lang/rust.lua). Do not enable here.
 			-- C/C++
 			clangd = {
 				cmd = {
@@ -500,7 +495,7 @@ return {
 
 		require("mason-lspconfig").setup({
 			automatic_installation = false,
-			automatic_enable = { exclude = { "jdtls" } },
+			automatic_enable = { exclude = { "jdtls", "rust_analyzer" } },
 			handlers = {
 				function(server_name)
 					local server = servers[server_name] or {}

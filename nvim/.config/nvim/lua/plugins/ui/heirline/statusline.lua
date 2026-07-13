@@ -406,12 +406,14 @@ local macro_ns = vim.api.nvim_create_namespace("heirline_macro")
 vim.on_key(nil, macro_ns) -- Clear previous listener
 
 vim.api.nvim_create_autocmd({ "RecordingEnter", "RecordingLeave" }, {
-	callback = function()
-		local reg = vim.fn.reg_recording()
-		Core.state.macro.recording = (reg ~= "")
-		Core.state.macro.reg = reg
-		if reg ~= "" then
+	callback = function(args)
+		if args.event == "RecordingEnter" then
+			Core.state.macro.recording = true
+			Core.state.macro.reg = vim.fn.reg_recording()
 			Core.state.macro.buffer = {}
+		else
+			Core.state.macro.recording = false
+			Core.state.macro.reg = ""
 		end
 		Core.dirty = true
 	end,

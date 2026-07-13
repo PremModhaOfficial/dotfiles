@@ -136,7 +136,7 @@ function M.setup()
 	end, { desc = "Find related notes by tag" })
 
 	-- Toggle between edit and preview mode (if you have a markdown preview plugin)
-	vim.keymap.set("n", "<leader>op", function()
+	vim.keymap.set("n", "<leader>oP", function()
 		if vim.g.obsidian_preview_mode then
 			vim.opt_local.conceallevel = 0
 			vim.g.obsidian_preview_mode = false

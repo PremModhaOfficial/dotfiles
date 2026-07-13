@@ -8,7 +8,7 @@ return {
 			---@param attr string
 			---@return string|nil
 			local function get_hl_color(name, attr)
-				local hl = vim.api.nvim_get_hl(0, { name = name })
+				local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
 				if hl[attr] then
 					return string.format("#%06x", hl[attr])
 				end
@@ -18,8 +18,8 @@ return {
 			-- Get the suggestion color from the Pmenu highlight group
 			local suggestion_color = get_hl_color("Pmenu", "fg") or "#B00B69"
 
-			-- Debugging: Print the fetched color
-			print("Fetched supermaven suggestion color: " .. suggestion_color)
+			-- Debugging: notify the fetched color
+			vim.notify("Fetched supermaven suggestion color: " .. suggestion_color)
 
 			require("supermaven-nvim").setup({
 				keymaps = {

@@ -1,7 +1,7 @@
 local map = vim.keymap.set
 
 map("n", "<Esc>", "<cmd>nohlsearch<CR>")
-map("n", "<M-1>", "<cmd>Exp<CR>")
+map("n", "<M-1>", "<cmd>Explore<CR>")
 
 map("n", "[d", function()
 	vim.diagnostic.jump({ count = -1, float = true })

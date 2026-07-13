@@ -6,13 +6,11 @@ local config = wezterm.config_builder()
 config.enable_wayland = true
 config.enable_tab_bar = false
 config.font = wezterm.font_with_fallback({
-	{ family = "CaskaydiaMono Nerd Font Mono" },
-	-- { family = "JetBrainsMono", weight = "Regular" },
-	-- { family = "VictorMono NF", weight = "SemiBold" },
-	-- { family = "VictorMono Nerd Font Mono", weight = "SemiBold" },
-	-- { family = "Iosevkaterm NF", weight = "Regular" },
-	-- "JetBrainsMono Nerd Font Mono",
-	"Noto Color Emoji", -- Add fallback for emojis
+	{
+		family = "IosevkaTerm Nerd Font",
+		harfbuzz_features = { "liga=1", "calt=1", "ss02", "ss03", "ss19", "ss20" },
+	},
+	"Noto Color Emoji",
 })
 
 config.keys = {
@@ -27,7 +25,7 @@ config.keys = {
 		action = wezterm.action.DisableDefaultAssignment,
 	},
 }
-config.font_size = 16
+config.font_size = 18
 config.window_padding = {
 	left = 5,
 	right = 5,

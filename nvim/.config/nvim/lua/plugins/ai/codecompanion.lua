@@ -15,7 +15,6 @@ return {
 		-- "Saghen/blink.cmp", -- Ensure blink.cmp is listed here
 		-- "j-hui/fidget.nvim",
 	},
-	config = true,
 	---@module "codecompanion"
 	opts = {
 		opts = {

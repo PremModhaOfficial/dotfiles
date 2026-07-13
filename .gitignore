@@ -22,3 +22,9 @@ tmux/.config/tmux/plugins
 config/tmux/plugins
 nvim/.context
 config/tmux/plugins
+.brv
+alacritty/.config/alacritty/dank-theme.toml
+graphify-out/cache/ast
+graphify-out
+wezterm/.config/wezterm/colors/dank-theme.toml
+.graphify_detect.json
