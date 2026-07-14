@@ -53,22 +53,24 @@ Complete this checklist before considering the async event loop production-ready
   - Expected: ✅ Listener doesn't fire after unsubscribe
   - Check: Listener removed properly
 
-**Status**: `[ ] All 10 tests pass without hanging`
+**Status**: `[✅] All 10 tests pass without hanging`
 
 ### Async Cleanup (CRITICAL FIX)
-- [ ] **No hanging promises** after tests complete
+- [✅] **No hanging promises** after tests complete
   ```bash
   timeout 5 node event-loop.test.js
   ```
   - Expected: Tests complete in < 5s
   - Check: No dangling listeners, proper cleanup
+  - Result: 10/10 tests pass in < 3s
 
-- [ ] **No unresolved promises** in test suite
+- [✅] **No unresolved promises** in test suite
   ```bash
   node --unhandled-rejections=strict event-loop.test.js
   ```
   - Expected: No "UnhandledPromiseRejectionWarning"
   - Check: All promises settled
+  - Result: Clean exit, no warnings
 
 - [ ] **Event listener cleanup** is automatic
   - Expected: Memory stable after 100+ commands
@@ -506,7 +508,7 @@ Complete this checklist before considering the async event loop production-ready
 
 **Status Summary**:
 ```
-[⬜] Phase 1: Unit Tests
+[✅] Phase 1: Unit Tests — 10/10 pass, no hanging, strict mode clean
 [⬜] Phase 2: Memory & Performance  
 [⬜] Phase 3: Integration Testing
 [⬜] Phase 4: TUI Component
@@ -516,7 +518,7 @@ Complete this checklist before considering the async event loop production-ready
 [⬜] Phase 8: Security
 [⬜] Phase 9: Code Quality
 
-Total: 0/9 phases complete
+Total: 1/9 phases complete
 ```
 
 Update this document as you progress through each phase! ✅

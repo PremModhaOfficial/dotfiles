@@ -168,23 +168,19 @@ async function runTests() {
   });
 
   // Test 6: Handler not found
-  await test("Throw error when handler not found", async () => {
+  await test("Error result when handler not found", async () => {
     const loop = new EventLoop();
     const id = loop.enqueue("nonexistent");
 
-    const loopPromise = loop.start();
-
-    try {
-      await loop.waitFor(id);
-      throw new Error("Should have thrown");
-    } catch (err) {
-      await assert(
-        err.message.includes("No handler registered"),
-        "Should throw handler not found error"
-      );
-    }
-
+    loop.start();
+    const result = await loop.waitFor(id);
     await loop.stop();
+
+    await assertEquals(result.status, "error", "Status should be error");
+    await assert(
+      result.error.message.includes("No handler registered"),
+      "Error message should indicate handler not found"
+    );
   });
 
   // Test 7: Get result

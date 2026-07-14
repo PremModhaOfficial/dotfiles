@@ -54,7 +54,8 @@ class EventLoop {
    * Emit an event
    */
   async emit(event, data) {
-    const listeners = this.eventListeners.get(event) || [];
+    // Copy to avoid mutation (e.g. once() unsubscribing) during iteration
+    const listeners = [...(this.eventListeners.get(event) || [])];
     for (const listener of listeners) {
       try {
         await listener(data);

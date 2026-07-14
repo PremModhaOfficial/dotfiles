@@ -73,7 +73,8 @@ export class EventLoop {
    * Emit an event
    */
   private async emit(event: string, data?: any): Promise<void> {
-    const listeners = this.eventListeners.get(event) || [];
+    // Copy to avoid mutation (e.g. once() unsubscribing) during iteration
+    const listeners = [...(this.eventListeners.get(event) || [])];
     for (const listener of listeners) {
       try {
         await listener(data);
@@ -179,23 +180,29 @@ export class EventLoop {
         return;
       }
 
+      let unsubscribeSuccess: (() => void) | undefined;
+      let unsubscribeError: (() => void) | undefined;
+
       const timer = setTimeout(() => {
-        unsubscribe();
+        if (unsubscribeSuccess) unsubscribeSuccess();
+        if (unsubscribeError) unsubscribeError();
         reject(new Error(`Command ${id} timed out after ${timeout}ms`));
       }, timeout);
 
-      const unsubscribe = this.on("command:success", (res) => {
+      unsubscribeSuccess = this.on("command:success", (res) => {
         if (res.id === id) {
           clearTimeout(timer);
-          unsubscribe();
+          if (unsubscribeSuccess) unsubscribeSuccess();
+          if (unsubscribeError) unsubscribeError();
           resolve(res);
         }
       });
 
-      this.on("command:error", (res) => {
+      unsubscribeError = this.on("command:error", (res) => {
         if (res.id === id) {
           clearTimeout(timer);
-          unsubscribe();
+          if (unsubscribeSuccess) unsubscribeSuccess();
+          if (unsubscribeError) unsubscribeError();
           reject(res.error);
         }
       });
