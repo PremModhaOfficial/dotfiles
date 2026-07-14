@@ -38,7 +38,16 @@ next_tab = "alt+shift+l"
 # Workspace navigation: Alt+[/]
 previous_workspace = "alt+["
 next_workspace = "alt+]"
-workspace_picker = "prefix+w"
+# prefix+s: show workspace/session names (tmux muscle memory)
+workspace_picker = ["prefix+w", "prefix+s"]
+# hjkl: navigate workspace list / picker (prefix+s/w, sidebar)
+navigate_workspace_up = "k"
+navigate_workspace_down = "j"
+# prefix+hjkl: move between panes (no conflict with workspace nav)
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
 
 [[keys.command]]
 key = "prefix+alt+t"
