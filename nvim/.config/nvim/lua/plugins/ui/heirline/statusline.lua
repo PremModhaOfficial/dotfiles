@@ -264,7 +264,9 @@ local function update_harpoon()
 	end
 
 	Core.state.harpoon.count = count
-	Core.state.harpoon.string = "┣󰛢" .. out .. "┫"
+	-- A compact cue strip: it belongs to the same signal rail as the other
+	-- instruments, rather than looking like an isolated badge.
+	Core.state.harpoon.string = "╏ 󰛢 " .. out
 	Core.state.harpoon.active = (count > 0)
 end
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, { callback = update_harpoon })
@@ -512,21 +514,20 @@ local VimMode = {
 	init = function(self)
 		self.mode = Core.state.mode
 	end,
-	-- Nixie Tube Rounded: ░  NORMAL  ░┣
-	-- 1. Left glow halo (warm cathode emission)
+	-- The mode plate is the left anchor of the instrument rail.
 	{
 		provider = function()
-			return Core.state.is_dimmed and "" or " ░"
+			return Core.state.is_dimmed and "" or " "
 		end,
 		hl = function(self)
 			if Core.state.is_dimmed then return {} end
 			return { fg = dim_hex(self.mode.color, 0.3) }
 		end,
 	},
-	-- 2. Pill left cap (rounded glass edge)
+	-- Left edge of the mode plate
 	{
 		provider = function()
-			return Core.state.is_dimmed and " 󰬅 " or ""
+			return Core.state.is_dimmed and "" or "▐"
 		end,
 		hl = function(self)
 			if Core.state.is_dimmed then
@@ -535,7 +536,7 @@ local VimMode = {
 			return { fg = self.mode.color }
 		end,
 	},
-	-- 3. Mode filament (glowing text inside the tube)
+	-- Mode filament
 	{
 		provider = function(self)
 			if Core.state.is_dimmed then
@@ -550,30 +551,30 @@ local VimMode = {
 			return { fg = Core.get_hl("Normal", "bg"), bg = self.mode.color, bold = true }
 		end,
 	},
-	-- 4. Pill right cap (rounded glass edge)
+	-- Right edge of the mode plate
 	{
 		provider = function()
-			return Core.state.is_dimmed and "" or ""
+			return Core.state.is_dimmed and "" or "▌"
 		end,
 		hl = function(self)
 			if Core.state.is_dimmed then return {} end
 			return { fg = self.mode.color }
 		end,
 	},
-	-- 5. Right glow halo
+	-- Breathing space before the live chamber
 	{
 		provider = function()
-			return Core.state.is_dimmed and "" or "░"
+			return Core.state.is_dimmed and " " or " "
 		end,
 		hl = function(self)
 			if Core.state.is_dimmed then return {} end
 			return { fg = dim_hex(self.mode.color, 0.3) }
 		end,
 	},
-	-- 6. Connector to nixie bar
+	-- Connector to the live chamber
 	{
 		provider = function()
-			return Core.state.is_dimmed and " " or "┣"
+			return Core.state.is_dimmed and " " or "╾"
 		end,
 		hl = function(self)
 			if Core.state.is_dimmed then return {} end
@@ -590,16 +591,16 @@ local Nixie = {
 			local tape = table.concat(b, "")
 			local display = tape:sub(-12)
 			local pad = string.rep(" ", math.max(0, 12 - #display))
-			return "┣" .. pad .. display .. "┫" .. s.label .. " "
+			return "╞" .. pad .. display .. "╡" .. s.label .. " "
 		elseif s.mode == "LSP" then
-			return "┣" .. s.wave_pattern .. "┫" .. s.label .. " "
+			return "╞" .. s.wave_pattern .. "╡" .. s.label .. " "
 		else
 			if Core.state.is_dimmed then
 				-- Minimalist Bar in AOD
 				return " " .. string.rep("·", 9) .. " "
 			else
 				-- Use pre-computed bar strings
-				return "┣" .. (nixie_bars[s.segments] or nixie_bars[0]) .. "┫" .. (s.label or "") .. " "
+				return "╞" .. (nixie_bars[s.segments] or nixie_bars[0]) .. "╡" .. (s.label or "") .. " "
 			end
 		end
 	end,
@@ -618,7 +619,7 @@ local Git = {
 	end,
 	{
 		provider = function()
-			return (Core.state.is_dimmed and "   " or "┫  ") .. Core.state.git.branch .. " "
+			return (Core.state.is_dimmed and "  " or "╏ ") .. Core.state.git.branch .. " "
 		end,
 		-- Dynamic hl function: updates on colorscheme change (was static table)
 		hl = function()
@@ -656,7 +657,7 @@ local File = {
 	end,
 	{
 		provider = function(self)
-			return (Core.state.is_dimmed and " " or "┣ ") .. (self.icon or "") .. " "
+			return (Core.state.is_dimmed and " " or "╏ ") .. (self.icon or "") .. " "
 		end,
 		hl = function(self)
 			local color = self.icon_color
@@ -670,7 +671,7 @@ local File = {
 	},
 	{
 		provider = function(self)
-			return self.filename .. (Core.state.is_dimmed and " " or " ┫ ")
+			return self.filename .. " "
 		end,
 		-- Dynamic hl function: updates on colorscheme change (was static table)
 		hl = function()
@@ -686,14 +687,14 @@ local Ruler = {
 
 		if Core.state.is_dimmed then
 			-- AOD: Simple numbers
-			return string.format(" %d:%d ", line, total)
+			return string.format("╏ %d:%d ", line, total)
 		else
 			-- Normal: Full Dial
 			local ratio = line / total
 			local dial_pos = math.floor(ratio * 8 + 0.5)
 			local left = string.rep("═", dial_pos)
 			local right = string.rep("═", 8 - dial_pos)
-			return string.format("[%d:%d] %s╣%s═", line, total, left, right)
+			return string.format("╏ %d:%d %s╽%s", line, total, left, right)
 		end
 	end,
 	hl = function()
@@ -738,9 +739,9 @@ local LspInfo = {
 				table.insert(out, name)
 			end
 		end
-		return (Core.state.is_dimmed and " " or "┣ ")
+		return (Core.state.is_dimmed and " " or "╏ ")
 			.. table.concat(out, "+")
-			.. (Core.state.is_dimmed and " " or " ┫ ")
+			.. " "
 	end,
 	hl = function()
 		local c = "#00d7ff"
@@ -762,9 +763,9 @@ local LazyUpdates = {
 		return require("lazy.status").has_updates()
 	end,
 	provider = function()
-		return (Core.state.is_dimmed and " 󰮯 " or "┣ 󰮯 ")
+		return (Core.state.is_dimmed and " 󰮯 " or "╏ 󰮯 ")
 			.. require("lazy.status").updates()
-			.. (Core.state.is_dimmed and " " or " ┫ ")
+			.. " "
 	end,
 	hl = { fg = "#ff00ff", bold = true },
 }
@@ -776,7 +777,7 @@ local Harpoon = {
 	provider = function()
 		local s = Core.state.harpoon.string
 		if Core.state.is_dimmed then
-			return s:gsub("┣", " "):gsub("┫", " ")
+			return s:gsub("╏", " ")
 		end
 		return s
 	end,
