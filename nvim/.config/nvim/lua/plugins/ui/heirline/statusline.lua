@@ -81,12 +81,6 @@ local Core = {
 	hl_cache = {},
 }
 
--- Pre-computed nixie bar strings (avoids string.rep per render)
-local nixie_bars = {}
-for i = 0, 9 do
-	nixie_bars[i] = string.rep("▓", i) .. string.rep("░", 9 - i)
-end
-
 -- AOD / Wireframe Logic: Swaps FG/BG on idle
 function Core.get_hl(name, attr)
 	local key = name .. "_" .. attr .. (Core.state.is_dimmed and "_dim" or "")
@@ -420,19 +414,20 @@ Animation.timer:start(
 			end
 		end
 
-		-- E. MAIN NIXIE STATE
-		if search.active then
-			s.mode = "SEARCH"
-			s.color = "#00ff00"
-			local ratio = search.display_count / math.max(1, search.display_total)
-			s.segments = math.min(9, math.floor(ratio * 9))
-			s.label = string.format(" %d/%d", search.display_count, search.display_total)
-		elseif Core.state.macro.recording then
+		-- E. LIVE RHYTHM STATE
+		-- Recording must always win: the key tape is the highest-value live signal.
+		if Core.state.macro.recording then
 			s.mode = "MACRO"
 			s.color = "#ff5555"
 			s.label = " REC @" .. Core.state.macro.reg
 			-- Tape Reel Animation: Cycling 1-9
 			s.segments = (math.floor(now / 100) % 9) + 1
+		elseif search.active then
+			s.mode = "SEARCH"
+			s.color = "#00ff00"
+			local ratio = search.display_count / math.max(1, search.display_total)
+			s.segments = math.min(9, math.floor(ratio * 9))
+			s.label = string.format(" %d/%d", search.display_count, search.display_total)
 		elseif lsp.progress then
 			s.mode = "LSP"
 			s.color = "#bb00ff"
@@ -583,26 +578,36 @@ local VimMode = {
 	},
 }
 
-local Nixie = {
+-- The live chamber is a rhythm lane: one changing measure that makes active
+-- editor work visible without disturbing the rest of the statusline.
+local RhythmLane = {
 	provider = function()
 		local s = Core.state.nixie
+		local function playhead(position)
+			return string.rep("─", position) .. "●" .. string.rep("─", 9 - position)
+		end
+
+		if Core.state.is_dimmed then
+			return " · · · "
+		end
+
 		if s.mode == "MACRO" then
 			local b = Core.state.macro.buffer
-			local tape = table.concat(b, "")
-			local display = tape:sub(-12)
-			local pad = string.rep(" ", math.max(0, 12 - #display))
-			return "╞" .. pad .. display .. "╡" .. s.label .. " "
+			local first = math.max(1, #b - 4)
+			local tape = table.concat(b, " ", first)
+			local beat = string.rep("·", math.max(0, s.segments - 1)) .. "◉"
+			return " " .. beat .. " " .. tape .. " → REC @" .. Core.state.macro.reg .. " "
+		elseif s.mode == "SEARCH" then
+			return " " .. playhead(s.segments) .. s.label .. " "
 		elseif s.mode == "LSP" then
-			return "╞" .. s.wave_pattern .. "╡" .. s.label .. " "
-		else
-			if Core.state.is_dimmed then
-				-- Minimalist Bar in AOD
-				return " " .. string.rep("·", 9) .. " "
-			else
-				-- Use pre-computed bar strings
-				return "╞" .. (nixie_bars[s.segments] or nixie_bars[0]) .. "╡" .. (s.label or "") .. " "
-			end
+			return " " .. s.wave_pattern .. s.label .. " "
+		elseif s.mode == "DIAGNOSTIC" then
+			return " " .. playhead(s.segments) .. s.label .. " "
+		elseif s.mode == "MODIFIED" then
+			return " " .. string.rep("═", math.max(1, s.segments)) .. "▶" .. s.label .. " "
 		end
+
+		return " " .. string.rep("·", 3 + s.segments) .. " "
 	end,
 	hl = function()
 		local c = Core.state.nixie.color
@@ -809,7 +814,7 @@ local statusline = {
 	{
 		-- SacredSymbols,
 		VimMode,
-		Nixie,
+		RhythmLane,
 		Git,
 		Harpoon,
 		File,
