@@ -1,6 +1,6 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
+;; Place your private configuration her! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
 
@@ -21,8 +21,9 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+(setq doom-font (font-spec :family "CaskaydiaMono Nerd Font Propo" :size 15 :weight 'Regular)
+      doom-variable-pitch-font (font-spec :family "CaskaydiaMono Nerd Font Propo" :size 13))
+   ;; (face-attribute 'default :font)
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
