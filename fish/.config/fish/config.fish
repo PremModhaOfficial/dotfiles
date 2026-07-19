@@ -286,3 +286,10 @@ carapace _carapace | source
 set -gx SSH_AUTH_SOCK "$HOME/.bitwarden-ssh-agent.sock"
 export PATH="/root/.bun/bin:$PATH"
 #source ~/.config/fish/extra.fish
+direnv hook fish | source
+
+# Nix profile PATH and vars
+fish_add_path $HOME/.nix-profile/bin
+set -x MANPATH $HOME/.nix-profile/share/man $MANPATH
+set -x XDG_DATA_DIRS $HOME/.nix-profile/share $XDG_DATA_DIRS
+set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive

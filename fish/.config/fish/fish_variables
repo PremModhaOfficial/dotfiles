@@ -3,4 +3,4 @@
 SETUVAR --export CARAPACE_BRIDGES:zsh\x2cfish\x2cbash\x2cinshellisense
 SETUVAR --export CARAPACE_UNFILTERED:\x3d\x1e1
 SETUVAR __fish_initialized:4300
-SETUVAR fish_user_paths:/home/prm/\x2ebin\x1e/home/prm/\x2elocal/bin\x1e/home/prm/\x2econfig/emacs/bin\x1e/home/prm/Applications\x1e/var/lib/flatpak/exports/bin/\x1e/home/prm/projects/hyprdots/Configs/\x2elocal/share/bin
+SETUVAR fish_user_paths:/home/prm/\x2enix\x2dprofile/bin\x1e/home/prm/\x2ebin\x1e/home/prm/\x2elocal/bin\x1e/home/prm/\x2econfig/emacs/bin\x1e/home/prm/Applications\x1e/var/lib/flatpak/exports/bin/\x1e/home/prm/projects/hyprdots/Configs/\x2elocal/share/bin
