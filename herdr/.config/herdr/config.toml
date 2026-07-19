@@ -59,8 +59,9 @@ command = "herdr-sesh.open"
 description = "TV Sessionizer: pick directory in floating window"
 
 [theme]
-name = "catppuccin"
+name = "gruvbox"
 
+auto_switch = false
 [ui]
 sidebar_width = 26
 hide_tab_bar_when_single_tab = true
@@ -74,7 +75,7 @@ delivery = "system"
 delay_seconds = 1
 
 [ui.sound]
-enabled = false
+enabled = true
 
 [experimental]
 pane_history = true

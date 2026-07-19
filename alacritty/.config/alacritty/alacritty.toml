@@ -26,8 +26,7 @@ style = "Italic"
 family = "CaskaydiaCove Nerd Font"
 style = "Bold Italic"
 
-[font.fallback]
-family = "Noto Color Emoji"
+# fontconfig handles emoji fallback via noto-fonts-color-emoji
 [font.glyph_offset]
 x = 0
 y = 0

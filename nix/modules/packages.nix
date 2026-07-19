@@ -31,12 +31,15 @@
     neovim
     fish
 
+    # Editors
+    emacs-pgtk
+
     # Shell
     starship
     zoxide
 
 
     ## terminals
-    ghostty
+
   ];
 }

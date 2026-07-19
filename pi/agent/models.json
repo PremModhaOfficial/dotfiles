@@ -1,7 +1,7 @@
 {
   "providers": {
-    "antigravity": {
-      "name": "Antigravity (cli-proxy-api)",
+    "proxy": {
+      "name": "cli-proxy-api",
       "baseUrl": "http://localhost:8317/v1",
       "apiKey": "7517ebf2c0ffee6a406b67d204215c20",
       "api": "openai-completions",
@@ -41,6 +41,42 @@
           "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
           "contextWindow": 1000000,
           "maxTokens": 8192
+        },
+        {
+          "id": "gpt-5.5",
+          "name": "GPT 5.5",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 200000,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gpt-5.4-mini",
+          "name": "GPT 5.4 Mini",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 200000,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gpt-5.6-terra",
+          "name": "GPT 5.6 Terra",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 272000,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 272000,
+          "maxTokens": 16384
         }
       ]
     }
