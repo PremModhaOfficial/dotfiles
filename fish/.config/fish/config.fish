@@ -283,7 +283,6 @@ carapace _carapace | source
 # end
 # starship init fish | source
 # enable_transience
-set -gx SSH_AUTH_SOCK "$HOME/.bitwarden-ssh-agent.sock"
 export PATH="/root/.bun/bin:$PATH"
 #source ~/.config/fish/extra.fish
 direnv hook fish | source

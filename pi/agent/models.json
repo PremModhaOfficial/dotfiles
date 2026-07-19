@@ -1,0 +1,48 @@
+{
+  "providers": {
+    "antigravity": {
+      "name": "Antigravity (cli-proxy-api)",
+      "baseUrl": "http://localhost:8317/v1",
+      "apiKey": "7517ebf2c0ffee6a406b67d204215c20",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "claude-opus-4-6-thinking",
+          "name": "Claude Opus 4.6 (thinking)",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 200000,
+          "maxTokens": 16384
+        },
+        {
+          "id": "claude-sonnet-4-6",
+          "name": "Claude Sonnet 4.6",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 200000,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gemini-3-flash",
+          "name": "Gemini 3 Flash",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 1000000,
+          "maxTokens": 8192
+        },
+        {
+          "id": "gemini-pro-agent",
+          "name": "Gemini Pro Agent",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 1000000,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  }
+}

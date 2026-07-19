@@ -34,5 +34,9 @@
     # Shell
     starship
     zoxide
+
+
+    ## terminals
+    ghostty
   ];
 }

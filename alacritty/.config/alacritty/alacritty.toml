@@ -11,38 +11,23 @@ TERM = "xterm-256color"
 [font]
 size = 17.0
 
+[font.normal]
+family = "CaskaydiaCove Nerd Font"
 
 [font.bold]
-family = "Cascadia Code"
-# family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
+family = "CaskaydiaCove Nerd Font"
 style = "Bold"
 
-[font.bold_italic]
-family = "Cascadia Code"
-# family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
-style = "Bold Italic"
-#
-
 [font.italic]
-family = "Cascadia Code"
-# family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
+family = "CaskaydiaCove Nerd Font"
 style = "Italic"
 
-[font.normal]
-family = "Cascadia Code"
-# family = "Iosevkaterm Nerd Font"
-# family = "JetBrainsMono Nerd Font"
-style = "Regular"
+[font.bold_italic]
+family = "CaskaydiaCove Nerd Font"
+style = "Bold Italic"
 
-# [font.fallback]
-# family = "Noto Color Emoji"
-
-# [font.offset]
-# x = 0
-# y = 0
+[font.fallback]
+family = "Noto Color Emoji"
 [font.glyph_offset]
 x = 0
 y = 0
