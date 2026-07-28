@@ -40,6 +40,8 @@ previous_workspace = "alt+["
 next_workspace = "alt+]"
 # prefix+s: show workspace/session names (tmux muscle memory)
 workspace_picker = ["prefix+w", "prefix+s"]
+
+settings = "prefix+p"
 # hjkl: navigate workspace list / picker (prefix+s/w, sidebar)
 navigate_workspace_up = "k"
 navigate_workspace_down = "j"
@@ -62,14 +64,27 @@ command = "cloudmanic.herdr-plus.projects"
 description = "herdr-plus projects"
 
 [[keys.command]]
-key = "prefix+o"
+key = "prefix+shift+t"
 type = "plugin_action"
 command = "herdr-sesh.open"
 description = "TV Sessionizer: pick directory in floating window"
 
-[theme]
-name = "catppuccin"
+[[keys.command]]
+key = "prefix+o"
+type = "plugin_action"
+command = "fullerzz.sesh.open-picker"
+description = "Sesh Picker: workspaces + sessions + zoxide"
 
+[[keys.command]]
+key = "prefix+shift+b"
+type = "plugin_action"
+command = "fullerzz.sesh.last"
+description = "Switch to previous workspace"
+
+[theme]
+name = "gruvbox"
+
+auto_switch = false
 [ui]
 sidebar_width = 26
 hide_tab_bar_when_single_tab = true
@@ -78,12 +93,13 @@ pane_borders = true
 pane_gaps = true
 show_agent_labels_on_pane_borders = true
 
+agent_panel_sort = "spaces"
 [ui.toast]
 delivery = "system"
 delay_seconds = 1
 
 [ui.sound]
-enabled = false
+enabled = true
 
 [experimental]
 pane_history = true
