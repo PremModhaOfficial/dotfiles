@@ -64,16 +64,16 @@ command = "cloudmanic.herdr-plus.projects"
 description = "herdr-plus projects"
 
 [[keys.command]]
+key = "prefix+o"
+type = "shell"
+command = "herdr plugin pane open --plugin fullerzz.sesh --entrypoint picker"
+description = "Sesh Picker (fzf): workspaces + sessions + zoxide"
+
+[[keys.command]]
 key = "prefix+shift+t"
 type = "plugin_action"
 command = "herdr-sesh.open"
 description = "TV Sessionizer: pick directory in floating window"
-
-[[keys.command]]
-key = "prefix+o"
-type = "plugin_action"
-command = "fullerzz.sesh.open-picker"
-description = "Sesh Picker: workspaces + sessions + zoxide"
 
 [[keys.command]]
 key = "prefix+shift+b"
