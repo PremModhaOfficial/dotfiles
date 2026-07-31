@@ -54,7 +54,7 @@ JCODE_UPSTREAM="https://github.com/1jehuang/jcode.git"
 mkdir -p "$LOG_DIR" "$UPDATER_SRC"
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG"; }
-fail() { log "ERROR: $*"; exit 1; }
+fail() { log "ERROR: $*"; checklist_write 1; exit 1; }
 
 DRY=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1
 for arg in "$@"; do
@@ -68,11 +68,52 @@ for arg in "$@"; do
   esac
 done
 
+# Per-run checklist ledger: appended to CHECKLIST.md in the skill folder so the
+# skill (and the user) can see exactly what was done, and verify next time.
+CHECKLIST_DIR="$SKILLS_DIR/update-all"
+CHECKLIST="$CHECKLIST_DIR/CHECKLIST.md"
+CHECKLIST_TMP="$LOG_DIR/checklist.tmp"
+
+checklist_init() {
+  mkdir -p "$CHECKLIST_DIR"
+  : > "$CHECKLIST_TMP"
+}
+checklist_add() { # checklist_add <done|fail> <label>
+  printf '%s\t%s\n' "$1" "$2" >> "$CHECKLIST_TMP"
+}
+checklist_write() {
+  [ -f "$CHECKLIST_TMP" ] || return 0
+  local total ok failc
+  total=$(wc -l < "$CHECKLIST_TMP" | tr -d ' ')
+  ok=$(grep -c '^done' "$CHECKLIST_TMP" || true)
+  failc=$(grep -c '^fail' "$CHECKLIST_TMP" || true)
+  {
+    echo "## Update run — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo ""
+    echo "Summary: $ok/$total steps OK, $failc failed (exit: ${1:-0})"
+    echo ""
+    echo "| # | Step | Status |"
+    echo "|---|------|--------|"
+    local i=0
+    while IFS=$'\t' read -r status label; do
+      i=$((i+1))
+      local mark="done"
+      [ "$status" = "fail" ] && mark="fail"
+      echo "| $i | $label | $mark |"
+    done < "$CHECKLIST_TMP"
+    echo ""
+  } >> "$CHECKLIST"
+  log "OK: checklist appended to $CHECKLIST"
+}
+
 run() { # run <label> <cmd...>
   local label="$1"; shift
   if [ "$DRY" = 1 ]; then log "DRY: $label — $*"; return 0; fi
   log "RUN: $label — $*"
-  if "$@"; then log "OK:  $label"; else log "WARN: $label exited $? (continuing)"; fi
+  if "$@"; then log "OK:  $label"; checklist_add done "$label"; else
+    log "WARN: $label exited $? (continuing)"
+    checklist_add fail "$label"
+  fi
 }
 
 # require() is like run() but FAILS THE WHOLE UPDATE on error. Used for the
@@ -82,7 +123,10 @@ require() { # require <label> <cmd...>
   local label="$1"; shift
   if [ "$DRY" = 1 ]; then log "DRY: $label — $*"; return 0; fi
   log "RUN: $label — $*"
-  if "$@"; then log "OK:  $label"; else fail "required step failed: $label (exited $?)"; fi
+  if "$@"; then log "OK:  $label"; checklist_add done "$label"; else
+    checklist_add fail "$label"
+    fail "required step failed: $label (exited $?)"
+  fi
 }
 
 # --- 1. jcode core (fork-based) --------------------------------------------
@@ -387,11 +431,14 @@ write_manifest() {
 # --- main -------------------------------------------------------------------
 log "=============================================="
 log "update-all started (dry_run=$DRY)"
+checklist_init
 [ "$DO_JCODE" = 1 ]   && update_jcode
 [ "$DO_SKILLS" = 1 ] && { skill_sources; sync_skills; }
 [ "$DO_TOOLS" = 1 ]  && update_tools
 [ "$DO_CONFIG" = 1 ] && sync_configs
 [ "$DO_SKILLS" = 1 ] && write_manifest
+checklist_write
 log "update-all finished — restart jcode (or reload skills) to pick up the new list."
 log "next: jcode self-dev --reload   (if jcode core was rebuilt)"
+log "checklist: $CHECKLIST"
 log "=============================================="

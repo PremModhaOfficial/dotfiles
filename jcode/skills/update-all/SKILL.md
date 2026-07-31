@@ -71,6 +71,22 @@ checks the first two):
 - `babysit/SKILL.md` still contains the "jcode harness note"
 - `~/.jcode/hooks/babysitter-gate.sh` and `herdr-agent-state.sh` are present
 
+## 0. Read the checklist (ledger of what was done before)
+
+This skill keeps a living ledger at `<skill-dir>/CHECKLIST.md` — every run
+appends a table of each step (jcode fetch/rebase/push/build, skill syncs,
+tools, configs, manifest, dotfiles) with `done`/`fail` status and a summary.
+
+Read it first:
+
+```bash
+cat <skill-dir>/CHECKLIST.md   # ~/.jcode/skills/update-all/CHECKLIST.md
+```
+
+Note any previously-failed steps. If a prior run shows a `fail` for a step you
+can fix (e.g. dotfiles pull, a skill sync), fix it during this run and confirm
+it flips to `done` in the new ledger entry.
+
 ## 1. Run the updater
 
 Run the updater **bundled inside this skill folder** (self-contained — the
@@ -89,7 +105,7 @@ It performs, in order:
 
 1. **jcode core** — fetches upstream (`1jehuang/jcode`), rebases our fork branch
    `local/turn-end-gate` (the babysitter turn-end-gate feature) onto upstream
-   main, force-pushes it to our fork `PremModhaOfficial/jcode`, and builds.
+   `master`, force-pushes it to our fork `PremModhaOfficial/jcode`, and builds.
 2. **Skills** — pulls ponytail/caveman, tiger-style, tuicr, babysitter, herdr
    into `~/.jcode/updater-src`; re-syncs them into `~/.agents/skills`;
    regenerates `babysit` with our jcode adaptation (harness=pi).
@@ -101,7 +117,8 @@ It performs, in order:
    commit).
 6. **Dotfiles auto-commit + push** — the updater ALWAYS does this at the end:
    - pulls `~/dotfiles` (ff-only) so remote changes are merged in first
-   - stages everything with `git add -A`
+   - stages only owned paths (`jcode/`, pickr config, `babysitter/`) — never
+     `git add -A`, which would sweep in unrelated edits and nested git repos
    - commits as `update-all: sync configs/skills/updater` (allow-empty, so a
      no-change run still records the update)
    - pushes to `origin` (branch `wrk`)
