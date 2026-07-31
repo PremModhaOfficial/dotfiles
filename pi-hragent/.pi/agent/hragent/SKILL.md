@@ -1,8 +1,7 @@
 # hragent — Multi-Agent Orchestration
 
 Spawn and coordinate parallel subagent workers via herdr + pi-intercom.
-Use when you need to parallelize work across 2+ agents (research, code review,
-implementation slices).
+Use when you need to parallelize work across 2+ agents.
 
 ## Files
 
@@ -14,70 +13,54 @@ implementation slices).
 
 ## Spawning workers
 
-Always use **windows** (not panes):
+Each worker gets its own **tab** (not panes sharing a tab):
 
 ```bash
-bash ./spawn.sh "hragent-w1" --cwd "$PWD" --split window --task "your task here"
+bash ./spawn.sh "hragent-w1" --cwd "$PWD" --task "your task here"
 ```
 
-`--split window` gives each worker its own terminal window with full space.
-Panes (--split right|down) share a tab — cramped, hard to read per-worker output.
+Spawn script does: create tab → `herdr agent start --tab` → `/name` → prepend main agent name to task → send task → print pane_id.
+The main agent name is auto-detected via `herdr agent list` and passed as `--main`.
+Switch between workers with `Alt+<number>`.
 
-The spawn script:
-1. Calls `herdr agent start` with the name and task
-2. Sends `/name <name>` to set the pi session name
-3. Sends the task (non-command) to trigger a turn → syncs intercom name
-4. Prints the pane_id on stdout
+## Communication
 
-## Communication — Pub-sub only, never `ask`
+**Status updates:** `intercom({ action: "send" })` — fire-and-forget. Workers push `[ACK]`, `[GO]`, `[DONE]`, `[FIN]`, `[FAIL]`, `[BLK]`, `[DET]`. Main never polls.
 
-**Only use `intercom({ action: "send", ... })`** (fire-and-forget).
-Never use `intercom({ action: "ask", ... })` — that blocks and causes deadlocks
-when multiple workers respond or a worker is mid-task.
+**Blocking requests:** `intercom({ action: "ask" })` — only for `[HELP]`, `[HUMN]`, `[DET?]` where the sender needs an answer.
 
 ### Tags
 
-| Tag | Purpose | When |
-|-----|---------|------|
-| `[ACK]` | Confirm receipt | Worker got a task |
-| `[GO]` | Started | Task begun |
-| `[DONE]` | Subtask done | A slice finished |
-| `[FIN]` | All done | Entire job complete |
-| `[HELP]` | Needs agent input | Blocked (non-blocking send) |
-| `[HUMN]` | Needs user input | Need a human decision |
-| `[FAIL]` | Irrecoverable | Task failed |
-| `[BLK]` | Blocked | Waiting on external dependency |
-| `[DET]` | Details | Extra info about prior message |
+| Tag | Purpose | Method |
+|-----|---------|--------|
+| `[ACK]` | Confirm receipt | send |
+| `[GO]` | Started working | send |
+| `[DONE]` | Subtask done | send |
+| `[FIN]` | All done | send |
+| `[HELP]` | Needs agent input | ask |
+| `[HUMN]` | Needs human decision | ask |
+| `[FAIL]` | Irrecoverable failure | send |
+| `[BLK]` | Blocked on dependency | send |
+| `[DET]` | Extra details | send |
+| `[DET?]` | Request details | ask |
 
 ### Rules
 
-- **Always CC main** — every status message must be sent to main.
-  Cross-worker comms are fine but main must see them too.
-- **Workers push** — main never polls, never asks for status.
-  Workers fire `[DONE]`, `[FAIL]`, `[HELP]` etc when they happen.
-- **`[DET?]` and `[STAT]` are non-blocking `send`** — never `ask`.
-  Worker replies with `[DET]` when it has the info.
+- **Always CC main** — every message must go to main too.
+- **Workers push status** — main never polls, never asks for status.
+- `[HELP]`/`[HUMN]`/`[DET?]` are the only `ask` use cases.
 
-## Orchestration pattern
+## Orchestration (BY_LAW)
 
-1. Spawn workers via `spawn.sh` with `--split window` and `--task`
-2. Wait for each to push `[DONE]` / `[FIN]` via intercom `send`
-3. On `[HELP]`/`[HUMN]` → relay to user or reply via `send`
-4. On `[FAIL]` → retry up to 2 times, then report to user
-5. Teardown: `herdr pane close <pane_id>` for each worker
+Follow the decision trees in PROTOCOL.md `BY_LAW` section strictly:
 
-## herdr lifecycle mapping
-
-| Intercom message | herdr status |
-|-----------------|--------------|
-| `[GO]` | working |
-| `[BLK]`/`[HELP]`/`[HUMN]` | blocked |
-| `[DONE]` | idle |
-| `[FIN]` | idle → done |
-| `[FAIL]` | blocked |
+1. Spawn workers → wait for all [ACK] before proceeding
+2. Workers push status — you never poll, never ask for status
+3. On [DONE]: send next task if more work, else wait for [FIN]
+4. On [FAIL]: retry up to 2 times via send, then report to user
+5. On [HELP]/[HUMN]: answer if you can, relay to user if you can't
+6. On [FIN] from all workers: summarize, teardown via `herdr pane close <pane_id>`
 
 ## Reference
 
-- PROTOCOL.md — full message format details
-- LEARNINGS.md — past mistakes and why patterns are what they are
-- spawn.sh — the spawn implementation
+PROTOCOL.md — full message format | LEARNINGS.md — past mistakes | spawn.sh — implementation

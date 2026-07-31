@@ -5,7 +5,6 @@ return {
 		event = "VeryLazy",
 		enabled = false,
 		dependencies = { "MunifTanjim/nui.nvim" },
-		opts = {},
 		config = function()
 			vim.keymap.set("n", "<leader>H", function()
 				require("hardtime").toggle()

@@ -16,7 +16,7 @@ name = "herdr-sesh"
 description = "Project directory picker for herdr"
 
 [source]
-command = "fd -H -t d -d 5 '^\\.git$' ~/Projects ~/dotfiles ~/.config -E '.cache' -E '.local' -E herdr/plugins 2>/dev/null | while read -r d; do dirname \"$d\"; done; find ~/Projects ~/dotfiles -maxdepth 2 -type d 2>/dev/null"
+command = "find ~/projects ~/Projects ~/dotfiles ~/workspace ~/scratch ~/iac ~/MPSProjects ~/sandbox ~/Notes -name '.git' -type d -maxdepth 5 2>/dev/null | while read -r d; do dirname \"$d\"; done"
 no_sort = true
 
 [preview]

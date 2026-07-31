@@ -1,6 +1,5 @@
 return {
 	"Zeioth/neon.nvim",
-	-- enabled = false,
 	opts = {
 		dim_inactive = false,
 		styles = {

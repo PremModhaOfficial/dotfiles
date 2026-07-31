@@ -5,6 +5,9 @@ reasoning_effort = "auto"
 [projects."/home/prem-modha/.config/deepseek"]
 trust_level = "trusted"
 
+[projects."/home/prem-modha/.config/fish"]
+trust_level = "trusted"
+
 [projects."/home/prem-modha/sandbox"]
 trust_level = "trusted"
 

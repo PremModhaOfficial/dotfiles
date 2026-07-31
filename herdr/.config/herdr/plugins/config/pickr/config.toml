@@ -1,0 +1,40 @@
+# herdr-pickr — configuration (auto-generated: tuicr wired into herdr)
+[pickr]
+auto    = false
+default = "tuicr"
+
+[[backend]]
+key = "t"
+id  = "tuicr"
+name = "tuicr — full review, comments to the forge"
+run  = "tuicr pr {url}"
+where = "pane"
+needs = ["tuicr"]
+platforms = ["github", "gitlab"]
+
+[[backend]]
+key = "h"
+id  = "hunk"
+name = "hunk — fast diff viewer"
+run_github = "gh pr diff {url} --no-color | hunk patch -"
+where = "pane"
+needs = ["gh", "hunk"]
+platforms = ["github"]
+
+[[backend]]
+key = "g"
+id  = "delta"
+name = "diff — delta"
+run_github = "gh pr diff {url} | delta"
+where = "pager"
+needs = ["gh", "delta"]
+platforms = ["github"]
+
+[[backend]]
+key = "o"
+id  = "browser"
+name = "open in browser"
+run  = "xdg-open {url}"
+where = "detach"
+needs = []
+platforms = ["github", "gitlab"]

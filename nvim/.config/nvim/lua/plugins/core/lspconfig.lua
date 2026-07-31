@@ -18,13 +18,7 @@ return {
 			cmd = "Neoconf",
 			opts = {},
 		},
-		-- Useful status updates for LSP.
-		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-		-- Artifact its GONE
-		-- { "j-hui/fidget.nvim", opts = {} },
 
-		-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
-		-- used for completion, annotations and signatures of Neovim apis
 	},
 	config = function()
 		-- Brief aside: **What is LSP?**
@@ -235,7 +229,7 @@ return {
 					},
 				},
 			},
-			-- nil_ls = { cmd = { "nil", "--stdio" }, flake = { autoArchive = "true", }, },
+
 			pylsp = {
 				plugins = {
 					pycodestyle = {
@@ -263,8 +257,7 @@ return {
 			-- Some languages (like typescript) have entire language plugins that can be useful:
 			--    https://github.com/pmizio/typescript-tools.nvim
 			--
-			-- But for many setups, the LSP (`tsserver`) will work just fine
-			-- tsserver = {},
+
 			--
 
 			-- TypeScript/JavaScript
@@ -450,7 +443,7 @@ return {
 			root_dir = vim.fs.root(0, { ".vectorcode", ".git" }),
 			settings = {},
 		}
-		-- vim.lsp.enable("VectorCode")
+
 		vim.lsp.config("VectorCode", v)
 
 		vim.lsp.config("nixd", {
@@ -503,7 +496,7 @@ return {
 					-- by the server configuration above. Useful when disabling
 					-- certain features of an LSP (for example, turning off formatting for tsserver)
 					server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-					-- require("lspconfig")[server_name].setup(server)
+	
 					vim.lsp.config(server_name, server)
 				end,
 				-- Disable mason-lspconfig from automatically configuring jdtls

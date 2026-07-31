@@ -73,6 +73,29 @@ chat = true
 side_panel = true
 
 [display.colors]
+# fluoromachine (delta) palette
+user = "#98FFFB"
+ai = "#D598FF"
+tool = "#925393"
+file_link = "#98FFFB"
+dim = "#925393"
+accent = "#D598FF"
+system = "#FF67D4"
+queued = "#FFD298"
+asap = "#98FFFB"
+pending = "#925393"
+user_text = "#EFEFFD"
+user_bg = "#2B2233"
+ai_text = "#EFEFFD"
+header_icon = "#98FFFB"
+header_name = "#D598FF"
+header_session = "#EFEFFD"
+success = "#C0FF98"
+warning = "#FFD298"
+error = "#FF98B3"
+info = "#98FFFB"
+border = "#925393"
+selection_bg = "#492949"
 
 [features]
 memory = true

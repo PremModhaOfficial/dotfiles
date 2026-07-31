@@ -1,4 +1,4 @@
-# hragent Protocol — Intercom message format
+# hragent Protocol
 
 Subagents talk to each other and the main agent via `pi-intercom`.
 Every message follows a strict tag format so the receiver can parse it in
@@ -17,159 +17,215 @@ one glance without loading a full conversation.
 
 ## Tags
 
-| Tag | Meaning | Used when |
-|-----|---------|-----------|
-| `[ACK]` | Acknowledge receipt | Subagent got a task |
-| `[GO]` | Started working on | Task begun |
-| `[DONE]` | Subtask complete | A slice is finished |
-| `[FIN]` | Assignment complete | Entire job done, awaiting next or exit |
-| `[HELP]` | Needs agent help | Blocked, need input from another agent |
-| `[HUMN]` | Needs human input | Need user decision |
-| `[FAIL]` | Task failed | Irrecoverable error |
-| `[BLK]` | Blocked | Waiting on external dependency |
-| `[DET]` | Details | Additional info about a prior `[DONE]`/`[FAIL]`/etc |
+| Tag | Meaning | Used when | Method |
+|-----|---------|-----------|--------|
+| `[ACK]` | Acknowledge receipt | Subagent got a task | `send` |
+| `[GO]` | Started working on | Task begun | `send` |
+| `[DONE]` | Subtask complete | A slice is finished | `send` |
+| `[FIN]` | Assignment complete | Entire job done | `send` |
+| `[HELP]` | Needs agent help | Blocked, need input | `ask` |
+| `[HUMN]` | Needs human input | Need user decision | `ask` |
+| `[FAIL]` | Task failed | Irrecoverable error | `send` |
+| `[BLK]` | Blocked | Waiting on dependency | `send` |
+| `[DET]` | Details | Extra info about prior message | `send` |
+| `[DET?]` | Request details | Ask for more info | `ask` |
 
-> **No blocking tags.** All communication is pub-sub via `intercom send`. Never use `ask`.
+**Fire-and-forget** (`send`): `[ACK]`, `[GO]`, `[DONE]`, `[FIN]`, `[FAIL]`, `[BLK]`, `[DET]`
+**Blocking** (`ask`): `[HELP]`, `[HUMN]`, `[DET?]`
 
-## Push-based lifecycle
+---
 
-Subagents **push** state changes. The main agent never polls.
+## BY_LAW — Orchestration rules
 
-### Rule: Always CC the main agent
+These are **mandatory**. The main agent and workers follow these decision trees
+on every intercom message. No improvisation.
 
-Every status message (`[GO]`, `[DONE]`, `[FIN]`, `[FAIL]`, `[HELP]`, `[HUMN]`, `[BLK]`)
-MUST be sent to the main agent. The main agent is the single source of truth for
-the global state. Cross-worker communication is fine but must **also** CC the main.
+### HARD RULE: No pane scanning
 
-```
-[DONE] <w1 >main: refactored auth.ts        ← CC main
-[DONE] <w1 >w2: here's my output, see above  ← cross-worker, still CC main:
-[DONE] <w1 >main: cross-worker: sent output to w2
-```
+**NEVER** read herdr panes directly (`herdr agent read`, `herdr pane run`, etc.)
+to get worker output. ALL communication goes through intercom.
 
-### Intercom name sync (important!)
+- Workers push results via `intercom send` — that's the only output channel.
+- Main receives results via intercom — that's the only input channel.
+- Pane reading is for debugging only, never for orchestration.
+- If a worker hasn't sent `[DONE]`/`[FIN]`, it's still working. Don't poll.
 
-pi-intercom only syncs the session name to the broker on `turn_start` (when an agent
-turn begins). Setting the name via `/name` does NOT automatically update intercom
-presence. A non-command message must be sent to trigger a turn first.
-
-**Fix in spawn.sh:** The `--task` argument sends the task via `herdr pane run` after
-`/name`. This non-command message triggers a turn → `syncPresenceIdentity` →
-worker becomes routable by name in intercom.
-
-### Startup sequence
+**VIOLATION:** Worker doesn't know main's name → can't send results.
+**FIX:** spawn.sh prepends main name to task. Worker MUST use that name in all intercom send calls.
 
 ```
-1. Spawn:    herdr agent start hragent-w1 -- env TERM=xterm-256color pi
-2. Name:     herdr pane run <pane> "/name hragent-w1"
-             → pi receives "/name" command. Name set but NOT yet in intercom.
-3. Task:     herdr pane run <pane> "Research feature X and report findings"
-             → pi receives task as user input → triggers agent turn
-             → turn_start → syncPresenceIdentity → name syncs to broker
-             → agent starts working → reports results via intercom
-             ← Now routable: intercom({ action: "send", to: "hragent-w1", ... })
+VIOLATION: herdr agent read <pane> --lines 50  ← WRONG
+CORRECT:   wait for intercom message            ← RIGHT
+VIOLATION: sleep N && check pane                 ← WRONG
+CORRECT:   intercom({ action: "ask", ... })      ← RIGHT
+VIOLATION: intercom({ action: "send", to: "main" })  ← WRONG ("main" is not a name)
+CORRECT:   intercom({ action: "send", to: "<actual_name>" }) ← RIGHT
 ```
 
-Subsequent communication goes through intercom only.
-
-### Normal flow
+### Main agent: after spawning workers
 
 ```
-             Main → pane run: task description (triggers turn, syncs name)
-Subagent → Main: [ACK] <w1 >main: got it
-Subagent → Main: [GO] <w1 >main: extracting validate() to auth-utils.ts
-Subagent → Main: [DONE] <w1 >main: validate() extracted
-Subagent → Main: [FIN] <w1 >main: auth refactor done, 3 files changed
-             Main → pane run: (next task starts a new turn)
-Subagent → Main: [ACK] <w1 >main: got it
+1. Run all spawn commands (parallel is fine)
+2. WAIT for [ACK] from each worker — do NOT proceed until all ACK
+3. Once all ACK'd: workers are alive and ready
+4. If a worker doesn't ACK within 60s: assume spawn failed, report to user
 ```
 
-### Cross-worker with CC
+### Main agent: on receiving a message
 
 ```
-Subagent w1 → w2: [DONE] <w1 >w2: my analysis is ready
-Subagent w1 → Main: [DONE] <w1 >main: cross-worker: sent analysis to w2
-             Main → w1: [ACK] <main >w1: noted
+┌─ [ACK] ──── Track: worker is alive. If all ACK'd → workers ready.
+│
+├─ [GO] ───── Log only. Worker is working. Do nothing.
+│
+├─ [DONE] ─── Track: this slice is done.
+│             ├─ If more tasks for this worker → send next task via send
+│             ├─ If no more tasks → do nothing, wait for [FIN]
+│             └─ Request details if needed: [DET?] via ask
+│
+├─ [FIN] ──── Track: worker is fully done.
+│             ├─ If ALL workers [FIN] → proceed to teardown
+│             └─ Otherwise → wait for remaining workers
+│
+├─ [FAIL] ─── Retry logic:
+│             ├─ Retry count < 2 → re-send task via send: "[RETRY] <main >w: try again, <reason>"
+│             ├─ Retry count ≥ 2 → give up, report to user
+│             └─ If worker says [BLK] after [FAIL] → it's stuck, report to user
+│
+├─ [HELP] ─── Worker needs agent input:
+│             ├─ You know the answer → reply via send (not ask)
+│             ├─ You don't know → relay to user, send worker's question
+│             └─ Never ignore [HELP] — worker is blocked until you respond
+│
+├─ [HUMN] ─── Worker needs human input:
+│             ├─ Relay to user immediately
+│             ├─ User responds → send answer to worker via send
+│             └─ Never answer [HUMN] yourself — it's not your decision
+│
+├─ [BLK] ──── Worker is blocked on external dependency:
+│             ├─ Log only. Worker will unblock itself or send [HELP]/[FAIL].
+│             └─ Do NOT poll. Do NOT ask for status.
+│
+├─ [DET] ──── Details about a prior message:
+│             ├─ Process the information
+│             └─ Acknowledge if needed: [ACK] via send
+│
+└─ [DET?] ── Worker requesting details from another worker:
+              ├─ If you have the answer → reply via send
+              └─ If not → forward to the worker who has it
 ```
 
-### Error flow
+### Main agent: teardown
 
 ```
-Subagent → Main: [FAIL] <w1 >main: tests failing, auth-utils.ts:42 type error
-   Main → Subagent: [DET?] <main >w1: show the error
-Subagent → Main: [DET] <w1 >main: TypeError: User | null not assignable to User
+When ALL workers have sent [FIN] or [FAIL]:
+1. Summarize results to user
+2. Close each worker: herdr pane close <pane_id>
+3. Report completion
 ```
 
-### Help flow (blocking `ask`)
+### Worker: lifecycle rules
 
 ```
-Subagent → Main: [HELP] <w1 >main: should validate() throw or return Result?
-   Main → Subagent: return Result, callers already handle it
+STARTUP:
+1. On receiving task → send [ACK] to main immediately
+2. Send [GO] to main when you begin actual work
+3. Work on your assigned role only
+
+DURING WORK:
+4. Send [DONE] to main (and CC cross-workers if relevant) when a slice is done
+5. Send [FAIL] to main if you hit an irrecoverable error
+6. Send [BLK] to main if blocked on dependency (include what you're waiting on)
+7. Send [HELP] via ask to main if you need agent input
+8. Send [HUMN] via ask to main if you need human input
+
+COMPLETION:
+9. Send [FIN] to main when ALL your work is done
+10. Wait for main to close your pane — do NOT self-terminate
 ```
 
-### Human needed (blocking `ask`)
+### Worker: cross-worker communication
 
 ```
-Subagent → Main: [HUMN] <w1 >main: API key for staging?
-   Main → You: worker-1 needs API key for staging
+ALLOWED:
+- Send [DONE] to a cross-worker with your output (CC main)
+- Send [DET] to a cross-worker with details (CC main)
+
+NOT ALLOWED:
+- Do NOT send [HELP] or [HUMN] to cross-workers — always go through main
+- Do NOT send tasks to cross-workers — only main assigns tasks
+- Do NOT poll cross-workers for status — wait for them to push
+
+RULE: Cross-worker comms are for data sharing, not coordination.
+      Main is the single coordinator.
 ```
 
-## Intercom tool usage
+### Worker: what NOT to do
 
-### Fire-and-forget (notifications)
-
-```typescript
-intercom({ action: "send", to: "planner", message: "[GO] w1 >main: extracting validate()" })
-intercom({ action: "send", to: "planner", message: "[DONE] w1 >main: validate() extracted" })
-intercom({ action: "send", to: "main", message: "[DONE] w1 >main: cross-worker: sent output to w2" })
+```
+NEVER:
+- Read herdr panes for output (use intercom send only)
+- Ask main for status (push only, never poll)
+- Send [HELP] to a cross-worker (always main)
+- Send [HUMN] to a cross-worker (always main)
+- Self-terminate (wait for pane close)
+- Send duplicate [DONE] for the same slice
+- Send [FIN] before all slices are [DONE]
 ```
 
-### Blocking (needs answer)
+---
 
-```typescript
-intercom({ action: "ask", to: "planner", message: "[HELP] w1 >main: should this throw or return?" })
-// → Reply from planner: return Result
-intercom({ action: "ask", to: "w2", message: "[DET?] w1 >w2: what did you return?" })
-// → Reply from w2: [DET] w2 >w1: { status: "ok" }
-```
+## Intercom name sync
 
-### Replying to incoming
+pi-intercom syncs the session name to the broker on `turn_start`.
+`/name` alone does NOT update intercom presence — a non-command message
+must trigger a turn first.
 
-```typescript
-// Inside the turn triggered by an incoming intercom ask:
-intercom({ action: "reply", message: "return Result, callers already handle it" })
-```
+**spawn.sh flow:** `/name` → send task (non-command) → turn starts →
+`syncPresenceIdentity` → name syncs → worker routable by name.
 
 ## herdr state mapping
-
-Intercom status is mapped to herdr agent status automatically by `pi-intercom`.
-Subagents don't need to manually report state to herdr.
 
 | Intercom message | herdr status |
 |-----------------|--------------|
 | `[GO]` | working |
-| `[BLK]` | blocked |
-| `[HELP]` | blocked |
-| `[HUMN]` | blocked |
+| `[BLK]`/`[HELP]`/`[HUMN]` | blocked |
 | `[DONE]` | idle |
 | `[FIN]` | idle → done |
 | `[FAIL]` | blocked |
 
-## Result retrieval
+## Intercom tool usage
 
-After `[DONE]`/`[FIN]`, the main agent can request details:
+### Fire-and-forget (status updates)
 
 ```typescript
-// Ask for details
-intercom({ action: "ask", to: "w1", message: "[DET?] >w1: show changed files" })
+intercom({ action: "send", to: "main", message: "[GO] w1 >main: extracting validate()" })
+intercom({ action: "send", to: "main", message: "[DONE] w1 >main: validate() extracted" })
+```
 
-// Subagent replies with context-mode indexed results
+### Blocking (needs answer — `[HELP]`, `[HUMN]`, `[DET?]` only)
+
+```typescript
+intercom({ action: "ask", to: "main", message: "[HELP] w1 >main: throw or return?" })
+// → Reply: return Result
+```
+
+### Replying to incoming ask
+
+```typescript
+intercom({ action: "reply", message: "return Result, callers already handle it" })
+```
+
+## Result retrieval
+
+After `[DONE]`/`[FIN]`, main can request details:
+
+```typescript
+intercom({ action: "ask", to: "w1", message: "[DET?] >w1: show changed files" })
 intercom({ action: "reply", message: "[DET] >main: src/auth.ts, src/utils/auth-utils.ts" })
 ```
 
-For large results, subagents can `ctx_index` their work output, then reply with
-search terms:
-
+For large results, `ctx_index` output, then reply with search terms:
 ```
-[DET] >main: indexed as worker-1-auth-refactor, search for "changed files"
+[DET] >main: indexed as worker-1-auth, search for "changed files"
 ```

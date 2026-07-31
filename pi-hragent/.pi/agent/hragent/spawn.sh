@@ -1,74 +1,62 @@
 #!/usr/bin/env bash
 # hragent-spawn — spawn a named subagent pi session via herdr
-# Usage: ./hragent-spawn.sh <name> [--cwd DIR] [--split window|right|down] [--task TASK]
-#
-# Spawns a new herdr pane running pi with the given name.
-# If --task is provided, sends it as the first message after /name.
-# This triggers a turn → syncPresenceIdentity → worker becomes routable by name.
-# Prints the pane_id on stdout.
+# Usage: ./spawn.sh <name> [--cwd DIR] [--main MAIN_NAME] [--task TASK]
+# Creates a tab, starts pi in it, sets the name, sends the task.
+# Prints pane_id on stdout.
 
 set -euo pipefail
 
-NAME="${1:?usage: hragent-spawn.sh <name> [--cwd DIR] [--split right|down] [--task TASK]}"
+NAME="${1:?usage: spawn.sh <name> [--cwd DIR] [--main MAIN_NAME] [--task TASK]}"
 shift
 CWD="$PWD"
-SPLIT="window"
+MAIN=""
 TASK=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --cwd) CWD="$2"; shift 2 ;;
-    --split) SPLIT="$2"; shift 2 ;;
+    --main) MAIN="$2"; shift 2 ;;
+    --split) echo "ERROR: --split removed. Workers always get their own tab." >&2; exit 1 ;;
     --task) TASK="$2"; shift 2 ;;
-    *) echo "unknown: $1"; exit 1 ;;
+    *) echo "unknown option: $1" >&2; exit 1 ;;
   esac
 done
 
-# Spawn via herdr agent start
-START_OUT=$(herdr agent start "$NAME" --cwd "$CWD" --split "$SPLIT" --no-focus -- env TERM=xterm-256color pi)
+# Create tab
+TAB_OUT=$(herdr tab create --cwd "$CWD" --no-focus 2>&1)
+TAB_ID=$(echo "$TAB_OUT" | jq -r '.result.tab.tab_id // .tab.tab_id // empty') || true
+PANE_ID=$(echo "$TAB_OUT" | jq -r '.result.root_pane.pane_id // .result.pane.pane_id // .pane_id // empty') || true
 
-# Parse pane_id from herdr JSON: result.agent.pane_id (primary), result.pane.pane_id (fallback)
-PANE_ID=$(echo "$START_OUT" | python3 -c '
-import sys, json
-d = json.load(sys.stdin)
-r = d.get("result", d)
-if isinstance(r, dict) and "agent" in r and isinstance(r["agent"], dict) and "pane_id" in r["agent"]:
-    print(r["agent"]["pane_id"])
-elif isinstance(r, dict) and "pane" in r and isinstance(r["pane"], dict) and "pane_id" in r["pane"]:
-    print(r["pane"]["pane_id"])
-elif isinstance(r, dict) and "pane_id" in r:
-    print(r["pane_id"])
-else:
-    print("")
-' 2>/dev/null || echo "")
-
+if [ -z "$TAB_ID" ]; then
+  echo "ERROR: herdr tab create failed" >&2; echo "$TAB_OUT" >&2; exit 1
+fi
 if [ -z "$PANE_ID" ]; then
-  echo "ERROR: could not parse pane_id from herdr output" >&2
-  echo "$START_OUT" >&2
-  exit 1
+  echo "ERROR: could not parse pane_id from tab create" >&2; echo "$TAB_OUT" >&2; exit 1
 fi
 
-echo "spawned $NAME at pane $PANE_ID" >&2
+echo "spawned $NAME tab=$TAB_ID pane=$PANE_ID" >&2
 
-# Wait for pi to start (agent_status: idle = ready)
-herdr wait agent-status "$PANE_ID" --status idle --timeout 30000 2>/dev/null || true
+# Start pi agent in the tab's pane
+START_OUT=$(herdr agent start "$NAME" --kind pi --pane "$PANE_ID" --timeout 60000 2>&1)
+AGENT_STATUS=$(echo "$START_OUT" | jq -r '.result.agent.agent_status // empty') || true
 
-# Send /name to set pi session name
+if [ "$AGENT_STATUS" != "idle" ] && [ "$AGENT_STATUS" != "working" ]; then
+  echo "WARNING: agent status is '$AGENT_STATUS', expected idle or working" >&2
+fi
+
+# Set name — /name alone doesn't trigger a turn, need a follow-up message
 herdr pane run "$PANE_ID" "/name $NAME" 2>/dev/null || true
-sleep 1
 
-# Wait for /name to be processed
-herdr wait agent-status "$PANE_ID" --status idle --timeout 15000 2>/dev/null || true
-
-# Send first task (non-command) to trigger a turn → syncPresenceIdentity → name registers in intercom
+# Send task — prepends main agent name so worker knows who to send results to
 if [ -n "$TASK" ]; then
-  herdr pane run "$PANE_ID" "$TASK" 2>/dev/null || true
-  # Worker is now working on the task AND routable via intercom by name
-  echo "task sent to $NAME via pane run (triggers intercom name sync)" >&2
+  FULL_TASK="$TASK"
+  if [ -n "$MAIN" ]; then
+    FULL_TASK="Your main agent is '${MAIN}'. Send ALL intercom messages (status updates, [DONE], [FAIL], [HELP]) to '${MAIN}' via intercom send. Never read herdr panes. $TASK"
+  fi
+  herdr pane run "$PANE_ID" "$FULL_TASK" 2>/dev/null || true
+  echo "task sent to $NAME" >&2
 else
-  echo "WARNING: no --task provided. Intercom name won't sync until a turn starts." >&2
-  echo "Send a non-command message via 'herdr pane run $PANE_ID \"<message>\"' to trigger sync." >&2
+  echo "WARNING: no --task. Send a message later to sync intercom name." >&2
 fi
 
-# Print pane_id for the caller
 echo "$PANE_ID"
