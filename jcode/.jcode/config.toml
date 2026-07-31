@@ -1,0 +1,12 @@
+# ~/.jcode/config.toml
+# Stow-managed via the dotfiles repo (package "jcode").
+#
+# The [hooks] section bridges jcode lifecycle events to herdr so the herdr
+# sidebar shows a "jcode" agent (working/idle). The hook script no-ops outside
+# herdr panes, so these hooks are harmless in a plain terminal.
+
+[hooks]
+session_start = "~/.jcode/hooks/herdr-agent-state.sh"
+turn_start    = "~/.jcode/hooks/herdr-agent-state.sh"
+turn_end      = "~/.jcode/hooks/herdr-agent-state.sh"
+session_end   = "~/.jcode/hooks/herdr-agent-state.sh"
