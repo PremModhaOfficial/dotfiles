@@ -241,6 +241,15 @@ sync_configs() {
   log "=== configs (dotfiles -> live, then push dotfiles) ==="
   [ -d "$DOTFILES/.git" ] || { log "skip: no dotfiles repo at $DOTFILES"; return; }
 
+  # Keep dotfiles itself up to date with any remote changes (other machines).
+  if [ "$DRY" = 1 ]; then
+    log "DRY: git pull dotfiles"
+  else
+    ( cd "$DOTFILES" && git fetch origin && git pull --ff-only origin HEAD ) >> "$LOG" 2>&1 \
+      && log "OK:  dotfiles pulled (ff-only)" \
+      || log "WARN: dotfiles pull failed (continuing with local state)"
+  fi
+
   # jcode config + hooks
   if [ -f "$DOTFILES/jcode/.jcode/config.toml" ]; then
     run "install jcode config" cp "$DOTFILES/jcode/.jcode/config.toml" "$HOME/.jcode/config.toml"

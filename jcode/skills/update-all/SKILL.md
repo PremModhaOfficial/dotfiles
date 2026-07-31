@@ -38,6 +38,16 @@ It performs, in order:
    config, babysitter processes) and commits + pushes the dotfiles repo.
 5. **Manifest** — regenerates `~/.agents/skills/README.md` (skill → source →
    commit).
+6. **Dotfiles** — the updater already commits + pushes the dotfiles repo after
+   installing configs. Additionally, if the dotfiles repo has an upstream
+   (other machines may have pushed), fetch and rebase it before committing so
+   nothing is lost:
+   ```bash
+   cd ~/dotfiles && git fetch origin && git pull --ff-only origin wrk
+   ```
+   (Run this BEFORE the updater's config step when other machines use the
+   dotfiles. If it conflicts, keep our version and push with `--force-with-lease`
+   only after confirming the conflict is ours.)
 
 Use a long timeout (the first run clones skill sources and may rebuild jcode;
 subsequent runs are fast). If it fails, read the tail of
