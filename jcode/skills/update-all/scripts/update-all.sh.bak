@@ -75,16 +75,6 @@ run() { # run <label> <cmd...>
   if "$@"; then log "OK:  $label"; else log "WARN: $label exited $? (continuing)"; fi
 }
 
-# require() is like run() but FAILS THE WHOLE UPDATE on error. Used for the
-# jcode core steps where continuing silently would corrupt the fork branch or
-# claim success while doing nothing.
-require() { # require <label> <cmd...>
-  local label="$1"; shift
-  if [ "$DRY" = 1 ]; then log "DRY: $label — $*"; return 0; fi
-  log "RUN: $label — $*"
-  if "$@"; then log "OK:  $label"; else fail "required step failed: $label (exited $?)"; fi
-}
-
 # --- 1. jcode core (fork-based) --------------------------------------------
 update_jcode() {
   log "=== jcode core (fork-based) ==="
@@ -101,10 +91,9 @@ update_jcode() {
     run "add upstream" git -C "$JCODE_SRC" remote add upstream "$JCODE_UPSTREAM"
   fi
 
-  # Fetch latest from both. These are required: a stale fetch silently
-  # rebases onto old upstream and force-pushes it to the fork.
-  require "git fetch upstream" git -C "$JCODE_SRC" fetch upstream master
-  require "git fetch origin" git -C "$JCODE_SRC" fetch origin
+  # Fetch latest from both.
+  run "git fetch upstream" git -C "$JCODE_SRC" fetch upstream master
+  run "git fetch origin" git -C "$JCODE_SRC" fetch origin
 
   # Rebase our feature branch onto upstream master.
   local current
@@ -114,32 +103,21 @@ update_jcode() {
       log "stashing uncommitted jcode changes"
       git -C "$JCODE_SRC" stash push -m "update-all pre-rebase" || true
     fi
-    require "checkout $GATE_BRANCH" git -C "$JCODE_SRC" checkout "$GATE_BRANCH"
+    run "checkout $GATE_BRANCH" git -C "$JCODE_SRC" checkout "$GATE_BRANCH"
   fi
-
-  # Rebase is required AND must not leave a rebase-in-progress state behind.
-  # On conflict we abort and fail the whole update instead of force-pushing a
-  # broken branch to the fork.
-  if ! git -C "$JCODE_SRC" rebase upstream/master; then
-    git -C "$JCODE_SRC" rebase --abort >/dev/null 2>&1 || true
-    fail "rebase onto upstream/master conflicted; aborted (resolve manually on $GATE_BRANCH, then re-run)"
-  fi
-  log "OK:  rebase $GATE_BRANCH onto upstream/master"
-
-  # Only push to the fork after a clean rebase (never a conflicted branch).
-  require "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push -f origin "$GATE_BRANCH"
-
+  run "rebase $GATE_BRANCH onto upstream/master" git -C "$JCODE_SRC" rebase upstream/master
+  run "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push -f origin "$GATE_BRANCH"
   # Return to the previous branch if we moved.
   if [ -n "$current" ] && [ "$current" != "$GATE_BRANCH" ]; then
-    require "checkout back to $current" git -C "$JCODE_SRC" checkout "$current"
+    run "checkout back to $current" git -C "$JCODE_SRC" checkout "$current"
     if git -C "$JCODE_SRC" stash list | grep -q "update-all pre-rebase"; then
       log "re-applying stashed jcode changes"
       git -C "$JCODE_SRC" stash pop || true
     fi
   fi
 
-  # Build the dev binary (required: the whole point is a fresh binary).
-  require "cargo build jcode" cargo build --manifest-path "$JCODE_SRC/Cargo.toml" --bin jcode
+  # Build the dev binary (bounded; user can also run `jcode self-dev --build`).
+  run "cargo build jcode" cargo build --manifest-path "$JCODE_SRC/Cargo.toml" --bin jcode
   log "to run the updated jcode: jcode self-dev --reload  (or restart jcode)"
 }
 
@@ -251,30 +229,11 @@ update_tools() {
     run "herdr plugin reinstall pickr" herdr plugin install tomasvarga/herdr-pickr -y
   fi
   if command -v node >/dev/null; then
-    # The babysitter CLI is consumed via `npm exec --package @a5c-ai/babysitter-sdk@latest`
-    # at runtime (documented fallback; no global install). This step VERIFIES the
-    # latest SDK resolves — it does not install anything.
-    run "babysitter SDK verify (npx always-latest)" node -e "require('child_process').execSync('npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version', {stdio:'inherit'})"
+    run "babysitter SDK probe" node -e "require('child_process').execSync('npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version', {stdio:'inherit'})"
   fi
   if command -v go >/dev/null; then
     run "gopls latest" go install golang.org/x/tools/gopls@latest
   fi
-}
-
-# install_if_different installs src -> dst, skipping silently when they are the
-# same file (e.g. dst is a symlink into src) so the step is a true no-op, not a
-# confusing cp failure.
-install_if_different() { # install_if_different <src> <dst>
-  local src="$1" dst="$2"
-  if [ "$DRY" = 1 ]; then log "DRY: install $src -> $dst"; return 0; fi
-  local rs ds
-  rs=$(readlink -f "$src" 2>/dev/null || echo "$src")
-  ds=$(readlink -f "$dst" 2>/dev/null || echo "$dst")
-  if [ "$rs" = "$ds" ]; then
-    log "OK:  install $dst (already in place)"
-    return 0
-  fi
-  if cp "$src" "$dst"; then log "OK:  install $src -> $dst"; else log "WARN: install $src -> $dst failed"; fi
 }
 
 # --- 5. configs: dotfiles -> live, then commit + push dotfiles --------------
@@ -285,33 +244,29 @@ sync_configs() {
   # Keep dotfiles itself up to date with any remote changes (other machines).
   # Pull the actual checked-out branch (dotfiles uses `wrk`), not `origin HEAD`
   # which resolves to the remote's default branch and diverges.
-  local df_branch df_pull_ok=1
+  local df_branch
   df_branch=$(git -C "$DOTFILES" branch --show-current 2>/dev/null || echo "wrk")
   if [ "$DRY" = 1 ]; then
     log "DRY: git pull dotfiles ($df_branch)"
-  elif ( cd "$DOTFILES" && git fetch origin && git pull --ff-only origin "$df_branch" ) >> "$LOG" 2>&1; then
-    log "OK:  dotfiles pulled ($df_branch)"
   else
-    log "WARN: dotfiles pull failed (continuing with local state)"
-    df_pull_ok=0
+    ( cd "$DOTFILES" && git fetch origin && git pull --ff-only origin "$df_branch" ) >> "$LOG" 2>&1 \
+      && log "OK:  dotfiles pulled ($df_branch)" \
+      || log "WARN: dotfiles pull failed (continuing with local state)"
   fi
 
-  # jcode config + hooks (symlink-safe install)
+  # jcode config + hooks
   if [ -f "$DOTFILES/jcode/.jcode/config.toml" ]; then
-    install_if_different "$DOTFILES/jcode/.jcode/config.toml" "$HOME/.jcode/config.toml"
+    run "install jcode config" cp "$DOTFILES/jcode/.jcode/config.toml" "$HOME/.jcode/config.toml"
   fi
   if [ -d "$DOTFILES/jcode/.jcode/hooks" ]; then
-    for hook in "$DOTFILES/jcode/.jcode/hooks/"*.sh; do
-      [ -f "$hook" ] || continue
-      install_if_different "$hook" "$HOME/.jcode/hooks/$(basename "$hook")"
-    done
+    run "install jcode hooks" cp -R "$DOTFILES/jcode/.jcode/hooks/." "$HOME/.jcode/hooks/"
     chmod +x "$HOME/.jcode/hooks/"*.sh 2>/dev/null || true
   fi
 
   # herdr config (only the pickr config we maintain)
   if [ -f "$DOTFILES/herdr/plugins/config/pickr/config.toml" ]; then
     run "install pickr config" mkdir -p "$HOME/.config/herdr/plugins/config/pickr"
-    install_if_different "$DOTFILES/herdr/plugins/config/pickr/config.toml" "$HOME/.config/herdr/plugins/config/pickr/config.toml"
+    run "install pickr config" cp "$DOTFILES/herdr/plugins/config/pickr/config.toml" "$HOME/.config/herdr/plugins/config/pickr/config.toml"
   fi
 
   # babysitter processes (custom .a5c processes) — install into the current repo
@@ -324,22 +279,15 @@ sync_configs() {
     run "install babysitter processes (global)" cp -R "$DOTFILES/babysitter/processes/." "$HOME/.a5c/processes/"
   fi
 
-  # Commit + push the dotfiles repo. We ONLY push the paths this updater owns
-  # (never `git add -A`, which sweeps in unrelated edits and nested git repos).
-  # And we only push if the ff-only pull above succeeded, so we never overwrite
-  # remote commits we failed to merge.
+  # Commit + push the dotfiles repo (our changes ride along with config updates).
   if [ "$DRY" = 1 ]; then log "DRY: commit+push dotfiles"; return; fi
-  if [ "$df_pull_ok" = 1 ]; then
-    ( cd "$DOTFILES" \
-      && git add jcode/ herdr/.config/herdr/plugins/config/pickr babysitter/ \
-      && git -c user.name="prem-modha" -c user.email="prem-modha@users.noreply.github.com" \
-           commit -m "update-all: sync configs/skills/updater" --allow-empty \
-      && git push origin HEAD ) >> "$LOG" 2>&1 \
-    && log "OK: dotfiles committed + pushed" \
-    || log "WARN: dotfiles commit/push failed (see log)"
-  else
-    log "WARN: skipping dotfiles push (pull failed; remote may have commits we did not merge)"
-  fi
+  ( cd "$DOTFILES" \
+    && git add -A \
+    && git -c user.name="prem-modha" -c user.email="prem-modha@users.noreply.github.com" \
+         commit -m "update-all: sync configs/skills/updater" --allow-empty \
+    && git push origin HEAD ) >> "$LOG" 2>&1 \
+  && log "OK: dotfiles committed + pushed" \
+  || log "WARN: dotfiles commit/push failed (see log)"
 }
 
 # --- 6. manifest ------------------------------------------------------------

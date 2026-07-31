@@ -2,15 +2,12 @@
 # Plugin source trees are regenerable via `herdr plugin install` (or
 # `update-all.sh`); their embedded .git dirs must never be committed.
 
-# Embedded git repos / plugin source trees
+# Embedded git repos / plugin source trees (real paths under .config)
 **/.git/
-**/.gitignore
-plugins/github/
-plugins/local/
-plugins/config/*/config.example.toml
-
-# Keep the actual pickr config (customized) but drop the example.
-!plugins/config/pickr/config.toml
-
-# Local scratch
+.config/herdr/plugins/github/
+.config/herdr/plugins/local/
 .local/bin/
+
+# Keep the actual pickr config (customized) but drop the rest.
+!.config/herdr/plugins/config/pickr/config.toml
+.config/herdr/plugins/config/*/config.example.toml
