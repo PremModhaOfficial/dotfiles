@@ -35,19 +35,21 @@ It performs, in order:
 3. **Tools** — mise herdr@latest, herdr-pickr plugin, babysitter SDK probe,
    gopls.
 4. **Configs** — installs dotfiles configs live (jcode config + hooks, pickr
-   config, babysitter processes) and commits + pushes the dotfiles repo.
+   config, babysitter processes).
 5. **Manifest** — regenerates `~/.agents/skills/README.md` (skill → source →
    commit).
-6. **Dotfiles** — the updater already commits + pushes the dotfiles repo after
-   installing configs. Additionally, if the dotfiles repo has an upstream
-   (other machines may have pushed), fetch and rebase it before committing so
-   nothing is lost:
+6. **Dotfiles auto-commit + push** — the updater ALWAYS does this at the end:
+   - pulls `~/dotfiles` (ff-only) so remote changes are merged in first
+   - stages everything with `git add -A`
+   - commits as `update-all: sync configs/skills/updater` (allow-empty, so a
+     no-change run still records the update)
+   - pushes to `origin` (branch `wrk`)
+   This keeps dotfiles (the source of truth for configs, the updater, and this
+   skill) current on GitHub after every single run. No manual git needed.
    ```bash
-   cd ~/dotfiles && git fetch origin && git pull --ff-only origin wrk
+   # equivalent manual check:
+   cd ~/dotfiles && git log --oneline -3 && git status
    ```
-   (Run this BEFORE the updater's config step when other machines use the
-   dotfiles. If it conflicts, keep our version and push with `--force-with-lease`
-   only after confirming the conflict is ours.)
 
 Use a long timeout (the first run clones skill sources and may rebuild jcode;
 subsequent runs are fast). If it fails, read the tail of
