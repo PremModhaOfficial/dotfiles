@@ -12,12 +12,17 @@ finally proving the update worked. Do ALL of the following, in order.
 
 ## 1. Run the updater
 
-Run the canonical updater (symlinked from dotfiles, so it survives machine
-changes and is itself versioned):
+Run the updater **bundled inside this skill folder** (self-contained — the
+skill carries its own script, so it works even before dotfiles are linked):
 
 ```bash
-~/.jcode/bin/update-all.sh
+<skill-dir>/scripts/update-all.sh
 ```
+
+which resolves to `~/.jcode/skills/update-all/scripts/update-all.sh` here. The
+canonical copy lives in dotfiles at `~/dotfiles/jcode/update-all.sh` (symlinked
+from `~/.jcode/bin/update-all.sh`) — the skill's copy is synced from it. If the
+skill copy is missing, fall back to `~/.jcode/bin/update-all.sh`.
 
 It performs, in order:
 
