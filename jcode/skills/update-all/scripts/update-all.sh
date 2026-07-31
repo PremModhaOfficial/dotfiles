@@ -7,7 +7,7 @@
 #
 #   Updates:
 #     1. jcode core   — fetch upstream (1jehuang/jcode), rebase our fork branch
-#                       (local/turn-end-gate) onto upstream main, push to our
+#                       (local/turn-end-gate) onto upstream master, push to our
 #                       fork (PremModhaOfficial/jcode = origin), build.
 #     2. Skill sources — git pull ponytail, tiger-style, tuicr, babysitter,
 #                       herdr; re-sync installed skills into ~/.agents/skills.
@@ -92,10 +92,10 @@ update_jcode() {
   fi
 
   # Fetch latest from both.
-  run "git fetch upstream" git -C "$JCODE_SRC" fetch upstream main
+  run "git fetch upstream" git -C "$JCODE_SRC" fetch upstream master
   run "git fetch origin" git -C "$JCODE_SRC" fetch origin
 
-  # Rebase our feature branch onto upstream main.
+  # Rebase our feature branch onto upstream master.
   local current
   current=$(git -C "$JCODE_SRC" branch --show-current)
   if [ "$current" != "$GATE_BRANCH" ]; then
@@ -105,7 +105,7 @@ update_jcode() {
     fi
     run "checkout $GATE_BRANCH" git -C "$JCODE_SRC" checkout "$GATE_BRANCH"
   fi
-  run "rebase $GATE_BRANCH onto upstream/main" git -C "$JCODE_SRC" rebase upstream/main
+  run "rebase $GATE_BRANCH onto upstream/master" git -C "$JCODE_SRC" rebase upstream/master
   run "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push -f origin "$GATE_BRANCH"
   # Return to the previous branch if we moved.
   if [ -n "$current" ] && [ "$current" != "$GATE_BRANCH" ]; then
