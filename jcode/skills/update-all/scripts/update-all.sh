@@ -242,11 +242,15 @@ sync_configs() {
   [ -d "$DOTFILES/.git" ] || { log "skip: no dotfiles repo at $DOTFILES"; return; }
 
   # Keep dotfiles itself up to date with any remote changes (other machines).
+  # Pull the actual checked-out branch (dotfiles uses `wrk`), not `origin HEAD`
+  # which resolves to the remote's default branch and diverges.
+  local df_branch
+  df_branch=$(git -C "$DOTFILES" branch --show-current 2>/dev/null || echo "wrk")
   if [ "$DRY" = 1 ]; then
-    log "DRY: git pull dotfiles"
+    log "DRY: git pull dotfiles ($df_branch)"
   else
-    ( cd "$DOTFILES" && git fetch origin && git pull --ff-only origin HEAD ) >> "$LOG" 2>&1 \
-      && log "OK:  dotfiles pulled (ff-only)" \
+    ( cd "$DOTFILES" && git fetch origin && git pull --ff-only origin "$df_branch" ) >> "$LOG" 2>&1 \
+      && log "OK:  dotfiles pulled ($df_branch)" \
       || log "WARN: dotfiles pull failed (continuing with local state)"
   fi
 
