@@ -1,0 +1,16 @@
+# herdr config mirror — only configs are versioned.
+# Plugin source trees are regenerable via `herdr plugin install` (or
+# `update-all.sh`); their embedded .git dirs must never be committed.
+
+# Embedded git repos / plugin source trees
+**/.git/
+**/.gitignore
+plugins/github/
+plugins/local/
+plugins/config/*/config.example.toml
+
+# Keep the actual pickr config (customized) but drop the example.
+!plugins/config/pickr/config.toml
+
+# Local scratch
+.local/bin/

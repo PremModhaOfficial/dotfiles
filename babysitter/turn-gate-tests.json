@@ -1,0 +1,6 @@
+{
+  "filesToChange": [
+    "crates/jcode-base/src/hooks.rs"
+  ],
+  "testResults": "Added 3 unit tests to crates/jcode-base/src/hooks.rs:\n\n1. parse_turn_end_followup_injects_on_block_decision — verifies {\"decision\":\"block\",\"followup_message\":\"continue the run\"} => Inject, and whitespace-padded JSON also parses.\n\n2. parse_turn_end_followup_continues_without_block_decision — covers empty stdout, whitespace, non-block decision, missing followup_message, empty/whitespace message, and malformed JSON => Continue.\n\n3. parse_turn_end_followup_truncates_long_messages — a 20k-char message is truncated to FOLLOWUP_MESSAGE_LIMIT (8000).\n\nRun: cargo test -p jcode-base --lib hooks\nResult: 11 passed; 0 failed (includes pre-existing observer + pre_tool gate tests, confirming no regressions).\n\nThe turn-level injection path is additionally verified by the app-core lib test suite (running in parallel)."
+}

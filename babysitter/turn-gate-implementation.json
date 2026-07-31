@@ -1,0 +1,12 @@
+{
+  "filesToChange": [
+    "crates/jcode-base/src/hooks.rs",
+    "crates/jcode-app-core/src/agent.rs",
+    "crates/jcode-app-core/src/agent/interrupts.rs",
+    "crates/jcode-app-core/src/agent/turn_execution.rs",
+    "crates/jcode-app-core/src/server/client_lifecycle.rs",
+    "crates/jcode-config-types/src/lib.rs",
+    "crates/jcode-base/src/config/env_overrides.rs"
+  ],
+  "implementationDetails": "Implemented opt-in turn-end gate hook:\n\n1. crates/jcode-config-types/src/lib.rs — Added HooksConfig.turn_end_gate (Option<String>) + turn_end_gate_timeout_ms (u64, default 5000). Doc comments describe the contract.\n\n2. crates/jcode-base/src/config/env_overrides.rs — Added JCODE_HOOK_TURN_END_GATE and JCODE_HOOK_TURN_END_GATE_TIMEOUT_MS overrides.\n\n3. crates/jcode-base/src/hooks.rs — Added TurnEndGateDecision enum {Continue, Inject{followup_message}}; run_turn_end_gate() (waits with timeout, parses stdout JSON, exit 0 + block JSON => Inject, everything else => Continue); parse_turn_end_followup() with FOLLOWUP_MESSAGE_LIMIT=8000; wired 'turn_end_gate' into hook_command lookup.\n\n4. crates/jcode-app-core/src/agent.rs — Added pending_followup: Option<String> field (init None).\n\n5. crates/jcode-app-core/src/agent/interrupts.rs — Added take_pending_followup() accessor.\n\n6. crates/jcode-app-core/src/agent/turn_execution.rs — fire_turn_end_hook is now async; runs the turn_end observer (unchanged) and then the turn_end_gate when configured and the turn succeeded; queues followup on pending_followup.\n\n7. crates/jcode-app-core/src/server/client_lifecycle.rs — process_message_streaming_mpsc loops while take_pending_followup() returns Some, injecting each followup as the next turn; bounded at MAX_FOLLOWUP_TURNS=1000.\n\nBehavior preserved: no gate configured => pure observer behavior, no waits, herdr-agent-state.sh unaffected. Exit 0 without block JSON, malformed JSON, exit 2, timeout, spawn failure all => Continue (no injection).\n\nVerified: cargo check -p jcode-base -p jcode-config-types -p jcode-app-core passes clean (0 warnings after removing unused mut); cargo test -p jcode-base --lib hooks passes 11/11 including 3 new parse_turn_end_followup tests."
+}
