@@ -50,6 +50,7 @@ DOTFILES="$HOME/dotfiles"
 GATE_BRANCH="local/turn-end-gate"
 JCODE_FORK="https://github.com/PremModhaOfficial/jcode.git"
 JCODE_UPSTREAM="https://github.com/1jehuang/jcode.git"
+UPDATER="${BASH_SOURCE[0]}"
 
 mkdir -p "$LOG_DIR" "$UPDATER_SRC"
 
@@ -389,7 +390,55 @@ sync_configs() {
   fi
 }
 
-# --- 6. manifest ------------------------------------------------------------
+# --- 6. self-review: run ponytail + tiger-style on the new code -------------
+self_review() {
+  log "=== self-review (ponytail + tiger-style on new code) ==="
+  local review_dir="$SKILLS_DIR"
+  local review_out="$LOG_DIR/self-review"
+  mkdir -p "$review_out"
+
+  # REVIEW_SOURCE: point reviewers at the jcode feature diff + the updater.
+  # The ponytail/tiger skills read SKILL.md instructions; we invoke them via
+  # the skill loader, but the review targets are concrete files, so we record
+  # them here for the checklist and run what's scriptable.
+  local targets=(
+    "$JCODE_SRC/crates/jcode-base/src/hooks.rs"
+    "$JCODE_SRC/crates/jcode-app-core/src/server/client_lifecycle.rs"
+    "$JCODE_SRC/crates/jcode-app-core/src/agent/turn_execution.rs"
+    "$JCODE_SRC/crates/jcode-config-types/src/lib.rs"
+    "$UPDATER"
+  )
+
+  # Scriptable summary: line counts + TODO/debt markers for the changed files
+  # (the real review is done by the skills when invoked; this keeps a record).
+  if [ "$DRY" = 1 ]; then
+    log "DRY: self-review would inspect ${#targets[@]} files"
+    return 0
+  fi
+  {
+    echo "# Self-review — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo ""
+    echo "Targets:"
+    for t in "${targets[@]}"; do
+      if [ -f "$t" ]; then
+        echo "- $t ($(wc -l < "$t") lines)"
+      else
+        echo "- $t (missing)"
+      fi
+    done
+    echo ""
+    echo "Debt markers (ponytail: TODO/FIXME/XXX):"
+    grep -rn "TODO\|FIXME\|XXX\|HACK" "${targets[@]}" 2>/dev/null | head -10 || echo "(none)"
+    echo ""
+    echo "Explicit limits (tiger-style: const/assert):"
+    grep -rn "const .* = \|assert" "${targets[@]}" 2>/dev/null | head -10 || echo "(none)"
+    echo ""
+  } > "$review_out/$(date -u +%Y%m%dT%H%M%SZ).md"
+  log "OK: self-review record written to $review_out"
+  log "note: for full ponytail/tiger review, invoke /ponytail-review and /tiger-style-review on: ${targets[*]}"
+}
+
+# --- 7. manifest ------------------------------------------------------------
 write_manifest() {
   log "=== skill manifest ==="
   local out="$MANIFEST"
@@ -436,6 +485,7 @@ checklist_init
 [ "$DO_SKILLS" = 1 ] && { skill_sources; sync_skills; }
 [ "$DO_TOOLS" = 1 ]  && update_tools
 [ "$DO_CONFIG" = 1 ] && sync_configs
+[ "$DO_JCODE" = 1 ]  && self_review
 [ "$DO_SKILLS" = 1 ] && write_manifest
 checklist_write
 log "update-all finished — restart jcode (or reload skills) to pick up the new list."
