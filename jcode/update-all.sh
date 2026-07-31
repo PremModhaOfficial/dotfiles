@@ -107,13 +107,16 @@ update_jcode() {
   require "git fetch origin" git -C "$JCODE_SRC" fetch origin
 
   # Rebase our feature branch onto upstream master.
-  local current
+  local current stash_applied=0
   current=$(git -C "$JCODE_SRC" branch --show-current)
+  # A dirty tree blocks rebase even when already on the gate branch (e.g.
+  # unrelated WIP in other crates). Stash unconditionally, pop after.
+  if [ -n "$(git -C "$JCODE_SRC" status --porcelain)" ]; then
+    log "stashing uncommitted jcode changes"
+    git -C "$JCODE_SRC" stash push -m "update-all pre-rebase" || true
+    stash_applied=1
+  fi
   if [ "$current" != "$GATE_BRANCH" ]; then
-    if [ -n "$(git -C "$JCODE_SRC" status --porcelain)" ]; then
-      log "stashing uncommitted jcode changes"
-      git -C "$JCODE_SRC" stash push -m "update-all pre-rebase" || true
-    fi
     require "checkout $GATE_BRANCH" git -C "$JCODE_SRC" checkout "$GATE_BRANCH"
   fi
 
@@ -129,13 +132,13 @@ update_jcode() {
   # Only push to the fork after a clean rebase (never a conflicted branch).
   require "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push -f origin "$GATE_BRANCH"
 
-  # Return to the previous branch if we moved.
+  # Return to the previous branch if we moved, then restore stashed changes.
   if [ -n "$current" ] && [ "$current" != "$GATE_BRANCH" ]; then
     require "checkout back to $current" git -C "$JCODE_SRC" checkout "$current"
-    if git -C "$JCODE_SRC" stash list | grep -q "update-all pre-rebase"; then
-      log "re-applying stashed jcode changes"
-      git -C "$JCODE_SRC" stash pop || true
-    fi
+  fi
+  if [ "$stash_applied" = 1 ]; then
+    log "re-applying stashed jcode changes"
+    git -C "$JCODE_SRC" stash pop || true
   fi
 
   # Build the dev binary (required: the whole point is a fresh binary).
