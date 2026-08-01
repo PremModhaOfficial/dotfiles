@@ -11,3 +11,11 @@
 # Keep the actual pickr config (customized) but drop the rest.
 !.config/herdr/plugins/config/pickr/config.toml
 .config/herdr/plugins/config/*/config.example.toml
+
+# Runtime state herdr writes into ~/.config/herdr (must never be committed).
+# Whole-dir symlink (herdr.nix) points here, so these would otherwise land in
+# the repo on every run.
+.config/herdr/herdr-*.log
+.config/herdr/herdr.sock
+.config/herdr/herdr-client.sock
+.config/herdr/plugins.json
