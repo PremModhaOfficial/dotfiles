@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# ============================================================================
+# jcode-theme — switch the jcode TUI color palette between fluoromachine
+# flavors (or any preset .toml in the themes dir).
+#
+#   ~/.jcode/bin/jcode-theme            # list available themes + current one
+#   ~/.jcode/bin/jcode-theme <name>     # apply a theme (e.g. delta)
+#   ~/.jcode/bin/jcode-theme export     # print the current palette as TOML
+#
+# It swaps the [display.colors] block in ~/.jcode/config.toml with the block
+# from themes/<name>.toml. The new palette takes effect on the next jcode
+# launch (the TUI reads config at startup). To apply WITHOUT restarting the
+# current TUI, run  /colors  in jcode after switching (an edit triggers
+# init_palette), or just restart jcode.
+# ============================================================================
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+THEMES_DIR="${JCODE_THEMES_DIR:-$DOTFILES/jcode/themes}"
+CONFIG="${JCODE_CONFIG:-$HOME/.jcode/config.toml}"
+
+# --- helpers ---------------------------------------------------------------
+err() { echo "error: $*" >&2; exit 1; }
+
+# Extract the [display.colors] block (including any leading comments) from a
+# TOML file. Prints to stdout.
+extract_block() {
+  local file="$1"
+  awk '/^\[display\.colors\]/{on=1; print; next}
+       /^\[[a-zA-Z]/{if(on){exit}}   # next top-level section ends the block
+       on{print}' "$file"
+}
+
+# Print the current live palette's [display.colors] block.
+current_block() {
+  extract_block "$CONFIG"
+}
+
+list_themes() {
+  echo "Available jcode themes:"
+  local live current=""
+  # Compare the live block to each preset ignoring comments. Whole-line comments
+  # are dropped first; inline comments are dropped only when the # is preceded by
+  # whitespace (so hex colors like "#98FFFB" are untouched).
+  local norm='s/[[:space:]][[:space:]]*#.*$//'
+  live="$(current_block | grep -v '^[[:space:]]*#' | sed "$norm" | grep -v '^[[:space:]]*$' | tr -d ' \t')"
+  local f name cmp
+  for f in "$THEMES_DIR"/*.toml; do
+    [ -f "$f" ] || continue
+    name="$(basename "$f" .toml)"
+    cmp="$(extract_block "$f" | grep -v '^[[:space:]]*#' | sed "$norm" | grep -v '^[[:space:]]*$' | tr -d ' \t')"
+    if [ "$cmp" = "$live" ]; then current="$name"; fi
+  done
+  [ -n "$current" ] || current="(custom palette — not a saved theme)"
+  echo "  current: $current"
+  echo ""
+  for f in "$THEMES_DIR"/*.toml; do
+    [ -f "$f" ] || continue
+    name="$(basename "$f" .toml)"
+    echo "  $name   ($f)"
+  done
+}
+
+# --- main -------------------------------------------------------------------
+case "${1:-}" in
+  "" | "list" | "ls")
+    list_themes
+    ;;
+  "export")
+    echo "# Current jcode palette"
+    current_block
+    ;;
+  *)
+    theme="$1"
+    preset="$THEMES_DIR/$theme.toml"
+    [ -f "$preset" ] || err "no theme '$theme' (expected $preset)"
+    block="$(extract_block "$preset")"
+    [ -n "$block" ] || err "no [display.colors] block in $preset"
+
+    # Backup current config, then swap the block.
+    cp "$CONFIG" "$CONFIG.bak"
+    awk -v newblock="$block" '
+      /^\[display\.colors\]/{inblock=1; print newblock; next}
+      /^\[[a-zA-Z]/{if(inblock){inblock=0}}
+      !inblock{print}
+    ' "$CONFIG.bak" > "$CONFIG"
+
+    echo "Switched jcode theme to: $theme"
+    echo "Preset:  $preset"
+    echo "Backup:  $CONFIG.bak"
+    echo ""
+    echo "The new palette applies on the next jcode launch. To apply to the"
+    echo "current TUI without restarting, run  /colors  (any edit applies it)."
+    ;;
+esac

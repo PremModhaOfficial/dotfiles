@@ -1,0 +1,25 @@
+# fluoromachine theme — flavor: "retrowave"
+# Source: maxmx03/fluoromachine.nvim lua/fluoromachine/colors/retrowave.lua
+[display.colors]
+user = "#61E2FF"        # cyan
+ai = "#AF6DF9"          # purple
+tool = "#495495"        # comment
+file_link = "#61E2FF"   # cyan
+dim = "#495495"         # comment
+accent = "#AF6DF9"      # purple
+system = "#FF7EDB"      # pink
+queued = "#FF8B39"      # orange
+asap = "#61E2FF"        # cyan
+pending = "#495495"     # comment
+user_text = "#F8F8F8"   # fg
+user_bg = "#262335"     # bg
+ai_text = "#F8F8F8"     # fg
+header_icon = "#61E2FF" # cyan
+header_name = "#AF6DF9" # purple
+header_session = "#F8F8F8" # fg
+success = "#72F1B8"     # green
+warning = "#FF8B39"     # orange
+error = "#FE4450"       # red
+info = "#61E2FF"        # cyan
+border = "#495495"      # editor.separator
+selection_bg = "#463465" # selection

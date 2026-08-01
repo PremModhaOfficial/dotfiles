@@ -35,6 +35,12 @@ It is a symlink to this file. It:
 ```
 jcode/
   update-all.sh              # THE updater (canonical; symlinked from ~/.jcode/bin)
+  bin/
+    jcode-theme              # switch TUI color palettes (fluoromachine flavors, etc.)
+  themes/
+    delta.toml               # fluoromachine flavor: delta  (the active palette)
+    fluoromachine.toml       # fluoromachine flavor: fluoromachine
+    retrowave.toml           # fluoromachine flavor: retrowave
   .jcode/
     config.toml              # jcode config incl. [hooks] (turn_end_gate opt-in)
     hooks/
@@ -46,6 +52,24 @@ babysitter/
   processes/jcode-turn-gate.js       # custom babysitter process (as code)
   turn-gate-*.json                   # example run artifacts
 ```
+
+## Switching the TUI theme
+
+jcode reads its palette from the `[display.colors]` block in `~/.jcode/config.toml`.
+The theme switcher swaps that block from a preset in `jcode/themes/`:
+
+```bash
+~/.jcode/bin/jcode-theme            # list themes + which is active
+~/.jcode/bin/jcode-theme delta      # apply the delta palette
+~/.jcode/bin/jcode-theme retrowave  # apply the retrowave palette
+~/.jcode/bin/jcode-theme fluoromachine
+~/.jcode/bin/jcode-theme export     # print the current palette as TOML
+```
+
+The three fluoromachine flavors (from `maxmx03/fluoromachine.nvim`) are
+pre-baked: `delta` (active), `retrowave`, and `fluoromachine`. The new palette
+takes effect on the next jcode launch; to apply to the running TUI without
+restarting, run `/colors` in jcode (any edit triggers a re-read).
 
 ## Custom things that are preserved
 

@@ -1,0 +1,25 @@
+# fluoromachine theme — flavor: "delta" (the current/active one)
+# Source: maxmx03/fluoromachine.nvim lua/fluoromachine/colors/delta.lua
+[display.colors]
+user = "#98FFFB"        # cyan
+ai = "#D598FF"          # purple
+tool = "#925393"        # comment
+file_link = "#98FFFB"   # cyan
+dim = "#925393"         # comment
+accent = "#D598FF"      # purple
+system = "#FF67D4"      # pink
+queued = "#FFD298"      # orange
+asap = "#98FFFB"        # cyan
+pending = "#925393"     # comment
+user_text = "#EFEFFD"   # fg
+user_bg = "#2B2233"     # bg
+ai_text = "#EFEFFD"     # fg
+header_icon = "#98FFFB" # cyan
+header_name = "#D598FF" # purple
+header_session = "#EFEFFD" # fg
+success = "#C0FF98"     # green
+warning = "#FFD298"     # orange
+error = "#FF98B3"       # red
+info = "#98FFFB"        # cyan
+border = "#925393"      # comment/separator
+selection_bg = "#492949" # selection

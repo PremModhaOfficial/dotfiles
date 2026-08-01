@@ -1,0 +1,25 @@
+# fluoromachine theme — flavor: "fluoromachine"
+# Source: maxmx03/fluoromachine.nvim lua/fluoromachine/colors/fluoromachine.lua
+[display.colors]
+user = "#61E2FF"        # cyan
+ai = "#AF6DF9"          # purple
+tool = "#495495"        # comment
+file_link = "#61E2FF"   # cyan
+dim = "#495495"         # comment
+accent = "#AF6DF9"      # purple
+system = "#FC199A"      # pink
+queued = "#FF8B39"      # orange
+asap = "#61E2FF"        # cyan
+pending = "#495495"     # comment
+user_text = "#8BA7A7"   # fg
+user_bg = "#262335"     # bg
+ai_text = "#8BA7A7"     # fg
+header_icon = "#61E2FF" # cyan
+header_name = "#AF6DF9" # purple
+header_session = "#8BA7A7" # fg
+success = "#72F1B8"     # green
+warning = "#FF8B39"     # orange
+error = "#FE4450"       # red
+info = "#61E2FF"        # cyan
+border = "#8C57C7"      # editor.separator
+selection_bg = "#463465" # selection

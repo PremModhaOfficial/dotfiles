@@ -356,6 +356,20 @@ sync_configs() {
     chmod +x "$HOME/.jcode/hooks/"*.sh 2>/dev/null || true
   fi
 
+  # jcode theme switcher + presets (bin + themes)
+  if [ -f "$DOTFILES/jcode/bin/jcode-theme" ]; then
+    mkdir -p "$HOME/.jcode/bin"
+    install_if_different "$DOTFILES/jcode/bin/jcode-theme" "$HOME/.jcode/bin/jcode-theme"
+    chmod +x "$HOME/.jcode/bin/jcode-theme" 2>/dev/null || true
+  fi
+  if [ -d "$DOTFILES/jcode/themes" ]; then
+    mkdir -p "$HOME/.jcode/themes"
+    for t in "$DOTFILES/jcode/themes/"*.toml; do
+      [ -f "$t" ] || continue
+      install_if_different "$t" "$HOME/.jcode/themes/$(basename "$t")"
+    done
+  fi
+
   # herdr config (only the pickr config we maintain)
   if [ -f "$DOTFILES/herdr/plugins/config/pickr/config.toml" ]; then
     run "install pickr config" mkdir -p "$HOME/.config/herdr/plugins/config/pickr"
