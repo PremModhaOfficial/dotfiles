@@ -10,6 +10,7 @@
     ./modules/shell.nix
     ./modules/tools.nix
     ./modules/editor.nix
+    ./modules/herdr.nix
   ];
 
   # After each switch, symlink Nix .desktop files into the standard
