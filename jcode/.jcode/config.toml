@@ -159,9 +159,9 @@ session_end = "~/.jcode/hooks/herdr-agent-state.sh"
 pre_tool_timeout_ms = 5000
 # Opt-in turn-end gate for external orchestrators (babysitter). Requires the
 # jcode build with the turn_end_gate feature (local/turn-end-gate branch, or
-# newer upstream). Uncomment to enable babysitter-driven continuation:
-# turn_end_gate = "~/.jcode/hooks/babysitter-gate.sh"
-# turn_end_gate_timeout_ms = 5000
+# newer upstream). Enabled for babysitter-driven continuation:
+turn_end_gate = "~/.jcode/hooks/babysitter-gate.sh"
+turn_end_gate_timeout_ms = 5000
 
 [ambient]
 enabled = false
