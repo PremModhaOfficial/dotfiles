@@ -1,0 +1,23 @@
+# herdr theme — fluoromachine flavor: "fluoromachine"
+# Source: maxmx03/fluoromachine.nvim lua/fluoromachine/colors/fluoromachine.lua
+[theme]
+name = "catppuccin"
+auto_switch = false
+
+[theme.custom]
+accent     = "#AF6DF9"  # purple
+panel_bg   = "#262335"  # bg
+surface0   = "#241B2F"  # bgdark
+surface1   = "#463465"  # selection
+surface_dim= "#262335"  # bg
+overlay0   = "#495495"  # comment
+overlay1   = "#495495"  # comment
+text       = "#8BA7A7"  # fg
+subtext0   = "#495495"  # comment
+mauve      = "#FC199A"  # pink
+green      = "#72F1B8"
+yellow     = "#FFCC00"
+red        = "#FE4450"
+blue       = "#61E2FF"  # cyan
+teal       = "#61E2FF"  # cyan
+peach      = "#FF8B39"  # orange

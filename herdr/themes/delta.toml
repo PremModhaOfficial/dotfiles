@@ -1,0 +1,23 @@
+# herdr theme — fluoromachine flavor: "delta" (the current/active one)
+# Source: maxmx03/fluoromachine.nvim lua/fluoromachine/colors/delta.lua
+[theme]
+name = "catppuccin"
+auto_switch = false
+
+[theme.custom]
+accent     = "#D598FF"  # purple
+panel_bg   = "#2B2233"  # bg
+surface0   = "#251D2B"  # bgdark
+surface1   = "#492949"  # selection
+surface_dim= "#2B2233"  # bg
+overlay0   = "#925393"  # comment
+overlay1   = "#925393"  # comment
+text       = "#EFEFFD"  # fg
+subtext0   = "#925393"  # comment
+mauve      = "#FF67D4"  # pink
+green      = "#C0FF98"
+yellow     = "#EDFF98"
+red        = "#FF98B3"
+blue       = "#98FFFB"  # cyan
+teal       = "#98FFFB"  # cyan
+peach      = "#FFD298"  # orange

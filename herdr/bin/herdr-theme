@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# ============================================================================
+# herdr-theme — switch the herdr TUI color theme between fluoromachine flavors
+# (or any preset .toml in the themes dir).
+#
+#   ~/.jcode/bin/herdr-theme          # list available themes + current one
+#   ~/.jcode/bin/herdr-theme <name>   # apply a theme (e.g. delta)
+#   ~/.jcode/bin/herdr-theme export   # print the current theme config
+#
+# It replaces the [theme] (+ [theme.custom]) section in ~/.config/herdr/config.toml
+# with the one from themes/<name>.toml. Herdr picks up config changes live
+# (reload_config) or on the next launch.
+# ============================================================================
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+THEMES_DIR="${HERDR_THEMES_DIR:-$DOTFILES/herdr/themes}"
+CONFIG="${HERDR_CONFIG:-$HOME/.config/herdr/config.toml}"
+
+err() { echo "error: $*" >&2; exit 1; }
+
+# Extract the [theme] + [theme.custom] block (through the next top-level section).
+extract_block() {
+  local file="$1"
+  awk '/^\[theme\]/{on=1; print; next}
+       /^\[[a-zA-Z]/{if(on && $0 !~ /^\[theme\./){exit}}
+       on{print}' "$file"
+}
+
+# Normalize a config's theme block for comparison (strip comments, whitespace).
+norm_block() {
+  grep -v '^[[:space:]]*#' \
+    | sed 's/[[:space:]][[:space:]]*#.*$//' \
+    | grep -v '^[[:space:]]*$' \
+    | tr -d ' \t'
+}
+
+current_theme() {
+  [ -f "$CONFIG" ] || { echo "(no herdr config yet)"; return; }
+  local live
+  live="$(extract_block "$CONFIG" | norm_block)"
+  local f name cmp
+  for f in "$THEMES_DIR"/*.toml; do
+    [ -f "$f" ] || continue
+    name="$(basename "$f" .toml)"
+    cmp="$(extract_block "$f" | norm_block)"
+    if [ "$cmp" = "$live" ]; then echo "$name"; return; fi
+  done
+  echo "(custom theme — not a saved preset)"
+}
+
+list_themes() {
+  echo "Available herdr themes:"
+  echo "  current: $(current_theme)"
+  echo ""
+  for f in "$THEMES_DIR"/*.toml; do
+    [ -f "$f" ] || continue
+    echo "  $(basename "$f" .toml)   ($f)"
+  done
+}
+
+case "${1:-}" in
+  "" | "list" | "ls")
+    list_themes
+    ;;
+  "export")
+    [ -f "$CONFIG" ] || err "no herdr config at $CONFIG"
+    extract_block "$CONFIG"
+    ;;
+  *)
+    theme="$1"
+    preset="$THEMES_DIR/$theme.toml"
+    [ -f "$preset" ] || err "no theme '$theme' (expected $preset)"
+    block="$(extract_block "$preset")"
+    [ -n "$block" ] || err "no [theme] block in $preset"
+
+    # Merge the theme block into the config: replace any existing [theme] section.
+    if [ -f "$CONFIG" ]; then
+      cp "$CONFIG" "$CONFIG.bak"
+      awk -v newblock="$block" '
+        /^\[theme\]/{inblock=1; skip=1; print newblock; next}
+        /^\[[a-zA-Z]/{if(inblock && $0 !~ /^\[theme\./){inblock=0; skip=0}}
+        !skip{print}
+      ' "$CONFIG.bak" > "$CONFIG"
+    else
+      mkdir -p "$(dirname "$CONFIG")"
+      printf '%s\n' "$block" > "$CONFIG"
+    fi
+
+    echo "Switched herdr theme to: $theme"
+    echo "Preset:  $preset"
+    echo "Backup:  $CONFIG.bak"
+    echo ""
+    echo "Herdr picks this up on reload (prefix+shift+r) or next launch."
+    ;;
+esac

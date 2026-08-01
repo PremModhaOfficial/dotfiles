@@ -71,6 +71,23 @@ pre-baked: `delta` (active), `retrowave`, and `fluoromachine`. The new palette
 takes effect on the next jcode launch; to apply to the running TUI without
 restarting, run `/colors` in jcode (any edit triggers a re-read).
 
+### herdr theme switcher
+
+Same three fluoromachine flavors, for the herdr TUI (`~/.config/herdr/config.toml`):
+
+```bash
+~/.jcode/bin/herdr-theme            # list themes + which is active
+~/.jcode/bin/herdr-theme delta      # apply the delta palette
+~/.jcode/bin/herdr-theme retrowave  # apply the retrowave palette
+~/.jcode/bin/herdr-theme fluoromachine
+~/.jcode/bin/herdr-theme export     # print the current theme config
+```
+
+Presets live in `herdr/themes/` and map each flavor onto herdr's 16 color
+tokens (`accent, panel_bg, surface*, text, mauve, green, yellow, red, blue,
+teal, peach`). Herdr picks the change up on reload (prefix+shift+r) or the next
+launch.
+
 ## Custom things that are preserved
 
 - `local/turn-end-gate` jcode branch, maintained in `PremModhaOfficial/jcode`
