@@ -15,6 +15,7 @@ nvim/.config/nvim/lazy-lock.json
 nvim/.config/nvim/${OPENCODE_CHROMA_DATA_DIR:-./.mcp/chroma_data}
 nvim/.config/nvim/.serena/memories
 config/tmux/plugins
+tmux/.config/tmux/plugins/
 nvim/.context
 
 # herdr — auto-generated files, don't track
