@@ -370,17 +370,17 @@ sync_configs() {
     done
   fi
 
-  # herdr theme switcher + presets (bin + themes)
+  # herdr theme switcher + presets (live under ~/.config/herdr with herdr's config)
   if [ -f "$DOTFILES/herdr/bin/herdr-theme" ]; then
-    mkdir -p "$HOME/.jcode/bin"
-    install_if_different "$DOTFILES/herdr/bin/herdr-theme" "$HOME/.jcode/bin/herdr-theme"
-    chmod +x "$HOME/.jcode/bin/herdr-theme" 2>/dev/null || true
+    mkdir -p "$HOME/.config/herdr/bin"
+    install_if_different "$DOTFILES/herdr/bin/herdr-theme" "$HOME/.config/herdr/bin/herdr-theme"
+    chmod +x "$HOME/.config/herdr/bin/herdr-theme" 2>/dev/null || true
   fi
   if [ -d "$DOTFILES/herdr/themes" ]; then
-    mkdir -p "$HOME/.jcode/herdr-themes"
+    mkdir -p "$HOME/.config/herdr/themes"
     for t in "$DOTFILES/herdr/themes/"*.toml; do
       [ -f "$t" ] || continue
-      install_if_different "$t" "$HOME/.jcode/herdr-themes/$(basename "$t")"
+      install_if_different "$t" "$HOME/.config/herdr/themes/$(basename "$t")"
     done
   fi
 

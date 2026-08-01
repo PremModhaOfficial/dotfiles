@@ -73,20 +73,21 @@ restarting, run `/colors` in jcode (any edit triggers a re-read).
 
 ### herdr theme switcher
 
-Same three fluoromachine flavors, for the herdr TUI (`~/.config/herdr/config.toml`):
+Same three fluoromachine flavors, for the herdr TUI (`~/.config/herdr/config.toml`).
+The switcher and presets live with herdr under `~/.config/herdr/`:
 
 ```bash
-~/.jcode/bin/herdr-theme            # list themes + which is active
-~/.jcode/bin/herdr-theme delta      # apply the delta palette
-~/.jcode/bin/herdr-theme retrowave  # apply the retrowave palette
-~/.jcode/bin/herdr-theme fluoromachine
-~/.jcode/bin/herdr-theme export     # print the current theme config
+~/.config/herdr/bin/herdr-theme     # list themes + which is active
+~/.config/herdr/bin/herdr-theme delta      # apply the delta palette
+~/.config/herdr/bin/herdr-theme retrowave  # apply the retrowave palette
+~/.config/herdr/bin/herdr-theme fluoromachine
+~/.config/herdr/bin/herdr-theme export     # print the current theme config
 ```
 
-Presets live in `herdr/themes/` and map each flavor onto herdr's 16 color
-tokens (`accent, panel_bg, surface*, text, mauve, green, yellow, red, blue,
-teal, peach`). Herdr picks the change up on reload (prefix+shift+r) or the next
-launch.
+Presets live in `~/.config/herdr/themes/` (sourced from `herdr/themes/` in this
+repo) and map each flavor onto herdr's 16 color tokens (`accent, panel_bg,
+surface*, text, mauve, green, yellow, red, blue, teal, peach`). Herdr picks the
+change up on reload (prefix+shift+r) or the next launch.
 
 ## Custom things that are preserved
 

@@ -14,7 +14,13 @@
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
-THEMES_DIR="${HERDR_THEMES_DIR:-$DOTFILES/herdr/themes}"
+# Prefer the live herdr themes dir (installed alongside herdr's config); fall
+# back to the dotfiles source when running straight out of the repo.
+if [ -d "$HOME/.config/herdr/themes" ]; then
+  THEMES_DIR="${HERDR_THEMES_DIR:-$HOME/.config/herdr/themes}"
+else
+  THEMES_DIR="${HERDR_THEMES_DIR:-$DOTFILES/herdr/themes}"
+fi
 CONFIG="${HERDR_CONFIG:-$HOME/.config/herdr/config.toml}"
 
 err() { echo "error: $*" >&2; exit 1; }
