@@ -11,21 +11,15 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    herdr = {
-      url = "github:herdrdev/herdr";
-    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-index-database, herdr, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-index-database, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      # herdr from its official flake (latest release build)
-      herdrPkg = herdr.packages.${system}.default;
     in {
       homeConfigurations."prm" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = { inherit herdrPkg; };
         modules = [
           nix-index-database.homeModules.nix-index
           ./home.nix
