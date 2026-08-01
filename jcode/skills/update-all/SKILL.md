@@ -89,17 +89,16 @@ it flips to `done` in the new ledger entry.
 
 ## 1. Run the updater
 
-Run the updater **bundled inside this skill folder** (self-contained — the
-skill carries its own script, so it works even before dotfiles are linked):
+Run the updater **from dotfiles only** — the sole canonical copy of the script
+lives in the dotfiles repo at `~/dotfiles/jcode/update-all.sh`. There is no
+duplicate bundled in this skill folder; do not copy it anywhere else.
 
 ```bash
-<skill-dir>/scripts/update-all.sh
+cd ~/dotfiles && ./jcode/update-all.sh
 ```
 
-which resolves to `~/.jcode/skills/update-all/scripts/update-all.sh` here. The
-canonical copy lives in dotfiles at `~/dotfiles/jcode/update-all.sh` (symlinked
-from `~/.jcode/bin/update-all.sh`) — the skill's copy is synced from it. If the
-skill copy is missing, fall back to `~/.jcode/bin/update-all.sh`.
+Always execute it from within the dotfiles working tree (`cd ~/dotfiles` first)
+so its dotfiles pull/commit/push step operates on the correct repo and branch.
 
 It performs, in order:
 
@@ -170,8 +169,9 @@ Next: <anything needing a restart, or ready to work>
 
 ## Notes
 
-- `~/.jcode/bin/update-all.sh` is a symlink to
-  `~/dotfiles/jcode/update-all.sh` (canonical, versioned in dotfiles).
+- The only copy of the updater is `~/dotfiles/jcode/update-all.sh` (canonical,
+  versioned in dotfiles). Run it only from `~/dotfiles`; it is never duplicated
+  into this skill folder or `~/.jcode/bin`.
 - Our custom things are preserved every run: `local/turn-end-gate` jcode
   branch, babysitter-gate hook, babysitter processes, pickr config, herdr
   hook, and any skill with no upstream source.
