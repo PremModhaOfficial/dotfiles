@@ -196,6 +196,7 @@ skill_sources() {
   log "=== skill sources ==="
   declare -A sources=(
     ["ponytail"]="https://github.com/DietrichGebert/ponytail"
+    ["caveman"]="https://github.com/JuliusBrussee/caveman"
     ["tiger-style"]="https://github.com/PremModhaOfficial/tiger-style"
     ["tuicr"]="https://github.com/agavra/tuicr"
     ["babysitter"]="https://github.com/a5c-ai/babysitter"
@@ -237,13 +238,14 @@ sync_skills() {
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-gain"   "$SKILLS_DIR/ponytail-gain"
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-help"   "$SKILLS_DIR/ponytail-help"
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-review" "$SKILLS_DIR/ponytail-review"
-  # caveman + friends live under ponytail repo too (check both layouts)
-  sync_dir "$UPDATER_SRC/ponytail/skills/caveman"         "$SKILLS_DIR/caveman"
-  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-commit"  "$SKILLS_DIR/caveman-commit"
-  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-compress" "$SKILLS_DIR/caveman-compress"
-  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-help"    "$SKILLS_DIR/caveman-help"
-  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-review"  "$SKILLS_DIR/caveman-review"
-  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-stats"   "$SKILLS_DIR/caveman-stats"
+  # caveman + friends (now its own repo: JuliusBrussee/caveman)
+  sync_dir "$UPDATER_SRC/caveman/skills/caveman"         "$SKILLS_DIR/caveman"
+  sync_dir "$UPDATER_SRC/caveman/skills/caveman-commit"  "$SKILLS_DIR/caveman-commit"
+  sync_dir "$UPDATER_SRC/caveman/skills/caveman-compress" "$SKILLS_DIR/caveman-compress"
+  sync_dir "$UPDATER_SRC/caveman/skills/caveman-help"    "$SKILLS_DIR/caveman-help"
+  sync_dir "$UPDATER_SRC/caveman/skills/caveman-review"  "$SKILLS_DIR/caveman-review"
+  sync_dir "$UPDATER_SRC/caveman/skills/caveman-stats"   "$SKILLS_DIR/caveman-stats"
+  sync_dir "$UPDATER_SRC/caveman/skills/cavecrew"        "$SKILLS_DIR/cavecrew"
 
   # tiger-style family
   sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style"        "$SKILLS_DIR/tiger-style"
@@ -490,7 +492,8 @@ write_manifest() {
         babysit)        source="a5c-ai/babysitter (custom harness=pi)"; repo="$UPDATER_SRC/babysitter" ;;
         herdr)          source="herdrdev/herdr"; repo="$UPDATER_SRC/herdr" ;;
         tuicr)          source="agavra/tuicr"; repo="$UPDATER_SRC/tuicr" ;;
-        ponytail*|caveman*|compress) source="DietrichGebert/ponytail"; repo="$UPDATER_SRC/ponytail" ;;
+        ponytail*|compress) source="DietrichGebert/ponytail"; repo="$UPDATER_SRC/ponytail" ;;
+        caveman*|cavecrew) source="JuliusBrussee/caveman"; repo="$UPDATER_SRC/caveman" ;;
         tiger-style*)   source="PremModhaOfficial/tiger-style"; repo="$UPDATER_SRC/tiger-style" ;;
       esac
       commit="—"

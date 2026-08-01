@@ -3,13 +3,14 @@
 # herdr-theme — switch the herdr TUI color theme between fluoromachine flavors
 # (or any preset .toml in the themes dir).
 #
-#   ~/.jcode/bin/herdr-theme          # list available themes + current one
-#   ~/.jcode/bin/herdr-theme <name>   # apply a theme (e.g. delta)
-#   ~/.jcode/bin/herdr-theme export   # print the current theme config
+#   herdr-theme                # interactive picker (prompts for a theme)
+#   herdr-theme list           # list available themes + current one
+#   herdr-theme <name>         # apply a theme (e.g. delta)
+#   herdr-theme export         # print the current theme config
 #
 # It replaces the [theme] (+ [theme.custom]) section in ~/.config/herdr/config.toml
-# with the one from themes/<name>.toml. Herdr picks up config changes live
-# (reload_config) or on the next launch.
+# with the one from themes/<name>.toml, then reloads herdr's config live
+# (herdr server reload-config) so the change applies immediately.
 # ============================================================================
 set -euo pipefail
 
@@ -65,8 +66,57 @@ list_themes() {
   done
 }
 
+apply_theme() { # apply_theme <name>
+  local theme="$1"
+  local preset="$THEMES_DIR/$theme.toml"
+  [ -f "$preset" ] || err "no theme '$theme' (expected $preset)"
+  local block
+  block="$(extract_block "$preset")"
+  [ -n "$block" ] || err "no [theme] block in $preset"
+
+  # Merge the theme block into the config: replace any existing [theme] section.
+  if [ -f "$CONFIG" ]; then
+    cp "$CONFIG" "$CONFIG.bak"
+    awk -v newblock="$block" '
+      /^\[theme\]/{inblock=1; skip=1; print newblock; next}
+      /^\[[a-zA-Z]/{if(inblock && $0 !~ /^\[theme\./){inblock=0; skip=0}}
+      !skip{print}
+    ' "$CONFIG.bak" > "$CONFIG"
+  else
+    mkdir -p "$(dirname "$CONFIG")"
+    printf '%s\n' "$block" > "$CONFIG"
+  fi
+
+  echo "Switched herdr theme to: $theme"
+
+  # Reload herdr live so the change applies without a manual reload.
+  if command -v herdr >/dev/null 2>&1; then
+    herdr server reload-config >/dev/null 2>&1 && echo "Herdr config reloaded." \
+      || echo "Herdr reload skipped (not running). Will apply on next launch."
+  else
+    echo "herdr CLI not found; change applies on next launch."
+  fi
+}
+
 case "${1:-}" in
-  "" | "list" | "ls")
+  "" | "pick")
+    # Interactive picker: list numbered options and prompt.
+    mapfile -t names < <(for f in "$THEMES_DIR"/*.toml; do [ -f "$f" ] || continue; basename "$f" .toml; done)
+    [ "${#names[@]}" -gt 0 ] || err "no theme presets found in $THEMES_DIR"
+    echo "Select a herdr theme (current: $(current_theme)):"
+    for i in "${!names[@]}"; do
+      printf '  %2d) %s\n' "$((i+1))" "${names[$i]}"
+    done
+    printf 'Choice [1-%d]: ' "${#names[@]}"
+    read -r sel
+    case "$sel" in
+      ''|*[!0-9]*) err "invalid selection '$sel'";;
+    esac
+    idx=$((sel-1))
+    [ "$idx" -ge 0 ] && [ "$idx" -lt "${#names[@]}" ] || err "selection out of range"
+    apply_theme "${names[$idx]}"
+    ;;
+  "list" | "ls")
     list_themes
     ;;
   "export")
@@ -74,29 +124,6 @@ case "${1:-}" in
     extract_block "$CONFIG"
     ;;
   *)
-    theme="$1"
-    preset="$THEMES_DIR/$theme.toml"
-    [ -f "$preset" ] || err "no theme '$theme' (expected $preset)"
-    block="$(extract_block "$preset")"
-    [ -n "$block" ] || err "no [theme] block in $preset"
-
-    # Merge the theme block into the config: replace any existing [theme] section.
-    if [ -f "$CONFIG" ]; then
-      cp "$CONFIG" "$CONFIG.bak"
-      awk -v newblock="$block" '
-        /^\[theme\]/{inblock=1; skip=1; print newblock; next}
-        /^\[[a-zA-Z]/{if(inblock && $0 !~ /^\[theme\./){inblock=0; skip=0}}
-        !skip{print}
-      ' "$CONFIG.bak" > "$CONFIG"
-    else
-      mkdir -p "$(dirname "$CONFIG")"
-      printf '%s\n' "$block" > "$CONFIG"
-    fi
-
-    echo "Switched herdr theme to: $theme"
-    echo "Preset:  $preset"
-    echo "Backup:  $CONFIG.bak"
-    echo ""
-    echo "Herdr picks this up on reload (prefix+shift+r) or next launch."
+    apply_theme "${1:-}"
     ;;
 esac

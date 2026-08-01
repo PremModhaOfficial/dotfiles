@@ -58,8 +58,14 @@ type = "plugin_action"
 command = "herdr-sesh.open"
 description = "TV Sessionizer: pick directory in floating window"
 
+[[keys.command]]
+key = "prefix+t"
+type = "pane"
+command = "/home/prm/.config/herdr/bin/herdr-theme"
+description = "Switch fluoromachine theme (delta/retrowave/fluoromachine)"
+
 [theme]
-name = "gruvbox"
+name = "vesper"
 
 auto_switch = false
 [ui]

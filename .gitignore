@@ -40,3 +40,6 @@ alacritty/.config/alacritty/dank-theme.toml
 graphify-out/cache/ast
 graphify-out
 .graphify_detect.json
+
+# caveman staging clone (real source pulled by update-all into ~/.jcode/updater-src)
+caveman-src/
