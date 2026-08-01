@@ -4,5 +4,4 @@ return {
 	ft = "qf",
 	---@module "quicker"
 	---@type quicker.SetupOptions
-	opts = {},
 }

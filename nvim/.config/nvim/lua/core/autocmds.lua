@@ -5,7 +5,7 @@ autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
 	group = augroup("kickstart-highlight-yank", { clear = true }),
 	callback = function()
-		vim.highlight.on_yank()
+		vim.hl.on_yank()
 	end,
 })
 
@@ -24,7 +24,6 @@ vim.filetype.add({
 autocmd({ "BufEnter", "BufWinEnter" }, {
 	pattern = { "*.hl", "hypr*.conf" },
 	callback = function(event)
-		print(string.format("starting hyprls for %s", vim.inspect(event)))
 		vim.lsp.start({
 			name = "hyprlang",
 			cmd = { "hyprls" },

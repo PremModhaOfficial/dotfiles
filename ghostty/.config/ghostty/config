@@ -1,6 +1,129 @@
-font-family = CaskaydiaCove Nerd Font
-font-size = 16
-##background-opacity = 0.96
-background-opacity = 1
+# This is the configuration file for Ghostty.
+#
+# Shader playground repo (custom cursor effects):
+#   https://github.com/KroneCorylus/ghostty-shader-playground
+# Managed as git submodule in dotfiles — init with:
+#   git submodule update --init --recursive
+#
+# This template file has been automatically created at the following
+# path since Ghostty couldn't find any existing config files on your system:
+#
+#   /home/prem-modha/.config/ghostty/config
+#
+# The template does not set any default options, since Ghostty ships
+# with sensible defaults for all options. Users should only need to set
+# options that they want to change from the default.
+#
+# Run `ghostty +show-config --default --docs` to view a list of
+# all available config options and their default values.
+#
+# Additionally, each config option is also explained in detail
+# on Ghostty's website, at https://ghostty.org/docs/config.
+#
+# Ghostty can reload the configuration while running by using the menu
+# options or the bound key (default: Command + Shift + comma on macOS and
+# Control + Shift + comma on other platforms). Not all config options can be
+# reloaded while running; some only apply to new windows and others may require
+# a full restart to take effect.
+
+# Config syntax crash course
+# ==========================
+# # The config file consists of simple key-value pairs,
+# # separated by equals signs.
+# Best looking font config for Iosevka Nerd Font
+font-family = "IosevkaTerm Nerd Font"
+#font-family = "Victor mono"
+# font-family = "Cascadia Code"
+# Font Features for Cascadia Code PL - toggle/comment out to enable/disable
+# Ligatures (beautiful code-specific ligatures like =>, !=, ==, ->, etc.)
+font-feature = "liga"
+# Contextual alternates (smarter character rendering based on context)
+font-feature = "calt"
+# Stylistic set 01 (THIS WAS MAKING IT ITALIC/CURSIVE - DISABLED)
+#font-feature = "ss01"
+# Stylistic set 02 (more glyph variants)
+font-feature = "ss02"
+# Stylistic set 03 (additional glyph variants)
+font-feature = "ss03"
+# Stylistic set 19 (Cascadia-specific alternates)
+font-feature = "ss19"
+# Stylistic set 20 (Cascadia-specific alternates)
+font-feature = "ss20"
+# font-style-italic = "Italic"  # DISABLED - was forcing cursive look
+
+font-size = 18
+background-opacity = 0.79
+background = #000000
+background-blur = true
+window-padding-balance = true
+# font-family = JetBrains Mono NF
+alpha-blending = native
+# --- Power User Configuration ---
+
+# Font size for better readability and more content on screen
+shell-integration = fish
+command = /usr/bin/fish
+# Minimal window padding for maximum screen real estate
+window-padding-x = 1
+window-padding-y = 1
+
+
+# Set a dark, high-contrast color scheme.
+# You might want to replace 'default-dark' with a specific theme name
+# like 'Dracula', 'Nord', 'Solarized-Dark', etc., if Ghostty supports them.
+# Check Ghostty's documentation or themes directory for available options.
+
+# Remove window decorations for a more integrated look
 window-decoration = false
-copy-on-select = clipboard
+
+# Ghostty uses shaders for rendering, but direct configuration of custom shaders
+# is not a common user-facing option in most terminal emulators.
+# If Ghostty supports custom shaders, you would likely find options like:
+# shader-path = "/path/to/your/shader.glsl"
+# render-backend = "opengl" # or "vulkan", "metal"
+# Please consult Ghostty's official documentation for details on shader usage.
+
+# Set the cursor style to a block for better visibility
+
+custom-shader = "./cursor_smear_gradient.glsl"
+custom-shader-animation = true
+cursor-style = block
+
+# --- 1.3.0 Updates ---
+notify-on-command-finish = always
+notify-on-command-finish-after = 10s
+split-preserve-zoom = true
+
+
+# Optimize rendering for a snappier feel
+# These values are educated guesses based on common terminal emulator settings.
+# You might need to adjust them based on Ghostty's actual options and your preference.
+# For example, 'refresh-rate' might be 'frame-rate' or similar.
+# 'animation-duration' might control cursor blink or other UI animations.
+# These are placeholders and might need adjustment after consulting official docs.
+# refresh-rate = 60
+# animation-duration = 0s
+
+# --- End of Power User Configuration ---
+
+# window-padding-x = 2
+#
+# # Spacing around the equals sign does not matter.
+# # All of these are identical:
+# key=value
+# key= value
+# key =value
+# key = value
+#
+# # Any line beginning with a # is a comment. It's not possible to put
+# # a comment after a config option, since it would be interpreted as a
+# # part of the value. For example, this will have a value of "#123abc":
+# background = #123abc
+#
+# # Empty values are used to reset config keys to default.
+# key =
+#
+# # Some config options have unique syntaxes for their value,
+# # which is explained in the docs for that config option.
+# # Just for example:
+# resize-overlay-duration = 4s 200ms

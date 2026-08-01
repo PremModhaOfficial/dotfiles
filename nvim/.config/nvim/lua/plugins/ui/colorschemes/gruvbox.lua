@@ -4,7 +4,7 @@ return {
 	enabled = false,
 	config = function()
 		require("gruvbox").setup({
-			terminal_colors = true, -- add neovim terminal colors
+			terminal_colors = true,
 			undercurl = true,
 			underline = true,
 			bold = true,
@@ -20,13 +20,12 @@ return {
 			invert_signs = false,
 			invert_tabline = true,
 			invert_intend_guides = true,
-			inverse = false, -- invert background for search, diffs, statuslines and errors
-			contrast = "soft", -- can be "hard", "soft" or empty string
+			inverse = false,
+			contrast = "soft",
 			palette_overrides = {},
 			overrides = {},
 			dim_inactive = false,
 			transparent_mode = true,
 		})
 	end,
-	-- init = function() vim.cmd([[colorscheme gruvbox]]) -- vim.cmd.hi("Comment gui=none") end,
 }

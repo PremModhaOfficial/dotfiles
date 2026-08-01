@@ -1,0 +1,238 @@
+[keybindings]
+scroll_up = "ctrl+shift+k"
+scroll_down = "ctrl+shift+j"
+scroll_page_up = "alt+u"
+scroll_page_down = "alt+d"
+model_switch_next = "ctrl+tab"
+model_switch_prev = "ctrl+shift+tab"
+fallback_switch = "ctrl+y"
+effort_increase = "alt+right"
+effort_decrease = "alt+left"
+centered_toggle = "alt+c"
+scroll_prompt_up = "ctrl+k"
+scroll_prompt_down = "ctrl+j"
+scroll_bookmark = "ctrl+g"
+scroll_up_fallback = ""
+scroll_down_fallback = ""
+workspace_left = "alt+h"
+workspace_down = "alt+j"
+workspace_up = "alt+k"
+workspace_right = "alt+l"
+side_panel_toggle = "alt+m"
+copy_selection_toggle = "alt+y"
+diagram_pane_toggle = "alt+t"
+typing_scroll_lock_toggle = "alt+s"
+diff_mode_cycle = "alt+g"
+info_widget_toggle = "alt+i"
+todo_card_toggle = "alt+x"
+swarm_panel_focus = "alt+n"
+new_terminal = "alt+shift+;"
+open_resume = "alt+r"
+session_picker_enter = "current-terminal"
+
+[dictation]
+command = ""
+mode = "send"
+key = "off"
+timeout_secs = 90
+
+[display]
+diff_mode = "inline"
+queue_mode = false
+auto_server_reload = true
+mouse_capture = true
+debug_socket = false
+emoji = true
+centered = false
+show_thinking = false
+reasoning_display = "off"
+diagram_mode = "none"
+markdown_spacing = "compact"
+latex_rendering = "image"
+pin_images = true
+pin_todos = false
+idle_animation = false
+prompt_entry_animation = true
+disabled_animations = []
+diff_line_wrap = true
+performance = ""
+animation_fps = 60
+redraw_fps = 60
+prompt_preview = true
+compact_notifications = false
+copy_badge_alt_label = ""
+show_agentgrep_output = false
+tool_call_details = false
+keybinding_hints = true
+theme = ""
+active_sessions_manager = false
+overscroll_status = "overscroll"
+
+[display.native_scrollbars]
+chat = true
+side_panel = true
+
+[display.colors]
+# fluoromachine (delta) palette
+user = "#98FFFB"
+ai = "#D598FF"
+tool = "#925393"
+file_link = "#98FFFB"
+dim = "#925393"
+accent = "#D598FF"
+system = "#FF67D4"
+queued = "#FFD298"
+asap = "#98FFFB"
+pending = "#925393"
+user_text = "#EFEFFD"
+user_bg = "#2B2233"
+ai_text = "#EFEFFD"
+header_icon = "#98FFFB"
+header_name = "#D598FF"
+header_session = "#EFEFFD"
+success = "#C0FF98"
+warning = "#FFD298"
+error = "#FF98B3"
+info = "#98FFFB"
+border = "#925393"
+selection_bg = "#492949"
+
+[features]
+memory = true
+swarm = true
+mermaid = true
+auto_poke = true
+message_timestamps = true
+persist_memory_injections = false
+kv_cache_miss_notices = true
+update_channel = "stable"
+
+[websearch]
+engine = "duckduckgo"
+fallback_engines = ["bing"]
+bing_api_key_env = "JCODE_BING_API_KEY"
+bing_market = "en-US"
+searxng_url_env = "JCODE_SEARXNG_URL"
+
+[tools]
+profile = ""
+enabled = []
+disabled = []
+disable_base_tools = false
+
+[acp]
+profile = "standard"
+tool_profile = "acp"
+
+[auth]
+trusted_external_sources = []
+
+[provider]
+openai_reasoning_effort = "low"
+openai_service_tier = "priority"
+openai_native_compaction_mode = "auto"
+openai_native_compaction_threshold_tokens = 200000
+preserve_reasoning_context = true
+cross_provider_failover = "countdown"
+same_provider_account_failover = true
+stream_idle_timeout_secs = 180
+
+[providers]
+
+[agents]
+swarm_spawn_mode = "inline"
+swarm_strip_layout = "vertical"
+memory_sidecar_enabled = true
+memory_rerank_cadence = 3
+memory_rerank_votes = 2
+memory_rerank_min_agree = 2
+memory_embedding_backend = "local"
+swarm_max_concurrent_agents = 32
+
+[terminal]
+
+[hooks]
+turn_start = "~/.jcode/hooks/herdr-agent-state.sh"
+turn_end = "~/.jcode/hooks/herdr-agent-state.sh"
+session_start = "~/.jcode/hooks/herdr-agent-state.sh"
+session_end = "~/.jcode/hooks/herdr-agent-state.sh"
+pre_tool_timeout_ms = 5000
+# Opt-in turn-end gate for external orchestrators (babysitter). Requires the
+# jcode build with the turn_end_gate feature (local/turn-end-gate branch, or
+# newer upstream). Uncomment to enable babysitter-driven continuation:
+# turn_end_gate = "~/.jcode/hooks/babysitter-gate.sh"
+# turn_end_gate_timeout_ms = 5000
+
+[ambient]
+enabled = false
+allow_api_keys = false
+min_interval_minutes = 5
+max_interval_minutes = 120
+pause_on_active_session = true
+proactive_work = true
+work_branch_prefix = "ambient/"
+visible = true
+
+[safety]
+ntfy_server = "https://ntfy.sh"
+desktop_notifications = true
+email_enabled = false
+email_smtp_port = 587
+email_imap_port = 993
+email_reply_enabled = false
+telegram_enabled = false
+telegram_reply_enabled = false
+discord_enabled = false
+discord_reply_enabled = false
+jade_relay_enabled = false
+jade_relay_reply_enabled = false
+jade_relay_launch_enabled = false
+
+[notifications]
+turn_complete = true
+turn_complete_min_secs = 120
+turn_complete_todo_min_secs = 30
+turn_complete_only_when_unfocused = true
+turn_complete_sound = "Glass"
+
+[gateway]
+enabled = false
+port = 7643
+bind_addr = "0.0.0.0"
+
+[compaction]
+mode = "reactive"
+lookahead_turns = 15
+ewma_alpha = 0.30000001192092896
+proactive_floor = 0.4000000059604645
+min_samples = 3
+stall_window = 5
+min_turns_between_compactions = 10
+topic_shift_threshold = 0.44999998807907104
+relevance_keep_threshold = 0.6499999761581421
+goal_window_turns = 5
+
+[power]
+prevent_sleep_while_streaming = true
+
+[autoreview]
+enabled = false
+
+[autojudge]
+enabled = false
+
+[launch_hotkeys]
+enabled = true
+imported = true
+
+[[launch_hotkeys.entries]]
+chord = "cmd+;"
+dir = "/home/prem-modha/dotfiles/nvim/.config/nvim"
+label = "nvim"
+self_dev = false
+
+[[launch_hotkeys.entries]]
+chord = "cmd+'"
+dir = "$HOME"
+label = "home"
+self_dev = false

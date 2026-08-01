@@ -7,8 +7,7 @@
 return {
 	"folke/snacks.nvim",
 	priority = 1000,
-	lazy = true,
-	event = "VimEnter",
+	lazy = false,
 	---@module "snacks"
 	---@type snacks.Config
 	opts = {
@@ -202,6 +201,7 @@ return {
 			desc = "File Explorer",
 		},
 		-- find
+		-- <leader>ff freed: use <leader>sf for Find Files (powered by fff)
 		{
 			"<leader>fb",
 			function()
@@ -215,13 +215,6 @@ return {
 				Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
 			end,
 			desc = "Find Config File",
-		},
-		{
-			"<leader>ff",
-			function()
-				Snacks.picker.files()
-			end,
-			desc = "Find Files",
 		},
 		{
 			"<leader>fg",
@@ -372,13 +365,6 @@ return {
 				Snacks.picker.highlights()
 			end,
 			desc = "Highlights",
-		},
-		{
-			"<leader>sf",
-			function()
-				Snacks.picker.files()
-			end,
-			desc = "Find Files",
 		},
 		{
 			"<leader>si",

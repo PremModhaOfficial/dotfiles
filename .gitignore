@@ -14,11 +14,6 @@ nix/.config/nixpkgs/flake.lock
 nvim/.config/nvim/lazy-lock.json
 nvim/.config/nvim/${OPENCODE_CHROMA_DATA_DIR:-./.mcp/chroma_data}
 nvim/.config/nvim/.serena/memories
-nvim/.config/nvim/.serena/memories
-config/tmux/plugins
-nvim/.config/nvim/${OPENCODE_CHROMA_DATA_DIR:-./.mcp/chroma_data}
-nvim/.config/nvim/.serena/memories
-tmux/.config/tmux/plugins
 config/tmux/plugins
 nvim/.context
 
@@ -30,11 +25,17 @@ herdr/.config/herdr/plugins/config/
 herdr/.config/television/cache/
 
 config/tmux/plugins
+
+# dank-theme generated files
 /alacritty/.config/alacritty/dank-theme.toml
 /kitty/.config/kitty/dank-tabs.conf
 /kitty/.config/kitty/dank-theme.conf
 /wezterm/.config/wezterm/colors/dank-theme.toml
-/kitty/.config/kitty/dank-tabs.conf
-/kitty/.config/kitty/dank-theme.conf
-/wezterm/.config/wezterm/colors/dank-theme.toml
 dank-theme.toml
+
+# misc tooling artifacts
+.brv
+alacritty/.config/alacritty/dank-theme.toml
+graphify-out/cache/ast
+graphify-out
+.graphify_detect.json

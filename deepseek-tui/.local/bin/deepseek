@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -a
+[ -f /home/prem-modha/sandbox/nvidia-nim/.env ] && . /home/prem-modha/sandbox/nvidia-nim/.env
+set +a
+export DEEPSEEK_PROVIDER="nvidia-nim"
+export DEEPSEEK_FORCE_HTTP1="1"
+exec /home/prem-modha/.cache/.bun/bin/deepseek "$@"

@@ -1,0 +1,342 @@
+#!/usr/bin/env bash
+# ============================================================================
+# jcode-update-all — ONE command to update everything, keep our custom bits.
+#
+#   Canonical location: ~/dotfiles/jcode/update-all.sh
+#   (symlinked from ~/.jcode/bin/update-all.sh)
+#
+#   Updates:
+#     1. jcode core   — fetch upstream (1jehuang/jcode), rebase our fork branch
+#                       (local/turn-end-gate) onto upstream master, push to our
+#                       fork (PremModhaOfficial/jcode = origin), build.
+#     2. Skill sources — git pull ponytail, tiger-style, tuicr, babysitter,
+#                       herdr; re-sync installed skills into ~/.agents/skills.
+#     3. Regenerated skills — babysit keeps our jcode harness=pi adaptation;
+#                       herdr is a plain sync.
+#     4. Tools         — mise herdr, herdr-pickr plugin, babysitter SDK via npx
+#                       (always latest), gopls best-effort.
+#     5. Configs       — install dotfiles configs into live locations
+#                       (~/.jcode, ~/.config/herdr, repo .a5c), then commit +
+#                       push the dotfiles repo (PremModhaOfficial/dotfiles).
+#     6. Skill manifest — ~/.agents/skills/README.md regenerated.
+#
+#   Preserved custom things: local/turn-end-gate jcode branch (in the fork),
+#   pickr config.toml, herdr-agent-state.sh hook, babysitter-gate.sh hook,
+#   .a5c/processes/* (babysitter processes), any skill in ~/.agents/skills/
+#   with no upstream source listed below.
+#
+#   Usage:
+#     ~/.jcode/bin/update-all.sh              # full update
+#     ~/.jcode/bin/update-all.sh --dry-run    # show what would run
+#     ~/.jcode/bin/update-all.sh --jcode-only
+#     ~/.jcode/bin/update-all.sh --skills-only
+#     ~/.jcode/bin/update-all.sh --tools-only
+#     ~/.jcode/bin/update-all.sh --config-only
+#
+#   After it finishes: restart jcode (or reload skills) so the new skill list
+#   takes effect, then run: jcode self-dev --reload  (if jcode itself updated).
+# ============================================================================
+set -uo pipefail
+
+# --- config -----------------------------------------------------------------
+HOME_DIR="$HOME"
+JCODE_SRC="$HOME/.jcode/source/jcode"
+SKILLS_DIR="$HOME/.agents/skills"
+UPDATER_SRC="$HOME/.jcode/updater-src"          # git clones we own for skill sync
+LOG_DIR="$HOME/.jcode/logs"
+LOG="$LOG_DIR/update-all.log"
+MANIFEST="$SKILLS_DIR/README.md"
+DOTFILES="$HOME/dotfiles"
+GATE_BRANCH="local/turn-end-gate"
+JCODE_FORK="https://github.com/PremModhaOfficial/jcode.git"
+JCODE_UPSTREAM="https://github.com/1jehuang/jcode.git"
+
+mkdir -p "$LOG_DIR" "$UPDATER_SRC"
+
+log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG"; }
+fail() { log "ERROR: $*"; exit 1; }
+
+DRY=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY=1 ;;
+    --jcode-only) DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0 ;;
+    --skills-only) DO_JCODE=0; DO_TOOLS=0; DO_CONFIG=0 ;;
+    --tools-only) DO_JCODE=0; DO_SKILLS=0; DO_CONFIG=0 ;;
+    --config-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0 ;;
+    *) echo "unknown arg: $arg"; exit 2 ;;
+  esac
+done
+
+run() { # run <label> <cmd...>
+  local label="$1"; shift
+  if [ "$DRY" = 1 ]; then log "DRY: $label — $*"; return 0; fi
+  log "RUN: $label — $*"
+  if "$@"; then log "OK:  $label"; else log "WARN: $label exited $? (continuing)"; fi
+}
+
+# --- 1. jcode core (fork-based) --------------------------------------------
+update_jcode() {
+  log "=== jcode core (fork-based) ==="
+  command -v cargo >/dev/null || fail "cargo not found"
+  [ -d "$JCODE_SRC/.git" ] || fail "no jcode source at $JCODE_SRC (run: jcode self-dev --setup)"
+
+  # Ensure remotes: origin = our fork (maintains our changes), upstream = jcode.
+  local origin_url
+  origin_url=$(git -C "$JCODE_SRC" remote get-url origin 2>/dev/null || true)
+  if [ "$origin_url" != "$JCODE_FORK" ] && [ "$origin_url" != "git@github.com:PremModhaOfficial/jcode.git" ]; then
+    run "set origin to fork" git -C "$JCODE_SRC" remote set-url origin "$JCODE_FORK"
+  fi
+  if ! git -C "$JCODE_SRC" remote get-url upstream >/dev/null 2>&1; then
+    run "add upstream" git -C "$JCODE_SRC" remote add upstream "$JCODE_UPSTREAM"
+  fi
+
+  # Fetch latest from both.
+  run "git fetch upstream" git -C "$JCODE_SRC" fetch upstream master
+  run "git fetch origin" git -C "$JCODE_SRC" fetch origin
+
+  # Rebase our feature branch onto upstream master.
+  local current
+  current=$(git -C "$JCODE_SRC" branch --show-current)
+  if [ "$current" != "$GATE_BRANCH" ]; then
+    if [ -n "$(git -C "$JCODE_SRC" status --porcelain)" ]; then
+      log "stashing uncommitted jcode changes"
+      git -C "$JCODE_SRC" stash push -m "update-all pre-rebase" || true
+    fi
+    run "checkout $GATE_BRANCH" git -C "$JCODE_SRC" checkout "$GATE_BRANCH"
+  fi
+  run "rebase $GATE_BRANCH onto upstream/master" git -C "$JCODE_SRC" rebase upstream/master
+  run "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push -f origin "$GATE_BRANCH"
+  # Return to the previous branch if we moved.
+  if [ -n "$current" ] && [ "$current" != "$GATE_BRANCH" ]; then
+    run "checkout back to $current" git -C "$JCODE_SRC" checkout "$current"
+    if git -C "$JCODE_SRC" stash list | grep -q "update-all pre-rebase"; then
+      log "re-applying stashed jcode changes"
+      git -C "$JCODE_SRC" stash pop || true
+    fi
+  fi
+
+  # Build the dev binary (bounded; user can also run `jcode self-dev --build`).
+  run "cargo build jcode" cargo build --manifest-path "$JCODE_SRC/Cargo.toml" --bin jcode
+  log "to run the updated jcode: jcode self-dev --reload  (or restart jcode)"
+}
+
+# --- 2. skill sources -------------------------------------------------------
+skill_sources() {
+  log "=== skill sources ==="
+  declare -A sources=(
+    ["ponytail"]="https://github.com/DietrichGebert/ponytail"
+    ["tiger-style"]="https://github.com/PremModhaOfficial/tiger-style"
+    ["tuicr"]="https://github.com/agavra/tuicr"
+    ["babysitter"]="https://github.com/a5c-ai/babysitter"
+    ["herdr"]="https://github.com/herdrdev/herdr"
+  )
+  for name in "${!sources[@]}"; do
+    local url="${sources[$name]}"
+    local dir="$UPDATER_SRC/$name"
+    if [ -d "$dir/.git" ]; then
+      run "pull $name" git -C "$dir" pull --ff-only
+    else
+      run "clone $name" git clone --depth 1 "$url" "$dir"
+    fi
+  done
+
+  # Refresh the babysitter process library too (created by the babysitter CLI).
+  local plib="$HOME/.a5c/process-library/babysitter-repo"
+  if [ -d "$plib/.git" ]; then
+    run "pull babysitter process library" git -C "$plib" pull --ff-only
+  fi
+}
+
+# --- 3. sync skills ---------------------------------------------------------
+sync_dir() { # sync_dir <src> <dst>
+  local src="$1" dst="$2"
+  [ -d "$src" ] || { log "skip (missing): $src"; return; }
+  mkdir -p "$dst"
+  if [ "$DRY" = 1 ]; then log "DRY: sync $src -> $dst"; return; fi
+  cp -R "$src/." "$dst/"
+  log "OK: sync $src -> $dst"
+}
+
+sync_skills() {
+  log "=== skill sync ==="
+  # ponytail family (ponytail + audits)
+  sync_dir "$UPDATER_SRC/ponytail/skills/ponytail"        "$SKILLS_DIR/ponytail"
+  sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-audit"  "$SKILLS_DIR/ponytail-audit"
+  sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-debt"   "$SKILLS_DIR/ponytail-debt"
+  sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-gain"   "$SKILLS_DIR/ponytail-gain"
+  sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-help"   "$SKILLS_DIR/ponytail-help"
+  sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-review" "$SKILLS_DIR/ponytail-review"
+  # caveman + friends live under ponytail repo too (check both layouts)
+  sync_dir "$UPDATER_SRC/ponytail/skills/caveman"         "$SKILLS_DIR/caveman"
+  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-commit"  "$SKILLS_DIR/caveman-commit"
+  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-compress" "$SKILLS_DIR/caveman-compress"
+  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-help"    "$SKILLS_DIR/caveman-help"
+  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-review"  "$SKILLS_DIR/caveman-review"
+  sync_dir "$UPDATER_SRC/ponytail/skills/caveman-stats"   "$SKILLS_DIR/caveman-stats"
+
+  # tiger-style family
+  sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style"        "$SKILLS_DIR/tiger-style"
+  sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style-audit"  "$SKILLS_DIR/tiger-style-audit"
+  sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style-commit" "$SKILLS_DIR/tiger-style-commit"
+  sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style-help"   "$SKILLS_DIR/tiger-style-help"
+  sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style-review" "$SKILLS_DIR/tiger-style-review"
+
+  # tuicr skill (has herdr wrappers)
+  sync_dir "$UPDATER_SRC/tuicr/skills/tuicr" "$SKILLS_DIR/tuicr"
+
+  # herdr skill (plain upstream copy)
+  sync_dir "$UPDATER_SRC/herdr/skills/herdr" "$SKILLS_DIR/herdr"
+
+  # babysit — REGENERATED with our jcode adaptation preserved
+  regenerate_babysit
+}
+
+regenerate_babysit() {
+  log "=== babysit (regenerated, custom jcode adaptation preserved) ==="
+  local src_skill="$UPDATER_SRC/babysitter/plugins/babysitter-unified/skills/babysit/SKILL.md"
+  [ -f "$src_skill" ] || { log "skip: upstream babysit SKILL.md missing"; return; }
+  local dst="$SKILLS_DIR/babysit"
+  mkdir -p "$dst"
+  local out="$dst/SKILL.md"
+  if [ "$DRY" = 1 ]; then log "DRY: regenerate $dst from $src_skill"; return; fi
+
+  sed -e 's|^SDK_VERSION=.*$|SDK_VERSION=latest|' \
+      -e 's|{{harness}}|pi|g' \
+      "$src_skill" > "$out"
+
+  if ! grep -q "jcode harness note" "$out"; then
+    cat >> "$out" <<'EOF'
+
+> **jcode harness note:** jcode does not implement Claude Code's Stop/PreToolUse
+> hook protocol, so Babysitter runs in **non-hook-driven continuation** mode:
+> keep driving the orchestration loop inside the current turn until the run
+> completes or a real user breakpoint requires chat input. Do not yield the turn
+> and wait for a Stop hook that will never come.
+EOF
+  fi
+  log "OK: regenerated $dst (harness=pi, jcode note appended)"
+}
+
+# --- 4. tools ---------------------------------------------------------------
+update_tools() {
+  log "=== tools ==="
+  if command -v mise >/dev/null; then
+    run "mise herdr latest" mise install herdr@latest
+    run "mise use herdr@latest" mise use -g herdr@latest
+  fi
+  if command -v herdr >/dev/null; then
+    run "herdr plugin reinstall pickr" herdr plugin install tomasvarga/herdr-pickr -y
+  fi
+  if command -v node >/dev/null; then
+    run "babysitter SDK probe" node -e "require('child_process').execSync('npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version', {stdio:'inherit'})"
+  fi
+  if command -v go >/dev/null; then
+    run "gopls latest" go install golang.org/x/tools/gopls@latest
+  fi
+}
+
+# --- 5. configs: dotfiles -> live, then commit + push dotfiles --------------
+sync_configs() {
+  log "=== configs (dotfiles -> live, then push dotfiles) ==="
+  [ -d "$DOTFILES/.git" ] || { log "skip: no dotfiles repo at $DOTFILES"; return; }
+
+  # Keep dotfiles itself up to date with any remote changes (other machines).
+  # Pull the actual checked-out branch (dotfiles uses `wrk`), not `origin HEAD`
+  # which resolves to the remote's default branch and diverges.
+  local df_branch
+  df_branch=$(git -C "$DOTFILES" branch --show-current 2>/dev/null || echo "wrk")
+  if [ "$DRY" = 1 ]; then
+    log "DRY: git pull dotfiles ($df_branch)"
+  else
+    ( cd "$DOTFILES" && git fetch origin && git pull --ff-only origin "$df_branch" ) >> "$LOG" 2>&1 \
+      && log "OK:  dotfiles pulled ($df_branch)" \
+      || log "WARN: dotfiles pull failed (continuing with local state)"
+  fi
+
+  # jcode config + hooks
+  if [ -f "$DOTFILES/jcode/.jcode/config.toml" ]; then
+    run "install jcode config" cp "$DOTFILES/jcode/.jcode/config.toml" "$HOME/.jcode/config.toml"
+  fi
+  if [ -d "$DOTFILES/jcode/.jcode/hooks" ]; then
+    run "install jcode hooks" cp -R "$DOTFILES/jcode/.jcode/hooks/." "$HOME/.jcode/hooks/"
+    chmod +x "$HOME/.jcode/hooks/"*.sh 2>/dev/null || true
+  fi
+
+  # herdr config (only the pickr config we maintain)
+  if [ -f "$DOTFILES/herdr/plugins/config/pickr/config.toml" ]; then
+    run "install pickr config" mkdir -p "$HOME/.config/herdr/plugins/config/pickr"
+    run "install pickr config" cp "$DOTFILES/herdr/plugins/config/pickr/config.toml" "$HOME/.config/herdr/plugins/config/pickr/config.toml"
+  fi
+
+  # babysitter processes (custom .a5c processes) — install into the current repo
+  # and the global ~/.a5c/processes so babysitter can find them anywhere.
+  if [ -d "$DOTFILES/babysitter/processes" ]; then
+    if [ -d ".a5c/processes" ]; then
+      run "install babysitter processes (repo)" cp -R "$DOTFILES/babysitter/processes/." ".a5c/processes/"
+    fi
+    mkdir -p "$HOME/.a5c/processes"
+    run "install babysitter processes (global)" cp -R "$DOTFILES/babysitter/processes/." "$HOME/.a5c/processes/"
+  fi
+
+  # Commit + push the dotfiles repo (our changes ride along with config updates).
+  if [ "$DRY" = 1 ]; then log "DRY: commit+push dotfiles"; return; fi
+  ( cd "$DOTFILES" \
+    && git add -A \
+    && git -c user.name="prem-modha" -c user.email="prem-modha@users.noreply.github.com" \
+         commit -m "update-all: sync configs/skills/updater" --allow-empty \
+    && git push origin HEAD ) >> "$LOG" 2>&1 \
+  && log "OK: dotfiles committed + pushed" \
+  || log "WARN: dotfiles commit/push failed (see log)"
+}
+
+# --- 6. manifest ------------------------------------------------------------
+write_manifest() {
+  log "=== skill manifest ==="
+  local out="$MANIFEST"
+  local tmp="$out.tmp"
+  {
+    echo "# Installed Agent Skills"
+    echo ""
+    echo "Regenerated by \`~/.jcode/bin/update-all.sh\` on $(date -u +%Y-%m-%dT%H:%M:%SZ)."
+    echo "Run \`~/.jcode/bin/update-all.sh\` to refresh everything."
+    echo ""
+    echo "| Skill | Source | Source commit |"
+    echo "|-------|--------|---------------|"
+    local commit
+    for dir in "$SKILLS_DIR"/*/; do
+      [ -f "$dir/SKILL.md" ] || continue
+      local name
+      name=$(basename "$dir")
+      local source="bundled/manual"
+      local repo=""
+      case "$name" in
+        babysit)        source="a5c-ai/babysitter (custom harness=pi)"; repo="$UPDATER_SRC/babysitter" ;;
+        herdr)          source="herdrdev/herdr"; repo="$UPDATER_SRC/herdr" ;;
+        tuicr)          source="agavra/tuicr"; repo="$UPDATER_SRC/tuicr" ;;
+        ponytail*|caveman*|compress) source="DietrichGebert/ponytail"; repo="$UPDATER_SRC/ponytail" ;;
+        tiger-style*)   source="PremModhaOfficial/tiger-style"; repo="$UPDATER_SRC/tiger-style" ;;
+      esac
+      commit="—"
+      if [ -n "$repo" ] && [ -d "$repo/.git" ]; then
+        commit=$(git -C "$repo" rev-parse --short HEAD 2>/dev/null || echo "—")
+      fi
+      echo "| $name | $source | $commit |"
+    done
+  } > "$tmp"
+  if [ "$DRY" = 1 ]; then log "DRY: manifest -> $out"; rm -f "$tmp"; return; fi
+  mv "$tmp" "$out"
+  log "OK: manifest written to $out ($(grep -c '^| ' "$out" | awk '{print $1-2}') skills)"
+}
+
+# --- main -------------------------------------------------------------------
+log "=============================================="
+log "update-all started (dry_run=$DRY)"
+[ "$DO_JCODE" = 1 ]   && update_jcode
+[ "$DO_SKILLS" = 1 ] && { skill_sources; sync_skills; }
+[ "$DO_TOOLS" = 1 ]  && update_tools
+[ "$DO_CONFIG" = 1 ] && sync_configs
+[ "$DO_SKILLS" = 1 ] && write_manifest
+log "update-all finished — restart jcode (or reload skills) to pick up the new list."
+log "next: jcode self-dev --reload   (if jcode core was rebuilt)"
+log "=============================================="

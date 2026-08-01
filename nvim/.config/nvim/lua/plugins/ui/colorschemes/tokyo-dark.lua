@@ -1,32 +1,26 @@
 return {
 	"tiagovla/tokyodark.nvim",
-	-- enabled = false,
-	---@module "tokyodark"
 	opts = {
-		transparent_background = true, -- set background to transparent
-		gamma = 1.00, -- adjust the brightness of the theme
+		transparent_background = true,
+		gamma = 1.00,
 		styles = {
-			comments = { italic = true }, -- style for comments
-			keywords = { bold = true }, -- style for keywords
-			identifiers = { bold = true }, -- style for identifiers
-			functions = { bold = true, italic = true }, -- style for functions
+			comments = { italic = true },
+			keywords = { bold = true },
+			identifiers = { bold = true },
+			functions = { bold = true, italic = true },
 			types = { italic = true },
-			variables = {}, -- style for variables
-			strings = {}, -- style for strings
-			-- folds = { bold = true, italic = true }, -- style for folds
+			variables = {},
+			strings = {},
 		},
-		---@diagnostic disable-next-line: unused-local
 		custom_highlights = {} or function(highlights, palette)
 			return {}
-		end, -- extend highlights
-		---@diagnostic disable-next-line: unused-local
+		end,
 		custom_palette = {} or function(palette)
 			return {}
-		end, -- extend palette
-		terminal_colors = true, -- enable terminal colors
+		end,
+		terminal_colors = true,
 	},
 	config = function(_, opts)
-		require("tokyodark").setup(opts) -- calling setup is optional
+		require("tokyodark").setup(opts)
 	end,
-	-- init = function() vim.cmd([[colorscheme tokyodark]]) end,
 }

@@ -3,9 +3,8 @@ return {
 	{
 		"m4xshen/hardtime.nvim",
 		event = "VeryLazy",
-		enable = false,
+		enabled = false,
 		dependencies = { "MunifTanjim/nui.nvim" },
-		opts = {},
 		config = function()
 			vim.keymap.set("n", "<leader>H", function()
 				require("hardtime").toggle()

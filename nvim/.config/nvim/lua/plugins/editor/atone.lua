@@ -5,5 +5,4 @@ return {
 	keys = {
 		{ "<leader>U", "<cmd>Atone<cr>", desc = "Toggle Undo Tree (Atone)" },
 	},
-	opts = {},
 }

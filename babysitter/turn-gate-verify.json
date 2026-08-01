@@ -1,0 +1,12 @@
+{
+  "filesToChange": [
+    "crates/jcode-base/src/hooks.rs",
+    "crates/jcode-app-core/src/agent.rs",
+    "crates/jcode-app-core/src/agent/interrupts.rs",
+    "crates/jcode-app-core/src/agent/turn_execution.rs",
+    "crates/jcode-app-core/src/server/client_lifecycle.rs",
+    "crates/jcode-config-types/src/lib.rs",
+    "crates/jcode-base/src/config/env_overrides.rs"
+  ],
+  "testResults": "cargo check -p jcode-base -p jcode-config-types -p jcode-app-core: PASS (0 warnings after removing unused mut).\ncargo test -p jcode-base --lib hooks: 11 passed, 0 failed (includes 3 new turn-end-gate tests).\ncargo test -p jcode-app-core --lib: full suite running in background; turn_execution + client_lifecycle compile-clean under check. Final app-core result posted when complete."
+}

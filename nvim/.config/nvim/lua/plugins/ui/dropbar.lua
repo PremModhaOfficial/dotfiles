@@ -152,10 +152,11 @@ return {
 			},
 		},
 	},
+	event = "VeryLazy",
 	config = function()
 		-- vim.ui.select = require("dropbar.utils.menu").select
 		local bar = require("dropbar.utils.bar")
-		require("which-key").add({
+		local ok = pcall(require("which-key").add, {
 			-- {
 			-- 	"<leader>db",
 			-- 	function()

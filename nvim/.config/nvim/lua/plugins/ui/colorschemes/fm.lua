@@ -1,6 +1,5 @@
 return {
 	"maxmx03/fluoromachine.nvim",
-	---@module "fluoromachine"
 	lazy = true,
 	enabled = true,
 	priority = 1000,
@@ -8,8 +7,6 @@ return {
 		local fluoromachine = require("fluoromachine")
 
 		fluoromachine.setup({
-
-			---@type fm.config.theme
 			theme = "delta",
 			glow = false,
 			transparent = true,
@@ -20,13 +17,8 @@ return {
 				constants = { bold = true },
 				functions = { bold = true },
 				keywords = { bold = true },
-				-- numbers = {},
-				-- parameters = {},
-				-- types = {},
-				types = { italic = true }, --  NOTE: NICE LOOKING
-				-- variables = {},
+				types = { italic = true },
 			},
 		})
 	end,
-	-- init = function() vim.cmd([[colorscheme fluoromachine]]) end,
 }

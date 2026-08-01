@@ -39,7 +39,6 @@ return { -- Autocompletion
 				require("luasnip.loaders.from_vscode").lazy_load()
 			end,
 		},
-		"zbirenbaum/copilot-cmp",
 		"mikavilpas/blink-ripgrep.nvim",
 		"giuxtaposition/blink-cmp-copilot",
 	},
@@ -218,6 +217,15 @@ return { -- Autocompletion
 				end,
 				"fallback",
 			},
+			["<C-p>"] = {
+				function(cmp)
+					if cmp.is_signature_visible() then
+						return cmp.hide_signature()
+					end
+					return cmp.show_signature()
+				end,
+				"fallback",
+			},
 		},
 
 		completion = {
@@ -226,10 +234,13 @@ return { -- Autocompletion
 					auto_insert = false,
 					preselect = false,
 				},
+				cycle = { from_bottom = true, from_top = true },
 			},
 			accept = {
+				-- mini.pairs handles typed brackets; this is post-accept fn-arg auto-`()`.
+				-- Different layers, no conflict with mini.pairs (editor/mini-pairs.lua).
 				auto_brackets = {
-					enabled = false,
+					enabled = true,
 					semantic_token_resolution = { enabled = true },
 				},
 				create_undo_point = true,
@@ -287,6 +298,7 @@ return { -- Autocompletion
 				auto_show = true,
 				auto_show_delay_ms = 200, -- Snappier (was 500ms)
 				update_delay_ms = 50,
+				treesitter_highlighting = true,
 				window = {
 					border = { "▀", "▀", "▀", " ", "▄", "▄", "▄", " " },
 					winblend = 0,
@@ -295,12 +307,21 @@ return { -- Autocompletion
 
 			trigger = {
 				show_on_insert = true,
+				show_in_snippet = true,
 				show_on_blocked_trigger_characters = {},
 			},
 		},
 
 		signature = {
 			enabled = true,
+			trigger = {
+				enabled = true,
+				show_on_keyword = false,
+				blocked_trigger_characters = {},
+				blocked_retrigger_characters = {},
+				show_on_insert_on_trigger_character = true,
+				show_on_insert = false,
+			},
 			window = {
 				border = { "▀", "▀", "▀", " ", "▄", "▄", "▄", " " },
 				scrollbar = false,

@@ -1,0 +1,9 @@
+{
+  "name": "hragent",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Herdr multi-agent orchestration — spawn and coordinate subagents via herdr + intercom",
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}

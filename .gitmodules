@@ -1,0 +1,3 @@
+[submodule "ghostty/.config/ghostty/ghostty-shader-playground"]
+	path = ghostty/.config/ghostty/ghostty-shader-playground
+	url = https://github.com/KroneCorylus/ghostty-shader-playground.git

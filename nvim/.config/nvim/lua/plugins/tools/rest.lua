@@ -164,9 +164,18 @@ return {
 				ft = "http",
 			},
 		}
-		for i, key in ipairs(keys) do
-			vim.keymap.set("n", key[1], key[2], { desc = key.desc })
-		end
+
+		vim.api.nvim_create_autocmd("FileType", {
+			group = vim.api.nvim_create_augroup("KulalaHttp", { clear = true }),
+			pattern = "http",
+			callback = function(args)
+				for i, key in ipairs(keys) do
+					if key.ft == "http" then
+						vim.keymap.set("n", key[1], key[2], { desc = key.desc, buffer = args.buf })
+					end
+				end
+			end,
+		})
 
 		require("kulala").setup()
 	end,
