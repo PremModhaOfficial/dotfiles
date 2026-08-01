@@ -9,21 +9,21 @@ style = "Block"
 TERM = "xterm-256color"
 
 [font]
-size = 17.0
+size = 19.0
 
 [font.normal]
-family = "CaskaydiaCove Nerd Font"
+family = "CaskaydiaMono Nerd Font Propo"
 
 [font.bold]
-family = "CaskaydiaCove Nerd Font"
+family = "CaskaydiaMono Nerd Font Propo"
 style = "Bold"
 
 [font.italic]
-family = "CaskaydiaCove Nerd Font"
+family = "CaskaydiaMono Nerd Font Propo"
 style = "Italic"
 
 [font.bold_italic]
-family = "CaskaydiaCove Nerd Font"
+family = "CaskaydiaMono Nerd Font Propo"
 style = "Bold Italic"
 
 # fontconfig handles emoji fallback via noto-fonts-color-emoji

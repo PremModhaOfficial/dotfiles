@@ -1,5 +1,6 @@
 font-family = CaskaydiaCove Nerd Font
 font-size = 16
-background-opacity = 0.96
+##background-opacity = 0.96
+background-opacity = 1
 window-decoration = false
 copy-on-select = clipboard

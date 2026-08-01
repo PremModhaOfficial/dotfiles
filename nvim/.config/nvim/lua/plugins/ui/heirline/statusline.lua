@@ -113,8 +113,12 @@ function Core.get_hl(name, attr)
 	return result
 end
 
+-- One reload-safe owner for every statusline autocmd.
+local core_augroup = vim.api.nvim_create_augroup("HeirlineStatusline", { clear = true })
+
 -- Clear cache on theme change
 vim.api.nvim_create_autocmd("ColorScheme", {
+	group = core_augroup,
 	callback = function()
 		Core.hl_cache = {}
 	end,
@@ -134,6 +138,7 @@ local function interact()
 	end
 end
 vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "InsertEnter", "TextChanged", "CmdlineEnter" }, {
+	group = core_augroup,
 	callback = interact,
 })
 
@@ -177,11 +182,12 @@ local function update_mode()
 	Core.state.mode.name = ModeNames[m] or ModeNames[char] or "NORMAL"
 	Core.state.mode.color = Core.get_hl(ModeColorMap[char] or "Normal", "fg")
 end
-vim.api.nvim_create_autocmd("ModeChanged", { callback = update_mode })
+vim.api.nvim_create_autocmd("ModeChanged", { group = core_augroup, callback = update_mode })
 update_mode()
 
 -- 2. Git Listener
 vim.api.nvim_create_autocmd("User", {
+	group = core_augroup,
 	pattern = "GitSignsUpdate",
 	callback = function()
 		local dict = vim.b.gitsigns_status_dict
@@ -207,10 +213,11 @@ local function update_diagnostics()
 	Core.state.diagnostics.warnings = warn
 	Core.state.diagnostics.has_any = (err + warn) > 0
 end
-vim.api.nvim_create_autocmd("DiagnosticChanged", { callback = update_diagnostics })
+vim.api.nvim_create_autocmd("DiagnosticChanged", { group = core_augroup, callback = update_diagnostics })
 
 -- 4. LSP Listener (With Boot Detection)
 vim.api.nvim_create_autocmd({ "LspProgress", "LspAttach", "LspDetach" }, {
+	group = core_augroup,
 	callback = function()
 		local clients = vim.lsp.get_clients({ bufnr = 0 })
 		local names = {}
@@ -263,7 +270,7 @@ local function update_harpoon()
 	Core.state.harpoon.string = "╏ 󰛢 " .. out
 	Core.state.harpoon.active = (count > 0)
 end
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, { callback = update_harpoon })
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, { group = core_augroup, callback = update_harpoon })
 
 -- 6. Macro Recording Listener
 -- Use a namespace to prevent duplicate listeners on reload
@@ -271,6 +278,7 @@ local macro_ns = vim.api.nvim_create_namespace("heirline_macro")
 vim.on_key(nil, macro_ns) -- Clear previous listener
 
 vim.api.nvim_create_autocmd({ "RecordingEnter", "RecordingLeave" }, {
+	group = core_augroup,
 	callback = function()
 		local reg = vim.fn.reg_recording()
 		Core.state.macro.recording = (reg ~= "")
@@ -303,10 +311,20 @@ end, macro_ns)
 -- ANIMATION SYSTEM (PHYSICS ENGINE)
 --------------------------------------------------------------------------------
 
+-- A config reload evaluates this module again. Retire the previous loop first
+-- so :source never leaves an invisible render timer behind.
+local timer_key = "__heirline_statusline_animation_timer"
+local previous_timer = rawget(_G, timer_key)
+if previous_timer and not previous_timer:is_closing() then
+	previous_timer:stop()
+	previous_timer:close()
+end
+
 local Animation = {
 	timer = vim.uv.new_timer(),
 	density = { " ", "░", "▒", "▓", "█" },
 }
+_G[timer_key] = Animation.timer
 
 -- Critically Damped Spring: smooth convergence without overshoot
 -- Handles target changes mid-flight gracefully (unlike Zeno's paradox)
@@ -422,6 +440,27 @@ Animation.timer:start(
 			s.label = " REC @" .. Core.state.macro.reg
 			-- Tape Reel Animation: Cycling 1-9
 			s.segments = (math.floor(now / 100) % 9) + 1
+		elseif Core.state.mode.name == "VISUAL" or Core.state.mode.name == "SELECT" then
+			s.mode = "VISUAL"
+			s.color = Core.state.mode.color
+
+			local visual_mode = vim.fn.mode(1)
+			local start_line, end_line = vim.fn.line("v"), vim.fn.line(".")
+			local lines = math.abs(start_line - end_line) + 1
+
+			if visual_mode == "v" or visual_mode == "s" then
+				local chars = vim.fn.wordcount().visual_chars or 0
+				s.label = (lines == 1)
+					and string.format("%d chars", chars)
+					or string.format("%d lines · %d chars", lines, chars)
+			elseif visual_mode == "V" or visual_mode == "S" then
+				s.label = string.format("%d lines", lines)
+			elseif visual_mode == "\22" or visual_mode == "\19" then
+				local cols = math.abs(vim.fn.col("v") - vim.fn.col(".")) + 1
+				s.label = string.format("%d × %d block", lines, cols)
+			else
+				s.label = "selection"
+			end
 		elseif search.active then
 			s.mode = "SEARCH"
 			s.color = "#00ff00"
@@ -495,9 +534,15 @@ Animation.timer:start(
 
 -- Cleanup timer on exit to prevent ghost timers on :source or config reload
 vim.api.nvim_create_autocmd("VimLeavePre", {
+	group = core_augroup,
 	callback = function()
-		Animation.timer:stop()
-		Animation.timer:close()
+		if not Animation.timer:is_closing() then
+			Animation.timer:stop()
+			Animation.timer:close()
+		end
+		if rawget(_G, timer_key) == Animation.timer then
+			_G[timer_key] = nil
+		end
 	end,
 })
 
@@ -580,34 +625,67 @@ local VimMode = {
 
 -- The live chamber is a rhythm lane: one changing measure that makes active
 -- editor work visible without disturbing the rest of the statusline.
+local macro_reel = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇" }
+local rhythm_width = 28
+local rhythm_padding, playhead_cache, modified_cache, idle_bar_cache = {}, {}, {}, {}
+for i = 0, rhythm_width do
+	rhythm_padding[i] = string.rep(" ", i)
+end
+for i = 0, 9 do
+	playhead_cache[i] = string.rep("─", i) .. "●" .. string.rep("─", 9 - i)
+	modified_cache[i] = string.rep("═", math.max(1, i)) .. "▶"
+	idle_bar_cache[i] = string.rep("▓", i) .. string.rep("░", 9 - i)
+end
+
+local function pad_rhythm_lane(text)
+	local padding = rhythm_width - vim.fn.strdisplaywidth(text)
+	return text .. (rhythm_padding[math.max(0, padding)] or "")
+end
+
+local function frame_rhythm_lane(text)
+	return "╞" .. pad_rhythm_lane(text) .. "╡"
+end
+
 local RhythmLane = {
 	provider = function()
 		local s = Core.state.nixie
-		local function playhead(position)
-			return string.rep("─", position) .. "●" .. string.rep("─", 9 - position)
-		end
 
 		if Core.state.is_dimmed then
-			return " · · · "
+			return " " .. string.rep("·", 9) .. " "
 		end
 
 		if s.mode == "MACRO" then
 			local b = Core.state.macro.buffer
-			local first = math.max(1, #b - 4)
-			local tape = table.concat(b, " ", first)
-			local beat = string.rep("·", math.max(0, s.segments - 1)) .. "◉"
-			return " " .. beat .. " " .. tape .. " → REC @" .. Core.state.macro.reg .. " "
+			-- Keep the tape itself stationary: only the one-cell reel spins, so
+			-- recorded keys remain readable while the line still feels alive.
+			local reel = macro_reel[s.segments] or macro_reel[1]
+			local prefix = " " .. reel .. " ["
+			local suffix = "] → REC @" .. Core.state.macro.reg .. " "
+			local tape = ""
+			for first = math.max(1, #b - 3), #b do
+				local candidate = table.concat(b, "", first)
+				if vim.fn.strdisplaywidth(prefix .. candidate .. suffix) <= rhythm_width then
+					tape = candidate
+					break
+				end
+			end
+			return frame_rhythm_lane(prefix .. tape .. suffix)
 		elseif s.mode == "SEARCH" then
-			return " " .. playhead(s.segments) .. s.label .. " "
+			return frame_rhythm_lane(" " .. (playhead_cache[s.segments] or playhead_cache[0]) .. s.label .. " ")
 		elseif s.mode == "LSP" then
-			return " " .. s.wave_pattern .. s.label .. " "
+			-- LSP is its own compact instrument: the wave is always ten cells,
+			-- so this keeps ch1's tight chamber without introducing layout jitter.
+			return "╞" .. s.wave_pattern .. "╡" .. s.label .. " "
+		elseif s.mode == "VISUAL" then
+			return frame_rhythm_lane(" ── " .. s.label .. " ── ")
 		elseif s.mode == "DIAGNOSTIC" then
-			return " " .. playhead(s.segments) .. s.label .. " "
+			return frame_rhythm_lane(" " .. (playhead_cache[s.segments] or playhead_cache[0]) .. s.label .. " ")
 		elseif s.mode == "MODIFIED" then
-			return " " .. string.rep("═", math.max(1, s.segments)) .. "▶" .. s.label .. " "
+			return frame_rhythm_lane(" " .. (modified_cache[s.segments] or modified_cache[1]) .. s.label .. " ")
 		end
 
-		return " " .. string.rep("·", 3 + s.segments) .. " "
+		-- Idle keeps ch1's compact Nixie tube instead of a mostly empty wide lane.
+		return "╞" .. (idle_bar_cache[s.segments] or idle_bar_cache[0]) .. "╡ "
 	end,
 	hl = function()
 		local c = Core.state.nixie.color
@@ -616,6 +694,17 @@ local RhythmLane = {
 		end
 		return { fg = c }
 	end,
+	on_click = {
+		callback = function()
+			local mode = Core.state.nixie.mode
+			if mode == "SEARCH" then
+				vim.cmd("nohlsearch")
+			elseif mode == "DIAGNOSTIC" then
+				vim.diagnostic.open_float()
+			end
+		end,
+		name = "sl_rhythm_click",
+	},
 }
 
 local Git = {
@@ -793,6 +882,15 @@ local Harpoon = {
 		end
 		return { fg = c, bold = true }
 	end,
+	on_click = {
+		callback = function()
+			if package.loaded["harpoon"] then
+				local harpoon = require("harpoon")
+				harpoon.ui:toggle_quick_menu(harpoon:list())
+			end
+		end,
+		name = "sl_harpoon_click",
+	},
 }
 
 local SacredSymbols = {
