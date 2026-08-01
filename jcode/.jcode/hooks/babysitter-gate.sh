@@ -41,8 +41,12 @@ if grep -q '"status":"completed"\|"status":"failed"' "$active_run/journal.jsonl"
   exit 0
 fi
 
-# Babysitter CLI via the npx fallback (documented, no global install needed).
-CLI="npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter"
+# Babysitter CLI: prefer a global install, fall back to npx.
+if command -v babysitter >/dev/null 2>&1 && babysitter --version >/dev/null 2>&1; then
+  CLI="babysitter"
+else
+  CLI="npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter"
+fi
 
 # Ask babysitter for the next iteration effects (JSON).
 # On failure, emit nothing so normal operation is preserved.
