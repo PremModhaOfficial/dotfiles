@@ -292,3 +292,8 @@ fish_add_path $HOME/.nix-profile/bin
 set -x MANPATH $HOME/.nix-profile/share/man $MANPATH
 set -x XDG_DATA_DIRS $HOME/.nix-profile/share $XDG_DATA_DIRS
 set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
+
+# Added by jcode installer
+if not contains "/home/prm/.local/bin" $PATH
+    set -gx PATH "/home/prm/.local/bin" $PATH
+end
