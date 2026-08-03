@@ -219,6 +219,28 @@ skill_sources() {
   fi
 }
 
+# --- 2b. reference sources (pulled, never synced into ~/.agents/skills) ------
+# Algorithm/reference repos the jcode Reasonix DeepSeek optimizations were
+# ported from. They are kept fresh for consultation but are NOT skills and are
+# NOT installed anywhere — jcode's reasonix.rs is a committed port, not a
+# generated artifact.
+reference_sources() {
+  log "=== reference sources (reasonix) ==="
+  declare -A refs=(
+    ["deepseek-reasonix"]="https://github.com/esengine/DeepSeek-Reasonix"
+    ["pi-reasonix"]="https://github.com/TheTrebor/pi-reasonix"
+  )
+  for name in "${!refs[@]}"; do
+    local url="${refs[$name]}"
+    local dir="$UPDATER_SRC/$name"
+    if [ -d "$dir/.git" ]; then
+      run "pull reference $name" git -C "$dir" pull --ff-only
+    else
+      run "clone reference $name" git clone --depth 1 "$url" "$dir"
+    fi
+  done
+}
+
 # --- 3. sync skills ---------------------------------------------------------
 sync_dir() { # sync_dir <src> <dst>
   local src="$1" dst="$2"
@@ -349,6 +371,11 @@ sync_configs() {
   # jcode config + hooks (symlink-safe install)
   if [ -f "$DOTFILES/jcode/.jcode/config.toml" ]; then
     install_if_different "$DOTFILES/jcode/.jcode/config.toml" "$HOME/.jcode/config.toml"
+  fi
+  # MCP server registry (context7, deepwiki, neo4j, exa, ...). Versioned in
+  # dotfiles so a fresh machine gets the same MCP servers.
+  if [ -f "$DOTFILES/jcode/.jcode/mcp.json" ]; then
+    install_if_different "$DOTFILES/jcode/.jcode/mcp.json" "$HOME/.jcode/mcp.json"
   fi
   if [ -d "$DOTFILES/jcode/.jcode/hooks" ]; then
     for hook in "$DOTFILES/jcode/.jcode/hooks/"*.sh; do
@@ -514,7 +541,7 @@ log "=============================================="
 log "update-all started (dry_run=$DRY)"
 checklist_init
 [ "$DO_JCODE" = 1 ]   && update_jcode
-[ "$DO_SKILLS" = 1 ] && { skill_sources; sync_skills; }
+[ "$DO_SKILLS" = 1 ] && { skill_sources; reference_sources; sync_skills; }
 [ "$DO_TOOLS" = 1 ]  && update_tools
 [ "$DO_CONFIG" = 1 ] && sync_configs
 [ "$DO_JCODE" = 1 ]  && self_review
