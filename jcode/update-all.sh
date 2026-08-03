@@ -174,6 +174,27 @@ update_jcode() {
   fi
   log "OK:  rebase $GATE_BRANCH onto upstream/master"
 
+  # Keep the fork's CI as-is. Upstream master frequently changes
+  # .github/workflows/* (e.g. the typescript-sdk job, publish workflows).
+  # Pushing any change to those files requires the `workflow` OAuth scope,
+  # which the fork token does not have, so the push would be rejected.
+  # Restore the fork's version of every workflow file AND delete upstream-only
+  # additions, so the pushed tree never touches .github/workflows/.
+  if git -C "$JCODE_SRC" diff --quiet origin/"$GATE_BRANCH"..HEAD -- .github/workflows/; then
+    log "OK:  workflows match fork (no CI changes to strip)"
+  else
+    log "restoring fork .github/workflows/* (stripping upstream CI changes)"
+    git -C "$JCODE_SRC" checkout origin/"$GATE_BRANCH" -- .github/workflows/
+    # Delete workflow files present locally but absent on the fork.
+    local workflow_file
+    for workflow_file in $(git -C "$JCODE_SRC" ls-files .github/workflows/); do
+      if ! git -C "$JCODE_SRC" cat-file -e "origin/$GATE_BRANCH:$workflow_file" 2>/dev/null; then
+        git -C "$JCODE_SRC" rm -q --cached "$workflow_file"
+      fi
+    done
+    git -C "$JCODE_SRC" commit -m "chore(ci): keep fork's ci.yml (strip upstream workflow changes)" --allow-empty -q
+  fi
+
   # Only push to the fork after a clean rebase (never a conflicted branch).
   require "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push -f origin "$GATE_BRANCH"
 
