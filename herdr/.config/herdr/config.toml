@@ -11,6 +11,7 @@
 #
 #   prefix+o → herdr-sesh plugin action (opens floating picker overlay)
 #   prefix+f → herdr-plus projects (deprecated in favor of tv-based picker)
+#   prefix+$ → token dashboard (live agent token spend / cost notifications)
 #
 # Plugin wiring (config.toml is NOT enough):
 #   Plugin files live in ~/.config/herdr/plugins/local/herdr-sesh/
@@ -57,6 +58,12 @@ key = "prefix+o"
 type = "plugin_action"
 command = "herdr-sesh.open"
 description = "TV Sessionizer: pick directory in floating window"
+
+[[keys.command]]
+key = "prefix+$"
+type = "plugin_action"
+command = "dave.token-dashboard.open-dashboard"
+description = "Token Dashboard: live agent token spend / cost notifications"
 
 [[keys.command]]
 key = "prefix+t"
