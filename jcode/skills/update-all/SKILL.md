@@ -29,9 +29,17 @@ Commits carried on top of upstream `master`:
 - `afc3bac81` **fix(hooks): drop stale turn-end gate followup after loop cap**
   Removes a stale follow-up that would fire after the orchestration loop cap,
   so the gate does not linger or double-yield when the loop is already bounded.
+- `e974ae785` **feat(update): honor JCODE_NO_AUTO_UPDATE in background check for all builds**
+  Makes `JCODE_NO_AUTO_UPDATE` the universal kill switch: the self-dev path
+  (`should_spawn_background_update_check`) now skips the background update
+  check entirely when the env var is set, matching the release path
+  (`should_auto_update`). With `JCODE_NO_AUTO_UPDATE=1` set in
+  `~/.config/fish/conf.d/jcode.env.fish` and
+  `~/.config/environment.d/10-jcode.conf`, jcode never auto-updates its
+  binary — `update-all` is the only gate that updates it.
 
 The updater's `update_jcode` step rebases this branch onto latest upstream
-`master` and force-pushes it to the fork, so the two commits above sit directly
+`master` and force-pushes it to the fork, so the commits above sit directly
 on top of whatever the base upstream is at update time.
 
 ### Hook — `babysitter-gate.sh` (`~/.jcode/hooks/`, source in dotfiles)
