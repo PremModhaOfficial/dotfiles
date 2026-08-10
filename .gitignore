@@ -43,3 +43,6 @@ graphify-out
 
 # caveman staging clone (real source pulled by update-all into ~/.jcode/updater-src)
 caveman-src/
+
+# nvim bisect sandbox (scratch/debug artifacts - never publish)
+nvim/.bisect-wt/
