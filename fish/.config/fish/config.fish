@@ -1,299 +1,122 @@
-#  ____ _____
-# |  _ \_   _|  Derek Taylor (DistroTube)
-# | | | || |    http://www.youtube.com/c/DistroTube
-# | |_| || |    http://www.gitlab.com/dwt1/
-# |____/ |_|
-#
-# My fish config. Not much to see here; just some pretty standard stuff.
+# ~/.config/fish/config.fish
 
-### ADDING TO THE PATH
-# First line removes the path; second line sets it.  Without the first line,
-# your path gets massive and fish becomes very slow.
-set -e fish_user_paths
-set -U fish_user_paths $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $HOME/Applications /var/lib/flatpak/exports/bin/ $fish_user_paths $HOME/projects/hyprdots/Configs/.local/share/bin
 set -g fish_greeting
 
-if status is-interactive
-    starship init fish | source
-end
+# Aliases
+alias e nvim
+alias bat batcat
+alias t 'tmux a|tmux'
 
-# List Directory
-# alias l='eza -lh  --icons=auto' # long list
-# alias ls='eza -1   --icons=auto' # short list
-# alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
-# alias ld='eza -lhD --icons=auto' # long list dirs
-# alias lt='eza --icons=auto --tree' # list folder as tree
-# Changing "ls" to "eza"
-alias ls='eza -al --color=always --group-directories-first' # my preferred listing
-alias la='eza -a --color=always --group-directories-first' # all files and dirs
-alias ll='eza -l --color=always --group-directories-first' # long format
-alias lt='eza -aT --color=always --group-directories-first' # tree listing
-alias l.='eza -a | egrep "^\."'
-alias l.='eza -al --color=always --group-directories-first ../' # ls on the PARENT directory
-alias l..='eza -al --color=always --group-directories-first ../../' # ls on directory 2 levels up
-alias l...='eza -al --color=always --group-directories-first ../../../' # ls on directory 3 levels up
-# Handy change dir shortcuts
-abbr .. 'cd ..'
-abbr ... 'cd ../..'
-abbr .3 'cd ../../..'
-abbr .4 'cd ../../../..'
-abbr .5 'cd ../../../../..'
+# Environment
+set -gx JAVA_HOME /usr/lib/jvm/jdk-24.0.2-oracle-x64
+set -gx EDITOR nvim
 
-abbr ta 'tmux a'
-abbr e nvim
-# Always mkdir a path (this doesn't inhibit functionality to make a single dir)
-abbr mkdir 'mkdir -p'
+# PATH (fish_add_path is the documented way to manage PATH; order = priority, front wins)
+fish_add_path --move \
+    $HOME/.bun/bin \
+    $HOME/.npm-global/bin \
+    $HOME/.local/bin \
+    $HOME/.local/share/JetBrains/Toolbox/scripts \
+    $HOME/.config/emacs/bin \
+    $HOME/.local/share/mise/shims \
+    $HOME/.brv-cli/bin \
+    $HOME/.opencode/bin \
+    $HOME/.bin \
+    $HOME/.local/scripts \
+    $HOME/.cargo/bin \
+    $HOME/go/bin \
+    $JAVA_HOME/bin
 
-### EXPORT ###
-set fish_greeting # Supresses fish's intro message
-set TERM xterm-256color # Sets the terminal type
-set EDITOR nvim # $EDITOR use Emacs in terminal
-set VISUAL nvim # $VISUAL use Emacs in GUI mode
-# set VISUAL "emacsclient -c -a emacs" # $VISUAL use Emacs in GUI mode
-
-### SET MANPAGER
-### Uncomment only one of these!
-
-### "nvim" as manpager
-set -x MANPAGER "nvim +Man!"
-
-### "less" as manpager
-# set -x MANPAGER "less"
-
-### SET EITHER DEFAULT EMACS MODE OR VI MODE ###
-function fish_user_key_bindings
-    # fish_default_key_bindings
-    fish_vi_key_bindings
-end
-### END OF VI MODE ###
-
-### AUTOCOMPLETE AND HIGHLIGHT COLORS ###
-set fish_color_normal brcyan
-set fish_color_autosuggestion '#7d7d7d'
-set fish_color_command brcyan
-set fish_color_error '#ff6c6b'
-set fish_color_param brcyan
-
-### FUNCTIONS ###
-
-# Functions needed for !! and !$
-function __history_previous_command
-    switch (commandline -t)
-        case "!"
-            commandline -t $history[1]
-            commandline -f repaint
-        case "*"
-            commandline -i !
-    end
-end
-
-function __history_previous_command_arguments
-    switch (commandline -t)
-        case "!"
-            commandline -t ""
-            commandline -f history-token-search-backward
-        case "*"
-            commandline -i '$'
-    end
-end
-
-# The bindings for !! and !$
-if [ "$fish_key_bindings" = fish_vi_key_bindings ]
-
-    bind -Minsert ! __history_previous_command
-    bind -Minsert '$' __history_previous_command_arguments
-else
-    bind ! __history_previous_command
-    bind '$' __history_previous_command_arguments
-end
-
-# Function for creating a backup file
-# ex: backup file.txt
-# result: copies file as file.txt.bak
-function backup --argument filename
-    cp $filename $filename.bak
-end
-
-# Function for copying files and directories, even recursively.
-# ex: copy DIRNAME LOCATIONS
-# result: copies the directory and all of its contents.
-function copy
-    set count (count $argv | tr -d \n)
-    if test "$count" = 2; and test -d "$argv[1]"
-        set from (echo $argv[1] | trim-right /)
-        set to (echo $argv[2])
-        command cp -r $from $to
+# Initialization
+zoxide init fish | source
+# carapace completions (cache; regenerate with: carapace _carapace > ~/.cache/fish/carapace.fish)
+if command -q carapace
+    if test -f ~/.cache/fish/carapace.fish
+        source ~/.cache/fish/carapace.fish
     else
-        command cp $argv
+        carapace _carapace | source
     end
 end
+atuin init fish --disable-up-arrow | source
 
-# Function for printing a column (splits input on whitespace)
-# ex: echo 1 2 3 | coln 3
-# output: 3
-function coln
-    while read -l input
-        echo $input | awk '{print $'$argv[1]'}'
+# Other settings
+set -gx CARAPACE_BRIDGES 'zsh,fish,bash,inshellisense'
+source "$HOME/.config/fish/tokens.fish"
+# set -x WAYLAND_DISPLAY wayland-0 # Hardcoding this breaks session switching between GNOME and Niri
+
+# Aliases (ls family)
+alias fd=fdfind
+alias cat=batcat
+alias cd=z
+alias ls='exa -l'
+alias ll='exa -l'
+alias la='exa -la'
+alias jjs='jj status'
+alias jjl="jj log -r 'all()'"
+alias k=kubectl
+
+# Functions
+function oc
+    set -l base_name (path basename (pwd) | string collect | string sub -l 20)
+    set -l path_hash (pwd | md5sum | string sub -l 4)
+    # Use a unique identifier to avoid session name collisions
+    set -l session_name "$base_name-$path_hash"
+
+    function __oc_find_port
+        set -l port 4096
+        while test $port -lt 5096
+            if not lsof -i :$port >/dev/null 2>&1
+                echo $port
+                return 0
+            end
+            set port (math $port + 1)
+        end
+        echo 4096
     end
+
+    set -l oc_port (__oc_find_port)
+    set -gx OPENCODE_PORT $oc_port
+
+    if set -q TMUX; and tmux info >/dev/null 2>&1
+        # Inside tmux: always create a fresh window with a unique name
+        set -l window_name "oc-$path_hash"
+        set -l counter 1
+        while tmux list-windows -t "$TMUX_PANE" -F "#W" | string match -q -- "^$window_name\$"
+            set window_name "oc-$path_hash-$counter"
+            set counter (math $counter + 1)
+        end
+        tmux new-window -n "$window_name" -c (pwd) "env OPENCODE_PORT=$oc_port /home/prem-modha/.opencode/bin/opencode --port $oc_port $argv; exec fish"
+    else
+        # Outside tmux: ensure a truly unique session name
+        set -l final_session_name "$session_name"
+        set -l counter 1
+        while tmux has-session -t "$final_session_name" 2>/dev/null
+            set final_session_name "$session_name-$counter"
+            set counter (math $counter + 1)
+        end
+
+        set -l oc_cmd "env OPENCODE_DISABLE_TERMINAL_TITLE=1 CLAUDE_CODE_THEME=dark OPENCODE_PORT=$oc_port /home/prem-modha/.opencode/bin/opencode --port $oc_port $argv; exec fish"
+        tmux new-session -s "$final_session_name" -c (pwd) "$oc_cmd"
+    end
+    functions -e __oc_find_port
+
+    notify-send OC "opencode ready"
 end
 
-# Function for printing a row
-# ex: seq 3 | rown 3
-# output: 3
-function rown --argument index
-    sed -n "$index p"
+function ai
+    opencode run "$argv" -m opencode/minimax-m2.5-free && notify-send done "$argv"
 end
 
-# Function for ignoring the first 'n' lines
-# ex: seq 10 | skip 5
-# results: prints everything but the first 5 lines
-function skip --argument n
-    tail +(math 1 + $n)
-end
-
-# Function for taking the first 'n' lines
-# ex: seq 10 | take 5
-# results: prints only the first 5 lines
-function take --argument number
-    head -$number
-end
-
-# Function for org-agenda
-function org-search -d "send a search string to org-mode"
-    set -l output (/usr/bin/emacsclient -a "" -e "(message \"%s\" (mapconcat #'substring-no-properties \
-        (mapcar #'org-link-display-format \
-        (org-ql-query \
-        :select #'org-get-heading \
-        :from  (org-agenda-files) \
-        :where (org-ql--query-string-to-sexp \"$argv\"))) \
-        \"
-    \"))")
-    printf $output
-end
-
-### END OF FUNCTIONS ###
-
-### ALIASES ###
-
-# vim and emacs
-alias vim='nvim'
-alias emacs="emacsclient -c -a 'emacs'"
-alias em='/usr/bin/emacs -nw'
-alias rem="killall emacs || echo 'Emacs server not running'; /usr/bin/emacs --daemon" # Kill Emacs and restart daemon..
-
-# pacman and yay
-alias pacsyu='sudo pacman -Syu' # update only standard pkgs
-alias pacsyyu='sudo pacman -Syyu' # Refresh pkglist & update standard pkgs
-alias parsua='paru -Sua --noconfirm' # update only AUR pkgs (paru)
-alias parsyu='paru -Syu --noconfirm' # update standard pkgs and AUR pkgs (paru)
-alias unlock='sudo rm /var/lib/pacman/db.lck' # remove pacman lock
-alias orphan='sudo pacman -Rns (pacman -Qtdq)' # remove orphaned packages (DANGEROUS!)
-
-# get fastest mirrors
-alias mirror="sudo reflector -f 30 -l 30 --number 10 --verbose --save /etc/pacman.d/mirrorlist"
-alias mirrord="sudo reflector --latest 50 --number 20 --sort delay --save /etc/pacman.d/mirrorlist"
-alias mirrors="sudo reflector --latest 50 --number 20 --sort score --save /etc/pacman.d/mirrorlist"
-alias mirrora="sudo reflector --latest 50 --number 20 --sort age --save /etc/pacman.d/mirrorlist"
-
-# adding flags
-alias df='df -h' # human-readable sizes
-alias free='free -m' # show sizes in MB
-alias grep='grep --color=auto' # colorize output (good for log files)
-
-# ps
-alias psa="ps auxf"
-alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
-alias psmem='ps auxf | sort -nr -k 4'
-alias pscpu='ps auxf | sort -nr -k 3'
-
-# Merge Xresources
-alias merge='xrdb -merge ~/.Xresources'
-
-# git
-alias addup='git add -u'
-alias addall='git add .'
-alias branch='git branch'
-alias checkout='git checkout'
-alias clone='git clone'
-alias commit='git commit -m'
-alias fetch='git fetch'
-alias pull='git pull origin'
-alias push='git push origin'
-alias tag='git tag'
-alias newtag='git tag -a'
-
-# get error messages from journalctl
-alias jctl="journalctl -p 3 -xb"
-
-# gpg encryption
-# verify signature for isos
-alias gpg-check="gpg2 --keyserver-options auto-key-retrieve --verify"
-# receive the key of a developer
-alias gpg-retrieve="gpg2 --keyserver-options auto-key-retrieve --receive-keys"
-
-# change your default USER shell
-alias tobash="sudo chsh $USER -s /bin/bash && echo 'Log out and log back in for change to take effect.'"
-alias tozsh="sudo chsh $USER -s /bin/zsh && echo 'Log out and log back in for change to take effect.'"
-alias tofish="sudo chsh $USER -s /bin/fish && echo 'Log out and log back in for change to take effect.'"
-
-# bare git repo alias for dotfiles
-alias config="/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME"
-
-# termbin
-alias tb="nc termbin.com 9999"
-
-# the terminal rickroll
-alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
-
-# Mocp must be launched with bash instead of Fish!
-alias mocp="bash -c mocp"
-
-### RANDOM COLOR SCRIPT ###
-# Get this script from my GitLab: gitlab.com/dwt1/shell-color-scripts
-# Or install it from the Arch User Repository: shell-color-scripts
-# colorscript random
-
-### SETTING THE STARSHIP PROMPT ###
-# starship init fish | source
+# Starship (transient prompt is enabled by default in fish 4)
 function starship_transient_prompt_func
     starship module character
 end
+
 starship init fish | source
-enable_transience
 
-### SETUP ZOXIDE ###
-zoxide init fish | source
-fzf --fish | source
+# mise
+mise activate fish | source
+mise completions fish | source
 
-alias wi='wimi -1 1 && exit'
-alias t='tmux a || tmux'
-alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
-alias ob='obsidian --disable-gpu'
-#alias pi="ping google.com"
-alias sds='sdn s'
-alias fd='fdfind'
-
-## carapace
-set -Ux CARAPACE_BRIDGES 'zsh,fish,bash,inshellisense' # optional
-set -x CARAPACE_UNFILTERED = 1
-carapace _carapace | source
-
-# function starship_transient_rprompt_func
-#   starship module time
-# end
-# starship init fish | source
-# enable_transience
-export PATH="/root/.bun/bin:$PATH"
-#source ~/.config/fish/extra.fish
-direnv hook fish | source
-
-# Nix profile PATH and vars
-fish_add_path $HOME/.nix-profile/bin
-set -x MANPATH $HOME/.nix-profile/share/man $MANPATH
-set -x XDG_DATA_DIRS $HOME/.nix-profile/share $XDG_DATA_DIRS
-set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
-
-# Added by jcode installer
-if not contains "/home/prm/.local/bin" $PATH
-    set -gx PATH "/home/prm/.local/bin" $PATH
-end
+# Generated for envman. Do not edit.
+# test -s ~/.config/envman/load.fish; and source ~/.config/envman/load.fish  # ponytail: 12ms startup, uncomment if you use envman
