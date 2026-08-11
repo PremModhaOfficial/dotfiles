@@ -56,8 +56,6 @@ return {
 		},
 
 	completion = {
-		nvim_cmp = false,
-		blink = true,
 		min_chars = 1,
 	},
 
@@ -114,19 +112,9 @@ return {
 		return path:with_suffix(".md")
 	end,
 
-	wiki_link_func = function(opts)
-		return require("obsidian.util").wiki_link_id_prefix(opts)
-	end,
-
-	markdown_link_func = function(opts)
-		return require("obsidian.util").markdown_link(opts)
-	end,
-
-	preferred_link_style = "wiki",
-
-	image_name_func = function()
-		return string.format("%s-", os.date("%Y%m%d-%H%M%S"))
-	end,
+	link = {
+		style = "wiki",
+	},
 
 		-- TEMPLATES CONFIGURATION - This is crucial for atomic notes
 		templates = {
@@ -160,10 +148,6 @@ return {
 			},
 		},
 
-		follow_url_func = function(url)
-			vim.fn.jobstart({ "xdg-open", url }) -- linux
-		end,
-
 
 		open = {
 			func = function(uri)
@@ -188,14 +172,17 @@ return {
 		sort_by = "modified",
 		sort_reversed = true,
 		max_lines = 1000,
-		cache = true,  -- Enable caching for faster searches
+	},
+
+	cache = {
+		enabled = true, -- Enable caching for faster searches
 	},
 
 	open_notes_in = "current",
 
 		-- Enhanced callbacks for atomic note workflow
 		callbacks = {
-			post_setup = function(client)
+			post_setup = function()
 				-- Auto-create templates directory
 				local workspace_path = vim.fn.expand("~/Notes/Conceptrone/")
 				local templates_dir = workspace_path .. "/templates"
@@ -206,18 +193,18 @@ return {
 				require("lib.obsidian_extras").setup()
 			end,
 
-			enter_note = function(client, note)
+			enter_note = function(note)
 				-- Note entered - additional setup can be added here if needed
 			end,
 
-			leave_note = function(client, note)
+			leave_note = function(note)
 				-- Auto-save when leaving note
 				if vim.bo.modified then
 					vim.cmd("silent! write")
 				end
 			end,
 
-			pre_write_note = function(client, note)
+			pre_write_note = function(note)
 				-- Update modified timestamp in frontmatter
 				local lines = vim.api.nvim_buf_get_lines(0, 0, 20, false)
 				for i, line in ipairs(lines) do
@@ -229,7 +216,7 @@ return {
 				end
 			end,
 
-			post_set_workspace = function(client, workspace)
+			post_set_workspace = function(workspace)
 				if workspace then
 					print("Workspace set to: " .. workspace.name)
 				else
@@ -268,10 +255,12 @@ return {
 		},
 
 		attachments = {
-			img_folder = "assets/imgs",
-			img_text_func = function(client, path)
-				path = client:vault_relative_path(path) or path
-				return string.format("![%s](%s)", path.name, path)
+			folder = "assets/imgs",
+			img_name_func = function()
+				return string.format("%s-", os.date("%Y%m%d-%H%M%S"))
+			end,
+			img_text_func = function(path)
+				return string.format("![%s](%s)", path.name, tostring(path))
 			end,
 		},
 	},
