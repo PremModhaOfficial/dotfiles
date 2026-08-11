@@ -28,7 +28,6 @@ return {
 				"gowork",
 				"gosum",
 				"haskell",
-				"cabal",
 				"html",
 				"java",
 				"lua",
