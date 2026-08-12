@@ -4,7 +4,7 @@
     "author": "maxmx03 (ported by prem-modha)",
     "themes": [
         {
-            "name": "Fluoromachine Fluoromachine",
+            "name": "Fluoromachine",
             "appearance": "dark",
             "style": {
                 "accents": [
@@ -383,7 +383,7 @@
             }
         },
         {
-            "name": "Fluoromachine Fluoromachine Transparent",
+            "name": "Fluoromachine Transparent",
             "appearance": "dark",
             "style": {
                 "accents": [
