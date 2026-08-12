@@ -434,15 +434,6 @@ sync_configs() {
     done
   fi
 
-  # prime-agent themes (fluoromachine flavors) — live under ~/.prime/agent/themes
-  if [ -d "$DOTFILES/prime-agent/themes" ]; then
-    mkdir -p "$HOME/.prime/agent/themes"
-    for t in "$DOTFILES/prime-agent/themes/"*.json; do
-      [ -f "$t" ] || continue
-      install_if_different "$t" "$HOME/.prime/agent/themes/$(basename "$t")"
-    done
-  fi
-
   # herdr config (only the pickr config we maintain)
   if [ -f "$DOTFILES/herdr/plugins/config/pickr/config.toml" ]; then
     run "install pickr config" mkdir -p "$HOME/.config/herdr/plugins/config/pickr"
@@ -466,7 +457,7 @@ sync_configs() {
   if [ "$DRY" = 1 ]; then log "DRY: commit+push dotfiles"; return; fi
   if [ "$df_pull_ok" = 1 ]; then
     ( cd "$DOTFILES" \
-      && git add jcode/ babysitter/ prime-agent/ \
+      && git add jcode/ babysitter/ \
       && git add -f herdr/.config/herdr/plugins/config/pickr \
       && git -c user.name="prem-modha" -c user.email="prem-modha@users.noreply.github.com" \
            commit -m "update-all: sync configs/skills/updater" --allow-empty \
