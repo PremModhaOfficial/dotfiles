@@ -25,6 +25,7 @@ Repo: https://github.com/leopalladium/focaltech-ft9366-arch-shim
 4. `patchelf --add-needed focaltech-shim.so /usr/lib/libfprint-2.so.2.0.0`
 5. Install udev rules for USB access
 6. Create udev rule to disable USB autosuspend for the sensor
+   (NOTE: steps 3-4 are now automated by `~/dotfiles/fingerprint/focaltech-repair.sh` + pacman hook — see RCA section below)
 7. `sudo systemctl restart fprintd`
 8. Enroll: `fprintd-enroll`
 9. Add `auth sufficient pam_fprintd.so` to `/etc/pam.d/system-auth`
@@ -36,6 +37,38 @@ Repo: https://github.com/leopalladium/focaltech-ft9366-arch-shim
 ### Option C: github.com/bro2020/fprint-focaltech
 - Alternative repo with similar approach (Debian/Ubuntu focused).
 - https://github.com/bro2020/fprint-focaltech
+
+## RCA: Aug 2026 outage — libfprint upgrade wiped the driver (RESOLVED)
+
+**Symptom:** `fprintd-list` / PAM reported "No devices available" despite sensor present on USB.
+
+**Root cause:** The proprietary driver *is* `/usr/lib/libfprint-2.so.2.0.0` — a replacement for the
+stock libfprint binary, which pacman **owns**. On 2026-08-01 the `libfprint` package upgrade
+(`1.94.10-2 -> 1.94.100-1`) overwrote that file with the stock build. The shim linkage
+(`patchelf --add-needed focaltech-shim.so`) and the driver itself were both destroyed in one step.
+PAM line, udev rules, and `kill-fprintd.service` survived; only the patched binary reverted.
+
+**Key lesson:** any pacman operation on `libfprint` silently reverts this setup. The sensor
+hardware was never at fault (still on bus 3-8, `2808:a658`).
+
+## Repair & Auto-Repair (current setup, verified 2026-08-22)
+
+Durable copies of driver + shim now live in `~/dotfiles/fingerprint/`:
+
+- `libfprint-2.so.2.0.0` — proprietary FocalTech driver (sha256 `db95bcdf068c63a16d6fe37a55238d1dafcbe9e4d61387b2cf0bd4a631712cf4`)
+- `focaltech-shim.so` — gusb 0.1.0 compatibility shim
+- `focaltech-repair.sh` — re-copies both to `/usr/lib/`, re-applies patchelf, restarts fprintd
+- `focaltech-shim.hook` — pacman hook; runs the repair script automatically after any
+  `libfprint` install/upgrade. Installed at `/etc/pacman.d/hooks/focaltech-shim.hook`.
+
+**Manual repair after breakage:**
+```bash
+sudo ~/dotfiles/fingerprint/focaltech-repair.sh
+fprintd-list $USER   # expect: "FocalTech Systems Co., Ltd fingerprint (press)"
+```
+
+Enrollment data (`/var/lib/fprintd`) survives package upgrades — no re-enroll needed unless
+PAM stops accepting the finger.
 
 ## Key Caveats
 - **Proprietary driver** — no open-source alternative exists for this sensor.

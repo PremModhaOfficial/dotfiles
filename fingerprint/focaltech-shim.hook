@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = libfprint
+
+[Action]
+Description = Restoring FocalTech FT9366 fingerprint driver over stock libfprint
+When = PostTransaction
+Exec = /usr/bin/systemd-run --no-block /home/prm/dotfiles/fingerprint/focaltech-repair.sh

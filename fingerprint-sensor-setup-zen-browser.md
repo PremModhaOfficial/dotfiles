@@ -1,5 +1,9 @@
 # Bitwarden Browser Extension Fails to Connect in Zen Browser (Arch Linux)
 
+> **Status 2026-08-22:** healthy. Manifest points at `.bitwarden_desktop_proxy`, proxy binary +
+> `.app.bw.socket` present, Bitwarden desktop running. No action needed unless extension unlock
+> breaks again — then recheck the manifest per "If It Breaks Again" below.
+
 ## Symptom
 
 - Bitwarden desktop app is installed (AUR `bitwarden-bin`) and running.
@@ -38,8 +42,8 @@ mkdir -p ~/.mozilla/native-messaging-hosts
 cat > ~/.mozilla/native-messaging-hosts/com.8bit.bitwarden.json << 'EOF'
 {
   "name": "com.8bit.bitwarden",
-  "description": "Bitwarden desktop application",
-  "path": "/opt/Bitwarden/bitwarden-app",
+  "description": "Bitwarden desktop <-> browser bridge",
+  "path": "/home/prm/.mozilla/native-messaging-hosts/.bitwarden_desktop_proxy",
   "type": "stdio",
   "allowed_extensions": ["{446900e4-71c2-419f-a6a7-df9c091e268b}"]
 }
@@ -47,7 +51,12 @@ EOF
 ```
 
 Notes on the fields:
-- `path` — must match the actual `bitwarden-bin` binary location. Verify with `pgrep -af bitwarden` if unsure (AUR package installs to `/opt/Bitwarden/bitwarden-app`).
+- `path` — newer Bitwarden desktop versions ship a dedicated native-messaging proxy binary
+  (`.bitwarden_desktop_proxy`) that it drops into `~/.mozilla/native-messaging-hosts/` itself,
+  next to its `.app.bw.socket` unix socket. Point the manifest at **the proxy**, not
+  `/opt/Bitwarden/bitwarden-app`. Verify it exists and is executable:
+  `ls -la ~/.mozilla/native-messaging-hosts/`
+- Verified working 2026-08-22: manifest + proxy + socket all present, Bitwarden running.
 - `allowed_extensions` — official Bitwarden Firefox extension ID (`{446900e4-71c2-419f-a6a7-df9c091e268b}`). Works for Zen since it's Gecko-based and uses the same extension ID.
 
 Then fully restart both apps:
