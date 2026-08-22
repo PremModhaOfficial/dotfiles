@@ -16,7 +16,11 @@ name = "herdr-sesh"
 description = "Project directory picker for herdr"
 
 [source]
-command = "fd -H -t d -d 5 '^\\.git$' ~/Projects ~/dotfiles ~/.config -E '.cache' -E '.local' -E herdr/plugins 2>/dev/null | while read -r d; do dirname \"$d\"; done; find ~/Projects ~/dotfiles -maxdepth 2 -type d 2>/dev/null"
+# Git repos at ANY depth + immediate children of project roots.
+#   -HI → include hidden + ignored, so nested repos are never skipped
+#   dirname loop strips fd's trailing slash (sed can't anchor it)
+#   .repos excluded → vendored plugin-manager caches, not projects
+command = "fd -HI -t d '\\.git/?$' ~/Projects ~/projects ~/dotfiles ~/.config -E '.cache' -E '.local' -E 'node_modules' -E '.venv' -E '.repos' -E herdr/plugins 2>/dev/null | while read -r d; do dirname \"$d\"; done | sort -u; find ~/Projects ~/projects -mindepth 1 -maxdepth 1 -type d 2>/dev/null"
 no_sort = true
 
 [preview]
