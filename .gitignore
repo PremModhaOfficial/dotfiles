@@ -46,3 +46,6 @@ caveman-src/
 
 # secrets, never track
 fish/.config/fish/apis.fish
+
+# commandcode tool state
+fish/.config/.commandcode/
