@@ -65,9 +65,26 @@ command = "/home/prm/.config/herdr/bin/herdr-theme"
 description = "Switch fluoromachine theme (delta/retrowave/fluoromachine)"
 
 [theme]
-name = "vesper"
-
+name = "catppuccin"
 auto_switch = false
+
+[theme.custom]
+accent     = "#AF6DF9"  # purple
+panel_bg   = "#262335"  # bg
+surface0   = "#241B2F"  # bgdark
+surface1   = "#463465"  # selection
+surface_dim= "#262335"  # bg
+overlay0   = "#495495"  # comment
+overlay1   = "#495495"  # comment
+text       = "#F8F8F8"  # fg
+subtext0   = "#495495"  # comment
+mauve      = "#FF7EDB"  # pink
+green      = "#72F1B8"
+yellow     = "#FFCC00"
+red        = "#FE4450"
+blue       = "#61E2FF"  # cyan
+teal       = "#61E2FF"  # cyan
+peach      = "#FF8B39"  # orange
 [ui]
 sidebar_width = 26
 hide_tab_bar_when_single_tab = true
