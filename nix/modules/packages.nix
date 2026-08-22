@@ -39,7 +39,7 @@
     zoxide
 
 
-    ## terminals
-
+    ## helps
   ];
+
 }

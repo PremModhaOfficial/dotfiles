@@ -23,4 +23,13 @@
 
   programs.nix-index-database.comma.enable = false;
   programs.command-not-found.enable = false;
+
+  # tldr pages client (rust, fast) with auto-update on use
+  programs.tealdeer = {
+    enable = true;
+    settings = {
+      updates.auto_update = true;
+      updates.update_interval_hours = 168; # refresh if older than 1 week
+    };
+  };
 }
