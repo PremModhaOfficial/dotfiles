@@ -10,7 +10,7 @@
 # First line removes the path; second line sets it.  Without the first line,
 # your path gets massive and fish becomes very slow.
 set -e fish_user_paths
-set -U fish_user_paths $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $HOME/Applications /var/lib/flatpak/exports/bin/ $fish_user_paths $HOME/projects/hyprdots/Configs/.local/share/bin
+set -U fish_user_paths $HOME/.npm-global/bin $HOME/.bin $HOME/.local/bin $HOME/.config/emacs/bin $HOME/Applications /var/lib/flatpak/exports/bin/ $fish_user_paths $HOME/projects/hyprdots/Configs/.local/share/bin
 set -g fish_greeting
 
 if status is-interactive
@@ -296,4 +296,10 @@ set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
 # Added by jcode installer
 if not contains "/home/prm/.local/bin" $PATH
     set -gx PATH "/home/prm/.local/bin" $PATH
+end
+
+
+set -l APIS "/home/prm/.config/fish/apis.fish"
+if test -f "$APIS"
+    source "$APIS"
 end
