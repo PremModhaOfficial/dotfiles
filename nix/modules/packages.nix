@@ -22,6 +22,7 @@
 
     # Nix tooling
     nh
+    nvd
     nix-output-monitor
     nixfmt-rfc-style
 
