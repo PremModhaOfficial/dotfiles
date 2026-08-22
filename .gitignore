@@ -43,3 +43,6 @@ graphify-out
 
 # caveman staging clone (real source pulled by update-all into ~/.jcode/updater-src)
 caveman-src/
+
+# secrets, never track
+fish/.config/fish/apis.fish
