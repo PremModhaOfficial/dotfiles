@@ -1,0 +1,300 @@
+      voxtype-0.7.5-osd-gtk4.asc ... Skipped
+      voxtype-0.7.5-osd-quickshell ... Passed
+      voxtype-0.7.5-osd-quickshell.asc ... Skipped
+      voxtype-0.7.5-audio-bridge ... Passed
+      voxtype-0.7.5-audio-bridge.asc ... Skipped
+      config-0.7.5.toml ... Passed
+      voxtype-0.7.5.service ... Passed
+      voxtype-0.7.5.bash ... Passed
+      voxtype-0.7.5.zsh ... Passed
+      voxtype-0.7.5.fish ... Passed
+      LICENSE-0.7.5 ... Passed
+      README-0.7.5.md ... Passed
+      voxtype-configure-0.7.5.desktop ... Passed
+      voxtype-configure-launcher-0.7.5 ... Passed
+      quickshell-shell-0.7.5.qml ... Passed
+      quickshell-OsdSurface-0.7.5.qml ... Passed
+      quickshell-EnginePicker-0.7.5.qml ... Passed
+      quickshell-MeetingControls-0.7.5.qml ... Passed
+      quickshell-voxtype-shared-Theme-0.7.5.qml ... Passed
+      quickshell-voxtype-shared-StateReader-0.7.5.qml ... Passed
+      quickshell-voxtype-shared-AudioBridge-0.7.5.qml ... Passed
+      quickshell-voxtype-shared-qmldir-0.7.5 ... Passed
+  ==> Verifying source file signatures with gpg...
+      voxtype-0.7.5-avx2 ... Passed
+      voxtype-0.7.5-avx512 ... Passed
+      voxtype-0.7.5-vulkan ... Passed
+      voxtype-0.7.5-onnx-avx2 ... Passed
+      voxtype-0.7.5-onnx-avx512 ... Passed
+      voxtype-0.7.5-onnx-cuda-12 ... Passed
+      voxtype-0.7.5-onnx-cuda-13 ... Passed
+      voxtype-0.7.5-onnx-migraphx ... Passed
+      voxtype-0.7.5-osd ... Passed
+      voxtype-0.7.5-osd-gtk4 ... Passed
+      voxtype-0.7.5-osd-quickshell ... Passed
+      voxtype-0.7.5-audio-bridge ... Passed
+  ==> Removing existing $srcdir/ directory...
+  ==> Extracting sources...
+  ==> Sources are ready.
+  ==> Making package: voxtype-bin 0.7.5-1 (Mon 24 Aug 2026 12:32:20 PM IST)
+  ==> Checking runtime dependencies...
+  ==> Checking buildtime dependencies...
+  ==> WARNING: Using existing $srcdir/ tree
+  ==> Entering fakeroot environment...
+  ==> Starting package()...
+  ==> Tidying install...
+    -> Removing libtool files...
+    -> Removing static library files...
+    -> Purging unwanted files...
+    -> Stripping unneeded symbols from binaries and libraries...
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-avx2': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-avx2
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-avx512': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-avx512
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-vulkan': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-vulkan
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-onnx-avx2': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-onnx-avx2
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-onnx-avx512': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-onnx-avx512
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/cuda-12/voxtype-onnx-cuda-12': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/cuda-12/voxtype-onnx-cuda-12
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/cuda-12/libonnxruntime_providers_cuda.so': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/cuda-12/libonnxruntime_providers_cuda.so
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/cuda-12/libonnxruntime_providers_shared.so': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/cuda-12/libonnxruntime_providers_shared.so
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/cuda-13/voxtype-onnx-cuda-13': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/cuda-13/voxtype-onnx-cuda-13
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  readelf: Warning: Gap in build notes detected from 0x1dee5a to 0x108458f
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/cuda-13/libonnxruntime_providers_cuda.so': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/cuda-13/libonnxruntime_providers_cuda.so
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/cuda-13/libonnxruntime_providers_shared.so': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/cuda-13/libonnxruntime_providers_shared.so
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/cuda-13/libonnxruntime.so.1.24.4': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/cuda-13/libonnxruntime.so.1.24.4
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/migraphx/voxtype-onnx-migraphx': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/migraphx/voxtype-onnx-migraphx
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/migraphx/libonnxruntime_providers_migraphx.so': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/migraphx/libonnxruntime_providers_migraphx.so
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/migraphx/libonnxruntime_providers_shared.so': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/migraphx/libonnxruntime_providers_shared.so
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-osd': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-osd
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-osd-gtk4': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-osd-gtk4
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/lib/voxtype/voxtype-osd-quickshell': No debugging symbols
+  gdb-add-index: No index was created for ./usr/lib/voxtype/voxtype-osd-quickshell
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+  Error while writing index for `/home/prm/.cache/yay/voxtype-bin/pkg/voxtype-bin/usr/bin/voxtype-audio-bridge': No debugging symbols
+  gdb-add-index: No index was created for ./usr/bin/voxtype-audio-bridge
+  gdb-add-index: [Was there no debuginfo? Was there already an index?]
+    -> Compressing man and info pages...
+  ==> Checking for packaging issues...
+  ==> Creating package "voxtype-bin"...
+    -> Generating .PKGINFO file...
+    -> Generating .BUILDINFO file...
+    -> Adding install file...
+    -> Generating .MTREE file...
+    -> Compressing package...
+  ==> Creating package "voxtype-bin-debug"...
+    -> Generating .PKGINFO file...
+    -> Generating .BUILDINFO file...
+    -> Generating .MTREE file...
+    -> Compressing package...
+  ==> Leaving fakeroot environment.
+  ==> Finished making: voxtype-bin 0.7.5-1 (Mon 24 Aug 2026 12:32:30 PM IST)
+  ==> Cleaning up...
+  loading packages...
+  resolving dependencies...
+  looking for conflicting packages...
+  Packages (2) voxtype-bin-0.7.5-1  voxtype-bin-debug-0.7.5-1
+  Total Installed Size:  601.24 MiB
+  :: Proceed with installation? [Y/n] 
+  checking keyring...
+  checking package integrity...
+  loading package files...
+  checking for file conflicts...
+  checking available disk space...
+  :: Running pre-transaction hooks...
+  (1/1) Performing snapper pre snapshots for the following configurations...
+  :: Processing package changes...
+  installing voxtype-bin...
+  ==> Voxtype Post-installation Steps:
+      CPU backend: avx2 (using voxtype-avx2)
+      GPU detected: Intel Corporation Alder Lake-P GT1 [UHD Graphics] (rev 0c)
+      For GPU acceleration, run:
+        sudo voxtype setup gpu --enable
+      Requires: vulkan-icd-loader package
+      1. Add your user to the 'input' group:
+         sudo usermod -aG input $USER
+      2. Log out and back in for group changes to take effect
+      3. Download a model:
+         voxtype setup model
+      4. Start voxtype:
+         systemctl --user enable --now voxtype
+      Optional: Switch to an ONNX engine (Parakeet, SenseVoice, etc.):
+         voxtype setup onnx --enable
+  Optional dependencies for voxtype-bin
+      wtype: keyboard simulation for Wayland (recommended, best CJK support) [installed]
+      dotool: keyboard simulation with layout support (KDE/GNOME compatible)
+      ydotool: keyboard simulation fallback (X11/TTY support)
+      wl-clipboard: clipboard support [installed]
+      libnotify: desktop notifications [installed]
+      pipewire: audio server (recommended) [installed]
+      pipewire-alsa: ALSA compatibility for PipeWire (required if using PipeWire) [installed]
+      pulseaudio: audio server (alternative to PipeWire)
+      vulkan-icd-loader: GPU acceleration via Vulkan for Whisper (enable with: voxtype setup gpu --enable) [installed]
+      cuda: GPU acceleration via CUDA 13 for ONNX engines (NVIDIA GPUs, requires driver 580+)
+      cuda12.6: GPU acceleration via CUDA 12 for ONNX engines (older NVIDIA setups)
+      rocm-hip-runtime: ROCm runtime (required by migraphx)
+      migraphx: AMD GPU graph optimization for the MIGraphX execution provider — required for AMD GPU acceleration on ONNX engines
+      ollama: local AI summarization for meeting mode
+      gtk4-layer-shell: runtime for the GTK4 on-screen mic visualizer (voxtype-osd-gtk4) [installed]
+      quickshell: Quickshell-based OSD frontend (opt in via [osd] frontend = "quickshell") [installed]
+  installing voxtype-bin-debug...
+  :: Running post-transaction hooks...
+  (1/4) Reloading user manager configuration...
+  (2/4) Arming ConditionNeedsUpdate...
+  (3/4) Updating the desktop file MIME type cache...
+  (4/4) Performing snapper post snapshots for the following configurations...
+AUR packages that did not install: bibata-cursor-theme-bin
+re-run later with: yay -S bibata-cursor-theme-bin
+==== step shell ====
+$ sudo -n usermod -s /usr/bin/fish prm
+==== step doctor ====
+$ /usr/bin/ryoku doctor
+  Created symlink '/etc/systemd/system/timers.target.wants/snapper-cleanup.timer' → '/usr/lib/systemd/system/snapper-cleanup.timer'.
+  /usr/bin/ryoku-app is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-bluetooth-tune is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-bt-audio is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-clamshell is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-brightness is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-caffeine is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-calc is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-color-picker is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-discord-compress is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-edit-recording is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-folders is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-game-mode is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-google-lens is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-nightlight is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-ocr is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-present is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-qr-scan is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-radio is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-screenrecord is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-songrec is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-studiorecord is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cmd-touchpad is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-cursor-material-recolor is owned by ryoku-cursor-material 1.0.0-1
+  /usr/bin/ryoku-dns is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-docker is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-fastfetch is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-game-tune is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-gpu is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-gpu-detect is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-gpu-lib32 is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-gpu-mux is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-hub is owned by ryoku-hub 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-hw-asus-aura is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-hw-backlight is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-hw-backlight-fix is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-hw-laptop is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-i18n is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-i2c.conf is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-idle is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-livewall is owned by ryoku-shell 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-mic is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-monitor is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-music-toggle is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-nvidia-guard is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-pkg-add is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-pkg-aur-add is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-pkg-cachyos is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-pkg-multilib is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-pkg-remove is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-plugins-place is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-power is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-rashin is owned by ryoku-rashin 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-restart-audio is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-shell is owned by ryoku-shell 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-summon is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-volume is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-wifi-backend is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-wifi-powersave is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-wifi-regdom is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/bin/ryoku-windows-entry is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/46-ryoku-docker.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/47-ryoku-power.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/48-ryoku-wifi-regdom.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/49-ryoku-wifi-powersave.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/50-ryoku-dns.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/51-ryoku-wifi-backend.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/52-ryoku-timedate.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+  /usr/share/polkit-1/rules.d/53-ryoku-game-tune.rules is owned by ryoku-desktop 0.40.2.r2624.g09b925e-1
+    ✓ snapper configuration (fixed)
+        created snapper root config: /etc/snapper/configs/root,
+        /etc/conf.d/snapper
+    ✓ pacman progress bar (fixed)
+        set pacman's candy progress bar in /etc/pacman.conf (delete the ILoveCandy
+        line to go back; it is not re-added)
+    ✓ stale dev residue (fixed)
+        removed 1 home-deployed artifact(s) shadowing the packaged install; `ryoku
+        reload` switches to the packaged shell
+    ✓ browser theme host (fixed)
+        installed the browser host for: .mozilla
+    ✓ user edits overlay (fixed)
+        wrote the guide
+    ✓ keyring unlock policy (fixed)
+        recorded the inferred mode (unlock-on-login) in keyring.json; pointed the
+        default keyring at login
+    ✓ decor art (fixed)
+        seeded 23 decor art file(s) into /home/prm/Pictures/ryodecors
+    ✓ orphaned theme.lua (fixed)
+        removed the orphaned theme.lua left by the retired Themes feature
+    ! desktop loads
+        the desktop cannot load (shell.services did not load), and every file
+        under quickshell/shell/services matches the shipped one
+        ↳ ryoku update takes a release with the fix; ryoku rollback returns to
+        the last working snapshot
+    ✓ recordings directory (fixed)
+        created ~/Videos/Recordings
+    ! wireless regulatory domain
+        tried to set the wireless regulatory domain to US from the system locale
+        but it is still unset (00)
+        ↳ ryoku-wifi-regdom set US
+    ! pending config (.pacnew)
+        3 pending config update(s) (.pacnew) need review
+        ↳ review and merge with `sudo pacdiff` (from pacman-contrib)
+    ➜ found 3 issues
+      ryoku doctor --explain  AI diagnosis and a suggested fix
+      report saved: /home/prm/.local/state/ryoku/doctor-report.txt
+==== step verify ====
+✓ [ryoku] repository in /etc/pacman.conf
+✓ ryoku-keyring package installed
+✓ ryoku-desktop package installed
+✓ ryoku CLI on PATH
+✓ base config tree at /usr/share/ryoku/config
+✓ hyprland.lua materialized in ~/.config/hypr
+✓ Hyprland wayland session registered
+✓ sddm.service enabled
+✓ matugen palette generator (colors follow the wallpaper)
+✓ go toolchain on PATH (ryoku recovery rebuilds from source)
+all checks passed
