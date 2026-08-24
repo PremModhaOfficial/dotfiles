@@ -1,0 +1,76 @@
+                                  
+██████╗  █████╗ ███╗   ██╗██╗  ██╗
+██╔══██╗██╔══██╗████╗  ██║██║ ██╔╝
+██║  ██║███████║██╔██╗ ██║█████╔╝ 
+██║  ██║██╔══██║██║╚██╗██║██╔═██╗ 
+██████╔╝██║  ██║██║ ╚████║██║  ██╗
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝
+
+ System Health Check
+                    
+──────────────────────────────────────
+
+  System
+    ● Operating System ····· Arch Linux
+    ● Architecture ········· amd64
+    ● Display Server ······· Wayland
+
+  Versions
+    ● DMS CLI ·············· dms v1.5.3
+    ● Quickshell ··········· Quickshell 0.3.1 (revision , distributed by Arch Linux)
+    ● DMS Shell ············ v1.5.3
+
+  Installation
+    ● DMS Configuration ···· Found
+    ● shell.qml ············ Present
+
+  Compositor
+    ● niri ················· 26.04
+    ○ Active ··············· niri
+    ● Background Blur ······ Supported
+
+  Quickshell Features
+    ● Polkit ··············· Available
+    ● IdleMonitor ·········· Available
+    ● IdleInhibitor ········ Available
+    ● ShortcutInhibitor ···· Available
+    ● BackgroundBlur ······· Available
+
+  Optional Features
+    ● accountsservice ······ Available
+    ● power-profiles-daemon  Available
+    ● logind ··············· Available
+    ● cups-pk-helper ······· Available
+    ○ I2C/DDC ·············· No monitors detected
+    ● qt6-imageformats ····· Installed (1 formats)
+    ● kimageformats ········ Installed (4 formats)
+    ● Terminal ············· ghostty, kitty, alacritty, wezterm
+    ● Network ·············· NetworkManager
+    ● matugen ·············· Installed
+    ● dgop ················· Installed
+    ● cava ················· Installed
+    ○ khal ················· Not installed
+    ○ danksearch ··········· Not installed
+    ○ dankcalendar ········· Not installed
+    ● fprintd ·············· Installed
+
+  Config Files
+    ● settings.json ········ Present
+    ○ clsettings.json ······ Not yet created
+    ● plugin_settings.json · Present
+    ● session.json ········· Present
+    ● dms-colors.json ······ Present
+
+  Services
+    ● dms.service ·········· disabled, active
+    ● greetd ··············· enabled
+
+  Fonts
+    ● Normal Font ·········· 'Inter Variable' not found
+      → https://danklinux.com/docs/dankmaterialshell/cli-doctor#fonts
+    ● Monospace Font ······· 'Fira Code' not found
+      → https://danklinux.com/docs/dankmaterialshell/cli-doctor#fonts
+
+  ──────────────────────────────────────
+  2 warning(s), 33 ok
+
