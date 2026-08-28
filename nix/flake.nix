@@ -21,7 +21,7 @@
     in {
       homeConfigurations."prm" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = { inherit inputs; };
+        extraSpecialArgs = { inherit cliamp; };
         modules = [
           nix-index-database.homeModules.nix-index
           ./home.nix
