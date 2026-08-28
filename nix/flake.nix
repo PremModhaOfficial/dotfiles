@@ -11,9 +11,10 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    cliamp.url = "github:bjarneo/cliamp";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-index-database, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-index-database, cliamp, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
