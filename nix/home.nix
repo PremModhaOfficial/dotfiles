@@ -5,7 +5,7 @@
   home.stateVersion = "24.11";
   programs.home-manager.enable = true;
 
-  home.packages = [ cliamp.packages.${pkgs.system}.default ];
+  home.packages = [ cliamp ];
 
   imports = [
     ./modules/packages.nix
