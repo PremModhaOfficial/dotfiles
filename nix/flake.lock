@@ -1,23 +1,5 @@
 {
   "nodes": {
-    "cliamp": {
-      "inputs": {
-        "nixpkgs": "nixpkgs"
-      },
-      "locked": {
-        "lastModified": 1787772492,
-        "narHash": "sha256-J4tU9WdpVx7iDKQCfFUEeN+I4YEdk4U0dEOgo2u+zSI=",
-        "owner": "bjarneo",
-        "repo": "cliamp",
-        "rev": "de1dc4c8be6c568556e3ee8b1f266e936e9030e9",
-        "type": "github"
-      },
-      "original": {
-        "owner": "bjarneo",
-        "repo": "cliamp",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -60,22 +42,6 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787135253,
-        "narHash": "sha256-RD2kNWCG+Bjo6h+JVjWVNntZs2GtRoeY2xHjts/FNkA=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "ffb3c9b700e759be2ef13237c9d8f953b32a1e46",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
         "lastModified": 1787814960,
         "narHash": "sha256-PYZq1qzCJXC2zGI0mH07vrZBsw6DRBAOX0jN1pPtqOQ=",
         "owner": "NixOS",
@@ -92,10 +58,9 @@
     },
     "root": {
       "inputs": {
-        "cliamp": "cliamp",
         "home-manager": "home-manager",
         "nix-index-database": "nix-index-database",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs"
       }
     }
   },
