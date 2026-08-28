@@ -11,20 +11,15 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    cliamp.url = "github:bjarneo/cliamp";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-index-database, cliamp, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-index-database, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      cliampPkg = cliamp.packages.${system}.default.override {
-        buildGoModule = pkgs.buildGoModule.override { go = pkgs.go_1_27; };
-      };
     in {
       homeConfigurations."prm" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = { cliamp = cliampPkg; };
         modules = [
           nix-index-database.homeModules.nix-index
           ./home.nix

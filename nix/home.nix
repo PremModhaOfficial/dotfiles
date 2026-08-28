@@ -1,11 +1,9 @@
-{ config, pkgs, cliamp, ... }:
+{ config, pkgs, ... }:
 {
   home.username = "prm";
   home.homeDirectory = "/home/prm";
   home.stateVersion = "24.11";
   programs.home-manager.enable = true;
-
-  home.packages = [ cliamp ];
 
   imports = [
     ./modules/packages.nix
