@@ -499,7 +499,7 @@ return {
 
 		require("mason-lspconfig").setup({
 			automatic_installation = false,
-			automatic_enable = { exclude = { "jdtls" } },
+			automatic_enable = { exclude = { "jdtls", "rust_analyzer" } },
 			handlers = {
 				function(server_name)
 					local server = servers[server_name] or {}
