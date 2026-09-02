@@ -73,8 +73,6 @@ return {
 				end,
 			},
 			treesitter = {
-				-- Lua pattern used to extract a short name from the node text
-				name_pattern = "[#~%*%w%._%->!@:]+%s*" .. string.rep("[#~%*%w%._%->!@:]*", 3, "%s*"),
 				-- The order matters! The first match is used as the type
 				-- of the treesitter symbol and used to show the icon
 				-- Types listed below must have corresponding icons
@@ -153,23 +151,15 @@ return {
 		},
 	},
 	event = "VeryLazy",
-	config = function()
-		-- vim.ui.select = require("dropbar.utils.menu").select
-		local bar = require("dropbar.utils.bar")
-		local ok = pcall(require("which-key").add, {
-			-- {
-			-- 	"<leader>db",
-			-- 	function()
-			-- 		bar.pick()
-			-- 	end,
-			-- 	desc = "[D]rop[B]ar Pick",
-			-- },
+	config = function(_, opts)
+		require("dropbar").setup(opts)
+		pcall(require("which-key").add, {
 			{
-				"<leader>dh",
+				"<leader>db",
 				function()
-					bar.get_current()
+					require("dropbar.api").pick()
 				end,
-				desc = "[D]rop[B]ar [H]over",
+				desc = "[D]rop[B]ar Pick",
 			},
 		})
 	end,

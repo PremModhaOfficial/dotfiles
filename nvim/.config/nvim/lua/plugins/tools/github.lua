@@ -1,5 +1,6 @@
 return {
 	"ldelossa/gh.nvim",
+	event = "VeryLazy",
 	dependencies = {
 		{
 			"ldelossa/litee.nvim",

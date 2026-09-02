@@ -6,7 +6,7 @@ return {
     {
       "<leader>DF",
       function()
-        require("conform").format({ async = true, lsp_fallback = true })
+        require("conform").format({ async = true, lsp_format = "fallback" })
       end,
       mode = "",
       desc = "[F]ormat buffer",
@@ -18,14 +18,14 @@ return {
       local disable_filetypes = { c = true, cpp = true, rust = true }
       return {
         timeout_ms = 500,
-        lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+        lsp_format = not disable_filetypes[vim.bo[bufnr].filetype],
       }
     end,
     formatters_by_ft = {
       lua = { "stylua" },
       python = { "isort", "black" },
-      javascript = { "eslint", "prettierd", "prettier", stop_after_first = true },
-      typescript = { "prettierd", "prettier", "eslint", stop_after_first = true },
+      javascript = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
+      typescript = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
     },
   },
 }

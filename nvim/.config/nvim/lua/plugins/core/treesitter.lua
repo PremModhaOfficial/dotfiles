@@ -27,10 +27,7 @@ return {
 				"gomod",
 				"gowork",
 				"gosum",
-				"haskell",
-				"cabal",
 				"html",
-				"java",
 				"lua",
 				"luadoc",
 				"markdown",
@@ -54,9 +51,7 @@ return {
 			-- Enable indentation (experimental)
 			vim.api.nvim_create_autocmd("FileType", {
 				callback = function()
-					if vim.bo.filetype ~= "java" then
-						vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-					end
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 				end,
 			})
 

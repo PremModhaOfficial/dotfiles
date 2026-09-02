@@ -10,16 +10,18 @@ return {
 	-- OR if you use nix, build from source with:
 	-- build = 'nix run .#build-plugin',
 	dependencies = "saghen/blink.download",
+	keys = {
+		{
+			"<leader>k",
+			function()
+				require("kubectl").toggle({ tab = false })
+			end,
+			desc = "kubectl: toggle",
+		},
+	},
 	config = function()
 		require("kubectl").setup({
 			tab = false,
 		})
-
-		vim.keymap.set(
-			"n",
-			"<leader>k",
-			'<cmd>lua require("kubectl").toggle({ tab = false })<cr>',
-			{ noremap = true, silent = true, desc = "kubectl: toggle" }
-		)
 	end,
 }

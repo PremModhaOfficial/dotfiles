@@ -51,6 +51,7 @@ return { -- Autocompletion
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
+		snippets = { preset = "luasnip" },
 		fuzzy = {
 			implementation = "rust",
 			max_typos = function(keyword)

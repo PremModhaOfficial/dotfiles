@@ -167,7 +167,7 @@ return {
 
 		open = {
 			func = function(uri)
-				vim.ui.open(uri, { cmd = { "open", "-a", "/Applications/Obsidian.app" } })
+				vim.ui.open(uri) -- xdg-open handles obsidian:// URIs on Linux
 			end,
 		},
 

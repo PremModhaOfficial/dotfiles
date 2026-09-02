@@ -271,33 +271,6 @@ return {
 			-- tsserver = {},
 			--
 
-			-- TypeScript/JavaScript
-			ts_ls = {
-				settings = {
-					typescript = {
-						inlayHints = {
-							includeInlayParameterNameHints = "all",
-							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-							includeInlayFunctionParameterTypeHints = true,
-							includeInlayVariableTypeHints = true,
-							includeInlayPropertyDeclarationTypeHints = true,
-							includeInlayFunctionLikeReturnTypeHints = true,
-							includeInlayEnumMemberValueHints = true,
-						},
-					},
-					javascript = {
-						inlayHints = {
-							includeInlayParameterNameHints = "all",
-							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-							includeInlayFunctionParameterTypeHints = true,
-							includeInlayVariableTypeHints = true,
-							includeInlayPropertyDeclarationTypeHints = true,
-							includeInlayFunctionLikeReturnTypeHints = true,
-							includeInlayEnumMemberValueHints = true,
-						},
-					},
-				},
-			},
 			-- Rust: managed by rustaceanvim, do NOT configure here
 			-- C/C++
 			clangd = {
@@ -385,7 +358,7 @@ return {
 						return vim.fn.getcwd()
 					end
 					local util = require("lspconfig.util")
-					return util.find_git_ancestor(fname) or util.path.dirname(fname) or vim.fn.getcwd()
+					return util.find_git_ancestor(fname) or vim.fs.dirname(fname) or vim.fn.getcwd()
 				end,
 				settings = {
 					marksman = {
@@ -476,6 +449,8 @@ return {
 				},
 			},
 		})
+		-- nixd is configured but lives outside `servers`; enable it directly
+		vim.lsp.enable("nixd")
 		require("mason").setup()
 		-- You can add other tools here that you want Mason to install
 		-- for you, so that they are available from within Neovim.
@@ -483,7 +458,8 @@ return {
 		vim.list_extend(ensure_installed, {
 			"lua_ls", -- Lua LSP server
 			"stylua", -- Used to format Lua code
-			"prettier", -- Code formatter
+			"prettierd", -- Code formatter (conform's first choice)
+			"markdownlint-cli2", -- Used by none-ls markdown source
 			"eslint_d", -- Fast ESLint
 			"shellcheck", -- Shell script linting
 			"shfmt", -- Shell script formatting

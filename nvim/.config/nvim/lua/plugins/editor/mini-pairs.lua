@@ -47,9 +47,43 @@ return {
 	},
 
 	config = function(_, opts)
-	require("mini.pairs").setup(opts)
+		require("mini.pairs").setup(opts)
 
-	-- DISABLED: Bracket highlighting on CursorMoved was causing lag spikes
+		-- Tab out of brackets/quotes: cursor inside `foo|)` -> Tab puts cursor past `)`
+		local function tab_out()
+			local line = vim.api.nvim_get_current_line()
+			local row, col = vim.api.nvim_win_get_cursor(0)[1], vim.api.nvim_win_get_cursor(0)[2] + 1
+			local pairs = { { "(", ")" }, { "[", "]" }, { "{", "}" }, { '"', '"' }, { "'", "'" }, { "`", "`" } }
+			for _, pair in ipairs(pairs) do
+				if line:sub(col, col) == pair[2] then
+					local open_pos = line:sub(1, col - 1):find(pair[1] .. "%s*$")
+					if open_pos then
+						vim.api.nvim_win_set_cursor(0, { row, col })
+						return
+					end
+				end
+			end
+			return vim.api.nvim_replace_termcodes("<Tab>", true, true, true)
+		end
+
+		vim.keymap.set("i", "<Tab>", tab_out, { expr = true, desc = "Tab out of brackets or regular tab" })
+
+		vim.keymap.set("i", "<S-Tab>", function()
+			local line = vim.api.nvim_get_current_line()
+			local col = vim.api.nvim_win_get_cursor(0)[2] + 1
+			if col > 1 then
+				local pairs = { { "(", ")" }, { "[", "]" }, { "{", "}" }, { '"', '"' }, { "'", "'" }, { "`", "`" } }
+				for _, pair in ipairs(pairs) do
+					if line:sub(col - 1, col - 1) == pair[1] then
+						vim.api.nvim_win_set_cursor(0, { vim.api.nvim_win_get_cursor(0)[1], col - 2 })
+						return
+					end
+				end
+			end
+			return vim.api.nvim_replace_termcodes("<S-Tab>", true, true, true)
+		end, { expr = true, desc = "Backwards tab out of brackets" })
+
+		-- DISABLED: Bracket highlighting on CursorMoved was causing lag spikes
 	-- This callback ran on EVERY cursor movement, scanning entire line for bracket pairs
 	-- The performance cost was too high, especially during rapid edits (c, d, etc.)
 	-- If you want this feature back, uncomment below and profile with :profile
