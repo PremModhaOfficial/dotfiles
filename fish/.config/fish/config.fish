@@ -265,6 +265,9 @@ enable_transience
 zoxide init fish | source
 fzf --fish | source
 
+### SETUP MISE ###
+mise activate fish | source
+
 alias wi='wimi -1 1 && exit'
 alias t='tmux a || tmux'
 alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
