@@ -56,7 +56,8 @@ return {
 			local pairs = { { "(", ")" }, { "[", "]" }, { "{", "}" }, { '"', '"' }, { "'", "'" }, { "`", "`" } }
 			for _, pair in ipairs(pairs) do
 				if line:sub(col, col) == pair[2] then
-					local open_pos = line:sub(1, col - 1):find(pair[1] .. "%s*$")
+					local open_pat = pair[1]:gsub("([^%w])", "%%%1")
+					local open_pos = line:sub(1, col - 1):find(open_pat .. "%s*$")
 					if open_pos then
 						vim.api.nvim_win_set_cursor(0, { row, col })
 						return
