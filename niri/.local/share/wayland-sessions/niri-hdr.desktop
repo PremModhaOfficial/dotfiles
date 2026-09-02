@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Niri-HDR
+Comment=Niri (community HDR fork) with HDR on OLED
+Exec=/home/prm/.local/bin/niri-hdr-session
+Type=Application
+DesktopNames=niri

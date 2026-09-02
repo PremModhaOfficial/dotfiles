@@ -1,0 +1,16 @@
+#!/bin/sh
+# Toggle HDR on the eDP-1 output by commenting/uncommenting the hdr block.
+# niri hot-reloads the config, so change applies instantly.
+# Sends a notification with the resulting state.
+CFG="$HOME/.config/niri/config-hdr.kdl"
+if grep -q '^\s*/-hdr mode="on"' "$CFG"; then
+  sed -i 's/^\(\s*\)\/-hdr mode="on"/\1hdr mode="on"/' "$CFG"
+  STATE="HDR ON"
+  ICON="display-brightness-high"
+else
+  sed -i 's/^\(\s*\)hdr mode="on"/\1\/-hdr mode="on"/' "$CFG"
+  STATE="HDR OFF"
+  ICON="display-brightness-low"
+fi
+
+  notify-send -a "niri-hdr" -i "$ICON" -t 4000 "Display" "$STATE" 2>/dev/null &

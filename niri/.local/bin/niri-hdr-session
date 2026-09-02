@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Session wrapper for the niri HDR fork, modeled on niri-session.
+
+if hash systemctl >/dev/null 2>&1; then
+    # Make sure there's no already running session.
+    if systemctl --user -q is-active niri.service niri-hdr.service; then
+      echo 'A niri session is already running.'
+      exit 1
+    fi
+
+    # Reset failed state of all user units.
+    systemctl --user reset-failed
+
+    # Import the login manager environment.
+    systemctl --user import-environment
+
+    # DBus activation environment is independent from systemd.
+    if hash dbus-update-activation-environment >/dev/null 2>&1; then
+      dbus-update-activation-environment --all
+    fi
+
+    # Start niri-hdr and wait for it to terminate.
+    systemctl --user --wait start niri-hdr.service
+
+    # Force stop of graphical-session.target.
+    systemctl --user start --job-mode=replace-irreversibly niri-shutdown.target
+
+    # Unset environment that we've set.
+    systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY XDG_SESSION_TYPE XDG_CURRENT_DESKTOP NIRI_SOCKET
+else
+    exec /home/prm/project/niri-hdr/target/release/niri --session -c "$HOME/.config/niri/config-hdr.kdl"
+fi
