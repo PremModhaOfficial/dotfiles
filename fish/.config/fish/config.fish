@@ -277,6 +277,12 @@ alias fd='fdfind'
 set -Ux CARAPACE_BRIDGES 'zsh,fish,bash,inshellisense' # optional
 set -x CARAPACE_UNFILTERED = 1
 carapace _carapace | source
+# carapace's yay completer misparses `yay -Ss` when a package description
+# contains slashes (e.g. wob: "volume/backlight/progress/anything bar"),
+# producing a bogus auto-inserted candidate. Restore upstream vendor
+# completions for yay instead.
+complete -e -c yay
+source /usr/share/fish/vendor_completions.d/yay.fish
 
 # function starship_transient_rprompt_func
 #   starship module time
