@@ -9,22 +9,6 @@ return {
 		-- Global modes
 		modes = { insert = true, command = false, terminal = false },
 
-		-- Skip autopair when next character is one of these
-		skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
-
-		-- Skip autopair when the cursor is inside these treesitter nodes
-		skip_ts = { "string" },
-
-		-- Disable autopair for these filetypes
-		disable_filetype = {
-			"TelescopePrompt",
-			"spectre_panel",
-			"codecompanion",
-			"Avante",
-			"checkhealth",
-			"lazy",
-		},
-
 		-- Mappings for specific pairs
 		-- register = { cr = true } enables newline+indent behavior:
 		-- typing { then <CR> produces:
