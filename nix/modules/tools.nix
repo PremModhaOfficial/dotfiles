@@ -16,9 +16,9 @@
   };
 
   programs.direnv = {
-    enable = true;
-    enableFishIntegration = true;
-    nix-direnv.enable = true;
+    enable = false;
+    enableFishIntegration = false;
+    nix-direnv.enable = false;
   };
 
   programs.nix-index-database.comma.enable = false;

@@ -49,3 +49,14 @@ fish/.config/fish/apis.fish
 
 # commandcode tool state
 fish/.config/.commandcode/
+
+# ryoku-generated runtime files (through HM/config symlinks) — not source
+nvim/.config/nvim/.ryoku-lazyvim
+nvim/.config/nvim/lua/config/
+nvim/.config/nvim/lua/plugins/99-ryoku-user.lua
+nvim/.config/nvim/lua/plugins/ryoku*.lua
+fish/.commandcode/
+fish/.config/fish/conf.d/
+alacritty/.config/alacritty/colors.toml
+tmux/.config/tmux/ryoku-colors.conf
+kitty/.config/kitty/current-*.conf
