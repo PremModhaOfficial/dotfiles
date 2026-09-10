@@ -38,7 +38,7 @@ local function shell_string(key)
   f:close()
   return s:match('"' .. key .. '"%s*:%s*"([^"]*)"')
 end
-local shaders = { halftone = true, bone = true, onebit = true, vignette = true, grain = true, imax = true }
+local shaders = { halftone = true, bone = true, onebit = true, vignette = true, grain = true, imax = true, ["imax-hdr"] = true }
 local shader_name = shell_string("screenShader")
 local screen_shader = ""
 if not low_power and shader_name and shaders[shader_name] then
