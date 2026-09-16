@@ -16,7 +16,7 @@
 
     # CLI essentials
     ripgrep fd bat eza fzf jq yq
-    htop btop
+    htop # btop via pacman: nix build can't dlopen host libnvidia-ml (GPU not detected)
     wget curl
     unzip zip
 

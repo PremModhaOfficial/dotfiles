@@ -14,6 +14,11 @@
   };
 
   programs.nushell.enable = true;
+  programs.nushell.extraConfig = ''
+    alias e = nvim
+    alias h = herdr
+    alias wm = workmux
+  '';
 
   home.sessionVariables = {
     SSH_AUTH_SOCK = "${config.home.homeDirectory}/.bitwarden-ssh-agent.sock";
