@@ -1,4 +1,5 @@
 [keybindings]
+auto_poke_toggle = "ctrl+p"
 scroll_up = "ctrl+shift+k"
 scroll_down = "ctrl+shift+j"
 scroll_page_up = "alt+u"
@@ -37,6 +38,9 @@ key = "off"
 timeout_secs = 90
 
 [display]
+show_bash_output = false
+external_sessions = true
+usage_display = "left"
 diff_mode = "inline"
 queue_mode = false
 auto_server_reload = true
@@ -98,6 +102,7 @@ border = "#925393"
 selection_bg = "#492949"
 
 [features]
+check_updates = true
 memory = true
 swarm = true
 mermaid = true
@@ -115,6 +120,8 @@ bing_market = "en-US"
 searxng_url_env = "JCODE_SEARXNG_URL"
 
 [tools]
+mcp_tools = "auto"
+mcp_tools_token_threshold = 8000
 profile = ""
 enabled = []
 disabled = []
@@ -128,6 +135,10 @@ tool_profile = "acp"
 trusted_external_sources = []
 
 [provider]
+default_provider = "openrouter"
+default_model = "cohere/north-mini-code:free"
+max_retries = 8
+retry_backoff_cap_secs = 30
 openai_reasoning_effort = "low"
 openai_service_tier = "priority"
 openai_native_compaction_mode = "auto"

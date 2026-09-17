@@ -1,178 +1,89 @@
 ---
 name: update-all
-description: Run the self-maintaining update for the whole agent stack (jcode fork rebase, skills sync, tools, configs, manifest) and then reload so the new list is live. Use when asked to "update everything", "update all", "self-update", "keep the stack fresh", or to run the high-level maintenance workflow. Invokes ~/.jcode/bin/update-all.sh and verifies the result.
-version: 1.0.0
+description: Update the jcode fork, skill sources, tools and live configs while preserving custom gate behavior and runtime configuration. Read canonical context and the live checklist first.
+version: 1.1.0
 ---
 
-# update-all — self-maintaining stack update
+# update-all
 
-The user wants the entire agent stack updated in one shot, keeping our custom
-features on top, then having the fresh skill list take effect immediately, and
-finally proving the update worked. Do ALL of the following, in order.
+## Read first, do not rediscover
 
-## Custom changes layered on top of upstream
+Canonical files live in `~/dotfiles/jcode/`:
+- `update-all.sh` is the only updater. Never copy it into the skill folder.
+- `skills/update-all/CONTEXT.md` records the last audit, remaining risks and preservation decisions.
+- `skills/update-all/SKILL.md` is this procedure.
 
-Everything below is our own work, applied on top of base upstream, and is what
-`update-all` deliberately preserves (and re-applies after every rebase). If any
-of it is ever missing after an update, that is a bug in the updater, not a
-deliberate revert.
+Run `bash ~/dotfiles/jcode/update-all.sh --context` for paths without doing an update.
+Read the context and `~/.agents/skills/update-all/CHECKLIST.md`, then inspect the
+current branch/dirty state. Last observed dotfiles branch was DATA, not a contract.
 
-### jcode fork — `local/turn-end-gate` (PremModhaOfficial/jcode, ahead of 1jehuang/jcode)
-
-Commits carried on top of upstream `master`:
-
-- `65fcb341b` **feat(hooks): opt-in turn_end_gate for external orchestrator continuation**
-  Adds an opt-in `turn_end_gate` hook so an external orchestrator (babysitter)
-  can drive continuation: instead of jcode ending the turn and waiting for a
-  Stop hook that never comes, it yields control at the end of a turn and lets
-  the orchestrator resume it. Controlled via `[hooks]` config; off by default.
-- `afc3bac81` **fix(hooks): drop stale turn-end gate followup after loop cap**
-  Removes a stale follow-up that would fire after the orchestration loop cap,
-  so the gate does not linger or double-yield when the loop is already bounded.
-
-The updater's `update_jcode` step rebases this branch onto latest upstream
-`master` and force-pushes it to the fork, so the two commits above sit directly
-on top of whatever the base upstream is at update time.
-
-### Hook — `babysitter-gate.sh` (`~/.jcode/hooks/`, source in dotfiles)
-
-The turn_end_gate bridge that actually invokes the babysitter orchestrator.
-Ships as a hook file so the `turn_end_gate` feature in the fork has something to
-call. Opt-in (commented out by default in `~/.jcode/config.toml`).
-
-### Regenerated skill — `babysit` (`~/.agents/skills/babysit/`)
-
-Re-synced from upstream `a5c-ai/babysitter`, then regenerated with our jcode
-adaptation appended:
-
-- `SDK_VERSION=latest`
-- `{{harness}}` → `pi`
-- Appends the **"jcode harness note"**: jcode does not implement Claude Code's
-  Stop/PreToolUse hook protocol, so babysitter runs in non-hook-driven
-  continuation mode — keep driving the loop inside the current turn rather than
-  yielding and waiting for a Stop hook that never comes.
-
-### Configs (dotfiles → live)
-
-- `~/.jcode/config.toml` — jcode config incl. `[hooks]` (`turn_end_gate` opt-in)
-- `~/.jcode/hooks/herdr-agent-state.sh` — reports agent state to herdr (observer hooks)
-- `~/.jcode/hooks/babysitter-gate.sh` — turn_end_gate bridge (above)
-- `~/.config/herdr/plugins/config/pickr/config.toml` — herdr-pickr (tuicr/hunk/delta/browser)
-- `.a5c/processes/` + `~/.a5c/processes/` — babysitter processes, incl.
-  `jcode-turn-gate.js`
-
-### Health check after an update
-
-After running the updater, confirm these survive (the skill's Verify section
-checks the first two):
-
-- fork branch `local/turn-end-gate` still exists with the 2 commits above
-  (`gh api repos/PremModhaOfficial/jcode/branches/local/turn-end-gate`)
-- `babysit/SKILL.md` still contains the "jcode harness note"
-- `~/.jcode/hooks/babysitter-gate.sh` and `herdr-agent-state.sh` are present
-
-## 0. Read the checklist (ledger of what was done before)
-
-This skill keeps a living ledger at `<skill-dir>/CHECKLIST.md` — every run
-appends a table of each step (jcode fetch/rebase/push/build, skill syncs,
-tools, configs, manifest, dotfiles) with `done`/`fail` status and a summary.
-
-Read it first:
+## Execute
 
 ```bash
-cat <skill-dir>/CHECKLIST.md   # ~/.jcode/skills/update-all/CHECKLIST.md
+cd ~/dotfiles
+bash ./jcode/update-all.sh --parallel --dry-run
+bash -x ./jcode/update-all.sh --parallel
 ```
 
-Note any previously-failed steps. If a prior run shows a `fail` for a step you
-can fix (e.g. dotfiles pull, a skill sync), fix it during this run and confirm
-it flips to `done` in the new ledger entry.
+Only run the second command when an actual update is requested. It can rebase,
+build and publish the fork, install tools and update live skills/configs.
+`--jcode-only`, `--skills-only`, `--tools-only`, `--config-only` restrict scope.
+Without `--parallel`, jobs run serially. `flock` prevents overlapping updater runs.
 
-## 1. Run the updater
+With `--parallel`, core, skills and tools run independently with private logs and
+ledgers. Skill source pulls run concurrently, then sync and babysit regeneration.
+Tool jobs are independent except the ordered mise install -> mise use -> herdr
+pickr chain. The updater waits for every child. Configs and manifest run after the
+barrier only if independent phases succeeded. Failures produce a nonzero exit and
+failed ledger entries. Review skipped items too, they may need manual action.
 
-Run the updater **from dotfiles only** — the sole canonical copy of the script
-lives in the dotfiles repo at `~/dotfiles/jcode/update-all.sh`. There is no
-duplicate bundled in this skill folder; do not copy it anywhere else.
+Safety contracts:
+- Dirty core or unfinished merge/rebase fails. No automatic stash or reset.
+- Rebase the gate branch, build that branch, only then push using an explicit
+  `--force-with-lease`. A failed build never publishes the branch.
+- Fast-forward pulls override global `pull.rebase=true` and disable autostash.
+- Divergent live jcode config is preserved and reported for manual merge, not
+  overwritten. This protects live-only runtime keys without adding a TOML parser.
+- Dirty dotfiles skips pull/stage/commit/push but can install current configs.
+  Branch is detected at runtime. No broad staging or automatic empty commits.
+- Dry-run writes only reporting/lock directories, never rebases, stashes, pushes,
+  installs tools/configs, copies skills or rewrites the manifest.
+
+## Source-only workers
+
+Sourcing does not run main, parse arguments, set shell options or create files:
 
 ```bash
-cd ~/dotfiles && ./jcode/update-all.sh
+source ~/dotfiles/jcode/update-all.sh
+RUN_DIR=$(mktemp -d "$JCODE_SCRATCH_DIR/update-all-worker.XXXXXX")
+LOG="$RUN_DIR/update-all.log"
+CHECKLIST_TMP="$RUN_DIR/checklist.tsv"
+CHECKLIST="$RUN_DIR/CHECKLIST.md"
+checklist_init
+PARALLEL=1
+# Example worker scope. Coordinator must own locking and disjoint phase scopes.
+run_jobs update_skills
+rc=$?
+checklist_write "$rc"
 ```
 
-Always execute it from within the dotfiles working tree (`cd ~/dotfiles` first)
-so its dotfiles pull/commit/push step operates on the correct repo and branch.
+`run_jobs` isolates phase failure with errexit in a child. Do not invoke mutating
+functions inside `if`/`||` wrappers that disable Bash errexit. Workers do not touch
+the shared ledger/log or call main. Coordinator merges their private reports.
 
-It performs, in order:
+## Verify, reload and report
 
-1. **jcode core** — fetches upstream (`1jehuang/jcode`), rebases our fork branch
-   `local/turn-end-gate` (the babysitter turn-end-gate feature) onto upstream
-   `master`, force-pushes it to our fork `PremModhaOfficial/jcode`, and builds.
-2. **Skills** — pulls ponytail/caveman, tiger-style, tuicr, babysitter, herdr
-   into `~/.jcode/updater-src`; re-syncs them into `~/.agents/skills`;
-   regenerates `babysit` with our jcode adaptation (harness=pi).
-3. **Tools** — mise herdr@latest, herdr-pickr plugin, babysitter SDK probe,
-   gopls.
-4. **Configs** — installs dotfiles configs live (jcode config + hooks, pickr
-   config, babysitter processes).
-5. **Manifest** — regenerates `~/.agents/skills/README.md` (skill → source →
-   commit).
-6. **Dotfiles auto-commit + push** — the updater ALWAYS does this at the end:
-   - pulls `~/dotfiles` (ff-only) so remote changes are merged in first
-   - stages only owned paths (`jcode/`, pickr config, `babysitter/`) — never
-     `git add -A`, which would sweep in unrelated edits and nested git repos
-   - commits as `update-all: sync configs/skills/updater` (allow-empty, so a
-     no-change run still records the update)
-   - pushes to `origin` (branch `wrk`)
-   This keeps dotfiles (the source of truth for configs, the updater, and this
-   skill) current on GitHub after every single run. No manual git needed.
-   ```bash
-   # equivalent manual check:
-   cd ~/dotfiles && git log --oneline -3 && git status
-   ```
+- Read the run log and ledger. Latest aggregate log: `~/.jcode/logs/update-all.log`.
+  Per-run logs and per-phase job directories remain in `~/.jcode/logs/update-all-*`.
+- Count installed `*/SKILL.md` and manifest data rows, ignoring the table header.
+- Check babysit has `SDK_VERSION=latest`, `--harness jcode`, exactly one jcode harness
+  note and no unresolved `{{harness}}` placeholder.
+- Check `local/turn-end-gate` still carries the required gate functionality and
+  `babysitter-gate.sh` / `herdr-agent-state.sh` remain installed.
+- Confirm live-only config keys survive. Skipped config divergence is not a merge.
+- Reload skills through `skill_manage reload_all`. If core rebuilt successfully,
+  coordinate `jcode self-dev --reload` or restart separately. A build is not proof
+  that the running server has changed.
 
-Use a long timeout (the first run clones skill sources and may rebuild jcode;
-subsequent runs are fast). If it fails, read the tail of
-`~/.jcode/logs/update-all.log` and fix the specific step before proceeding.
-
-## 2. Reload so the new list is live
-
-After the updater succeeds, make the fresh skill list take effect in the
-current session:
-
-```bash
-# jcode: reload all skills (this agent)
-jcode skills reload-all   # or use the skill_manage reload_all equivalent
-```
-
-If jcode core itself was rebuilt, tell the user to run `jcode self-dev --reload`
-(or restart jcode) so the new binary with the `turn_end_gate` feature is active.
-
-## 3. Verify and report
-
-Confirm the update actually landed:
-
-- Check the manifest exists and count the skills:
-  `head -5 ~/.agents/skills/README.md`
-- Confirm the custom bits survived: `local/turn-end-gate` is still on the fork
-  (`gh api repos/PremModhaOfficial/jcode/branches/local/turn-end-gate`),
-  `babysit` still carries the "jcode harness note", `babysitter-gate.sh` is in
-  `~/.jcode/hooks/`.
-- Check the log tail: `tail -10 ~/.jcode/logs/update-all.log`.
-
-Then give the user a short summary:
-
-```
-Updated: <jcode core? skills? tools? configs?> 
-Skills now: <N> (from <manifest>)
-Custom bits preserved: turn-end-gate on fork ✓, babysit harness=pi ✓, babysitter-gate ✓
-Log: ~/.jcode/logs/update-all.log
-Next: <anything needing a restart, or ready to work>
-```
-
-## Notes
-
-- The only copy of the updater is `~/dotfiles/jcode/update-all.sh` (canonical,
-  versioned in dotfiles). Run it only from `~/dotfiles`; it is never duplicated
-  into this skill folder or `~/.jcode/bin`.
-- Our custom things are preserved every run: `local/turn-end-gate` jcode
-  branch, babysitter-gate hook, babysitter processes, pickr config, herdr
-  hook, and any skill with no upstream source.
-- Use `--dry-run` first if the user wants to preview.
+Report source commits, failures/skips, exact ledger/log paths and remaining
+restart/migration work. Do not claim a dry-run or stub test was a real update.

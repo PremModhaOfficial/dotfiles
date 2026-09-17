@@ -17,7 +17,7 @@ It is a symlink to this file. It:
 2. **Skills** — pulls upstream skill sources (ponytail/caveman, tiger-style,
    tuicr, babysitter, herdr) into `~/.jcode/updater-src`, re-syncs them into
    `~/.agents/skills`, and regenerates `babysit` with our jcode adaptation
-   (harness=pi, in-turn continuation note).
+   (harness=jcode, in-turn continuation note).
 3. **Tools** — mise herdr@latest, herdr-pickr plugin, babysitter SDK probe
    (npx always-latest), gopls.
 4. **Configs** — installs these dotfiles into live locations, then commits and

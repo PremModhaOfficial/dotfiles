@@ -8,16 +8,16 @@
 #   Updates:
 #     1. jcode core   — fetch upstream (1jehuang/jcode), rebase our fork branch
 #                       (local/turn-end-gate) onto upstream master, push to our
-#                       fork (PremModhaOfficial/jcode = origin), build.
+#                       fork only after a successful build, with an explicit lease.
 #     2. Skill sources — git pull ponytail, tiger-style, tuicr, babysitter,
 #                       herdr; re-sync installed skills into ~/.agents/skills.
-#     3. Regenerated skills — babysit keeps our jcode harness=pi adaptation;
+#     3. Regenerated skills — babysit keeps our jcode harness=jcode adaptation;
 #                       herdr is a plain sync.
 #     4. Tools         — mise herdr, herdr-pickr plugin, babysitter SDK via npx
 #                       (always latest), gopls best-effort.
 #     5. Configs       — install dotfiles configs into live locations
-#                       (~/.jcode, ~/.config/herdr, repo .a5c), then commit +
-#                       push the dotfiles repo (PremModhaOfficial/dotfiles).
+#                       (~/.jcode, ~/.config/herdr, repo .a5c). Preserve divergent
+#                       live config and dirty dotfiles; never stage user changes.
 #     6. Skill manifest — ~/.agents/skills/README.md regenerated.
 #
 #   Preserved custom things: local/turn-end-gate jcode branch (in the fork),
@@ -32,11 +32,12 @@
 #     ~/.jcode/bin/update-all.sh --skills-only
 #     ~/.jcode/bin/update-all.sh --tools-only
 #     ~/.jcode/bin/update-all.sh --config-only
+#     ~/.jcode/bin/update-all.sh --parallel   # independent phases and sources
+#     ~/.jcode/bin/update-all.sh --context    # fast, read-only context pointers
 #
 #   After it finishes: restart jcode (or reload skills) so the new skill list
 #   takes effect, then run: jcode self-dev --reload  (if jcode itself updated).
 # ============================================================================
-set -uo pipefail
 
 # --- config -----------------------------------------------------------------
 HOME_DIR="$HOME"
@@ -52,22 +53,24 @@ JCODE_FORK="https://github.com/PremModhaOfficial/jcode.git"
 JCODE_UPSTREAM="https://github.com/1jehuang/jcode.git"
 UPDATER="${BASH_SOURCE[0]}"
 
-mkdir -p "$LOG_DIR" "$UPDATER_SRC"
-
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG"; }
-fail() { log "ERROR: $*"; checklist_write 1; exit 1; }
+fail() { log "ERROR: $*"; checklist_add fail "$*"; exit 1; }
 
-DRY=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1
+DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1
+parse_args() {
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY=1 ;;
+    --parallel) PARALLEL=1 ;;
+    --context) show_context; return 2 ;;
     --jcode-only) DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0 ;;
     --skills-only) DO_JCODE=0; DO_TOOLS=0; DO_CONFIG=0 ;;
     --tools-only) DO_JCODE=0; DO_SKILLS=0; DO_CONFIG=0 ;;
     --config-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0 ;;
-    *) echo "unknown arg: $arg"; exit 2 ;;
+    *) echo "unknown arg: $arg" >&2; return 1 ;;
   esac
 done
+}
 
 # Per-run checklist ledger: appended to CHECKLIST.md in the skill folder so the
 # skill (and the user) can see exactly what was done, and verify next time.
@@ -76,7 +79,7 @@ CHECKLIST="$CHECKLIST_DIR/CHECKLIST.md"
 CHECKLIST_TMP="$LOG_DIR/checklist.tmp"
 
 checklist_init() {
-  mkdir -p "$CHECKLIST_DIR"
+  mkdir -p "$(dirname "$CHECKLIST_TMP")"
   : > "$CHECKLIST_TMP"
 }
 checklist_add() { # checklist_add <done|fail> <label>
@@ -84,14 +87,15 @@ checklist_add() { # checklist_add <done|fail> <label>
 }
 checklist_write() {
   [ -f "$CHECKLIST_TMP" ] || return 0
-  local total ok failc
+  local total ok failc skipped
   total=$(wc -l < "$CHECKLIST_TMP" | tr -d ' ')
   ok=$(grep -c '^done' "$CHECKLIST_TMP" || true)
   failc=$(grep -c '^fail' "$CHECKLIST_TMP" || true)
+  skipped=$(grep -c '^skip' "$CHECKLIST_TMP" || true)
   {
     echo "## Update run — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
     echo ""
-    echo "Summary: $ok/$total steps OK, $failc failed (exit: ${1:-0})"
+    echo "Summary: $ok/$total steps OK, $failc failed, $skipped skipped (exit: ${1:-0})"
     echo ""
     echo "| # | Step | Status |"
     echo "|---|------|--------|"
@@ -99,7 +103,7 @@ checklist_write() {
     while IFS=$'\t' read -r status label; do
       i=$((i+1))
       local mark="done"
-      [ "$status" = "fail" ] && mark="fail"
+      mark="$status"
       echo "| $i | $label | $mark |"
     done < "$CHECKLIST_TMP"
     echo ""
@@ -109,11 +113,13 @@ checklist_write() {
 
 run() { # run <label> <cmd...>
   local label="$1"; shift
-  if [ "$DRY" = 1 ]; then log "DRY: $label — $*"; return 0; fi
+  if [ "$DRY" = 1 ]; then log "DRY: $label — $*"; checklist_add skip "$label (dry-run)"; return 0; fi
   log "RUN: $label — $*"
   if "$@"; then log "OK:  $label"; checklist_add done "$label"; else
-    log "WARN: $label exited $? (continuing)"
+    local rc=$?
+    log "ERROR: $label exited $rc"
     checklist_add fail "$label"
+    return "$rc"
   fi
 }
 
@@ -121,20 +127,51 @@ run() { # run <label> <cmd...>
 # jcode core steps where continuing silently would corrupt the fork branch or
 # claim success while doing nothing.
 require() { # require <label> <cmd...>
-  local label="$1"; shift
-  if [ "$DRY" = 1 ]; then log "DRY: $label — $*"; return 0; fi
-  log "RUN: $label — $*"
-  if "$@"; then log "OK:  $label"; checklist_add done "$label"; else
-    checklist_add fail "$label"
-    fail "required step failed: $label (exited $?)"
-  fi
+  run "$@" || exit "$?"
+}
+
+# Each child owns its log/ledger. Merge only after waiting, including failures.
+# Launch even serial work as a child so errexit is not disabled by an if test.
+run_jobs() {
+  local dir name pid rc=0 i=0
+  local -a pids=() names=()
+  dir=$(mktemp -d "$RUN_DIR/jobs.XXXXXX")
+  for name in "$@"; do
+    names+=("$name")
+    (
+      set -euo pipefail
+      LOG="$dir/$i.log"; CHECKLIST_TMP="$dir/$i.tsv"
+      : > "$LOG"; : > "$CHECKLIST_TMP"
+      "$name"
+    ) > "$dir/$i.output" 2>&1 &
+    pid=$!; pids+=("$pid")
+    if [ "$PARALLEL" = 0 ]; then wait "$pid" || rc=1; fi
+    i=$((i+1))
+  done
+  for i in "${!pids[@]}"; do
+    if wait "${pids[$i]}"; then
+      checklist_add done "phase ${names[$i]}"
+    else
+      checklist_add fail "phase ${names[$i]}"; rc=1
+    fi
+    cat "$dir/$i.tsv" >> "$CHECKLIST_TMP"
+    cat "$dir/$i.log" >> "$LOG"
+    cat "$dir/$i.output"
+  done
+  return "$rc"
 }
 
 # --- 1. jcode core (fork-based) --------------------------------------------
 update_jcode() {
   log "=== jcode core (fork-based) ==="
+  if [ "$DRY" = 1 ]; then
+    log "DRY: require clean core, fetch, rebase $GATE_BRANCH, build, then push with lease"
+    checklist_add skip "core (dry-run, no git/cargo executed)"
+    return 0
+  fi
   command -v cargo >/dev/null || fail "cargo not found"
   [ -d "$JCODE_SRC/.git" ] || fail "no jcode source at $JCODE_SRC (run: jcode self-dev --setup)"
+  [ -z "$(git -C "$JCODE_SRC" status --porcelain)" ] || fail "core is dirty; preserve changes and resolve manually before updating"
 
   # Ensure remotes: origin = our fork (maintains our changes), upstream = jcode.
   local origin_url
@@ -151,16 +188,12 @@ update_jcode() {
   require "git fetch upstream" git -C "$JCODE_SRC" fetch upstream master
   require "git fetch origin" git -C "$JCODE_SRC" fetch origin
 
-  # Rebase our feature branch onto upstream master.
-  local current stash_applied=0
+  # Never stash/reset user work. Refuse an unfinished operation too.
+  local current lease
   current=$(git -C "$JCODE_SRC" branch --show-current)
-  # A dirty tree blocks rebase even when already on the gate branch (e.g.
-  # unrelated WIP in other crates). Stash unconditionally, pop after.
-  if [ -n "$(git -C "$JCODE_SRC" status --porcelain)" ]; then
-    log "stashing uncommitted jcode changes"
-    git -C "$JCODE_SRC" stash push -m "update-all pre-rebase" || true
-    stash_applied=1
-  fi
+  [ -n "$current" ] || fail "core has detached HEAD"
+  [ ! -d "$JCODE_SRC/.git/rebase-merge" ] && [ ! -d "$JCODE_SRC/.git/rebase-apply" ] && [ ! -f "$JCODE_SRC/.git/MERGE_HEAD" ] || fail "core has an unfinished merge/rebase"
+  lease=$(git -C "$JCODE_SRC" rev-parse "refs/remotes/origin/$GATE_BRANCH") || fail "fork gate branch missing"
   if [ "$current" != "$GATE_BRANCH" ]; then
     require "checkout $GATE_BRANCH" git -C "$JCODE_SRC" checkout "$GATE_BRANCH"
   fi
@@ -168,27 +201,24 @@ update_jcode() {
   # Rebase is required AND must not leave a rebase-in-progress state behind.
   # On conflict we abort and fail the whole update instead of force-pushing a
   # broken branch to the fork.
-  if ! git -C "$JCODE_SRC" rebase upstream/master; then
+  if ! git -C "$JCODE_SRC" -c rebase.autoStash=false rebase upstream/master; then
     git -C "$JCODE_SRC" rebase --abort >/dev/null 2>&1 || true
+    [ "$current" = "$GATE_BRANCH" ] || git -C "$JCODE_SRC" checkout "$current"
     fail "rebase onto upstream/master conflicted; aborted (resolve manually on $GATE_BRANCH, then re-run)"
   fi
   log "OK:  rebase $GATE_BRANCH onto upstream/master"
 
-  # Only push to the fork after a clean rebase (never a conflicted branch).
-  require "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push -f origin "$GATE_BRANCH"
-
-  # Return to the previous branch if we moved, then restore stashed changes.
+  # Build the rebased gate branch before publishing, not the previous branch.
+  local rc=0
+  run "cargo build jcode" cargo build --manifest-path "$JCODE_SRC/Cargo.toml" --bin jcode || rc=1
+  if [ "$rc" = 0 ]; then
+    run "push $GATE_BRANCH to fork" git -C "$JCODE_SRC" push "--force-with-lease=refs/heads/$GATE_BRANCH:$lease" origin "$GATE_BRANCH" || rc=1
+  fi
   if [ -n "$current" ] && [ "$current" != "$GATE_BRANCH" ]; then
     require "checkout back to $current" git -C "$JCODE_SRC" checkout "$current"
   fi
-  if [ "$stash_applied" = 1 ]; then
-    log "re-applying stashed jcode changes"
-    git -C "$JCODE_SRC" stash pop || true
-  fi
-
-  # Build the dev binary (required: the whole point is a fresh binary).
-  require "cargo build jcode" cargo build --manifest-path "$JCODE_SRC/Cargo.toml" --bin jcode
   log "to run the updated jcode: jcode self-dev --reload  (or restart jcode)"
+  return "$rc"
 }
 
 # --- 2. skill sources -------------------------------------------------------
@@ -202,31 +232,42 @@ skill_sources() {
     ["babysitter"]="https://github.com/a5c-ai/babysitter"
     ["herdr"]="https://github.com/herdrdev/herdr"
   )
+  local name
+  local -a jobs=()
   for name in "${!sources[@]}"; do
-    local url="${sources[$name]}"
+    jobs+=("pull_$name")
+    # Names and URLs are fixed literals above, never user input.
+    eval "pull_$name() { pull_skill '$name' '${sources[$name]}'; }"
+  done
+  local plib="$HOME/.a5c/process-library/babysitter-repo"
+  if [ -d "$plib/.git" ]; then jobs+=(pull_process_library); fi
+  run_jobs "${jobs[@]}"
+}
+
+pull_skill() {
+    local name="$1" url="$2"
     local dir="$UPDATER_SRC/$name"
     if [ -d "$dir/.git" ]; then
-      run "pull $name" git -C "$dir" pull --ff-only
+      run "pull $name" git -C "$dir" -c pull.rebase=false -c merge.autoStash=false pull --ff-only
     else
       run "clone $name" git clone --depth 1 "$url" "$dir"
     fi
-  done
-
-  # Refresh the babysitter process library too (created by the babysitter CLI).
+}
+pull_process_library() {
   local plib="$HOME/.a5c/process-library/babysitter-repo"
-  if [ -d "$plib/.git" ]; then
-    run "pull babysitter process library" git -C "$plib" pull --ff-only
-  fi
+  run "pull babysitter process library" git -C "$plib" -c pull.rebase=false -c merge.autoStash=false pull --ff-only
 }
 
 # --- 3. sync skills ---------------------------------------------------------
 sync_dir() { # sync_dir <src> <dst>
   local src="$1" dst="$2"
-  [ -d "$src" ] || { log "skip (missing): $src"; return; }
-  mkdir -p "$dst"
+  if [ "$DRY" = 1 ]; then log "DRY: sync $src -> $dst"; return 0; fi
+  [ -d "$src" ] || { log "ERROR (missing): $src"; checklist_add fail "sync $src (missing)"; return 1; }
   if [ "$DRY" = 1 ]; then log "DRY: sync $src -> $dst"; return; fi
+  mkdir -p "$dst"
   cp -R "$src/." "$dst/"
   log "OK: sync $src -> $dst"
+  checklist_add done "sync $(basename "$dst")"
 }
 
 sync_skills() {
@@ -267,14 +308,15 @@ sync_skills() {
 regenerate_babysit() {
   log "=== babysit (regenerated, custom jcode adaptation preserved) ==="
   local src_skill="$UPDATER_SRC/babysitter/plugins/babysitter-unified/skills/babysit/SKILL.md"
-  [ -f "$src_skill" ] || { log "skip: upstream babysit SKILL.md missing"; return; }
+  if [ "$DRY" = 1 ]; then log "DRY: regenerate babysit from $src_skill"; return 0; fi
+  [ -f "$src_skill" ] || fail "upstream babysit SKILL.md missing"
   local dst="$SKILLS_DIR/babysit"
   mkdir -p "$dst"
   local out="$dst/SKILL.md"
   if [ "$DRY" = 1 ]; then log "DRY: regenerate $dst from $src_skill"; return; fi
 
   sed -e 's|^SDK_VERSION=.*$|SDK_VERSION=latest|' \
-      -e 's|{{harness}}|pi|g' \
+      -e 's|{{harness}}|jcode|g' \
       "$src_skill" > "$out"
 
   if ! grep -q "jcode harness note" "$out"; then
@@ -287,12 +329,16 @@ regenerate_babysit() {
 > and wait for a Stop hook that will never come.
 EOF
   fi
-  log "OK: regenerated $dst (harness=pi, jcode note appended)"
+  log "OK: regenerated $dst (harness=jcode, jcode note appended)"
+  checklist_add done "regenerate babysit (harness=jcode)"
 }
 
 # --- 4. tools ---------------------------------------------------------------
 update_tools() {
   log "=== tools ==="
+  run_jobs update_herdr_tools verify_babysitter_sdk update_gopls
+}
+update_herdr_tools() {
   if command -v mise >/dev/null; then
     run "mise herdr latest" mise install herdr@latest
     run "mise use herdr@latest" mise use -g herdr@latest
@@ -300,12 +346,16 @@ update_tools() {
   if command -v herdr >/dev/null; then
     run "herdr plugin reinstall pickr" herdr plugin install tomasvarga/herdr-pickr -y
   fi
+}
+verify_babysitter_sdk() {
   if command -v node >/dev/null; then
     # The babysitter CLI is consumed via `npm exec --package @a5c-ai/babysitter-sdk@latest`
     # at runtime (documented fallback; no global install). This step VERIFIES the
     # latest SDK resolves — it does not install anything.
     run "babysitter SDK verify (npx always-latest)" node -e "require('child_process').execSync('npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version', {stdio:'inherit'})"
   fi
+}
+update_gopls() {
   if command -v go >/dev/null; then
     run "gopls latest" go install golang.org/x/tools/gopls@latest
   fi
@@ -324,31 +374,54 @@ install_if_different() { # install_if_different <src> <dst>
     log "OK:  install $dst (already in place)"
     return 0
   fi
-  if cp "$src" "$dst"; then log "OK:  install $src -> $dst"; else log "WARN: install $src -> $dst failed"; fi
+  run "install $src -> $dst" cp "$src" "$dst"
 }
 
-# --- 5. configs: dotfiles -> live, then commit + push dotfiles --------------
+install_live_jcode_config() {
+  local src="$DOTFILES/jcode/.jcode/config.toml" dst="$HOME/.jcode/config.toml"
+  [ -f "$src" ] || return 0
+  if [ -f "$dst" ] && ! cmp -s "$src" "$dst"; then
+    log "PRESERVED: live jcode config differs; review/merge manually, runtime keys were not overwritten"
+    checklist_add skip "live jcode config preserved (manual merge required)"
+    return 0
+  fi
+  install_if_different "$src" "$dst"
+}
+
+# --- 5. configs: preserve runtime state and unrelated dotfiles work --------
 sync_configs() {
   log "=== configs (dotfiles -> live, then push dotfiles) ==="
+  if [ "$DRY" = 1 ]; then
+    log "DRY: pull clean dotfiles branch, install configs (preserve divergent live jcode config), push clean branch"
+    checklist_add skip "configs (dry-run, no writes or git executed)"
+    return 0
+  fi
   [ -d "$DOTFILES/.git" ] || { log "skip: no dotfiles repo at $DOTFILES"; return; }
 
   # Keep dotfiles itself up to date with any remote changes (other machines).
-  # Pull the actual checked-out branch (dotfiles uses `wrk`), not `origin HEAD`
+  # Pull the actual checked-out branch, not `origin HEAD`
   # which resolves to the remote's default branch and diverges.
   local df_branch df_pull_ok=1
-  df_branch=$(git -C "$DOTFILES" branch --show-current 2>/dev/null || echo "wrk")
+  df_branch=$(git -C "$DOTFILES" branch --show-current)
+  [ -n "$df_branch" ] || fail "dotfiles detached HEAD"
   if [ "$DRY" = 1 ]; then
     log "DRY: git pull dotfiles ($df_branch)"
-  elif ( cd "$DOTFILES" && git fetch origin && git pull --ff-only origin "$df_branch" ) >> "$LOG" 2>&1; then
+  elif [ -n "$(git -C "$DOTFILES" status --porcelain)" ]; then
+    log "PRESERVED: dirty dotfiles; skip pull/staging/commit/push, install current configs only"
+    checklist_add skip "dirty dotfiles pull/commit/push (manual review required)"
+    df_pull_ok=0
+  elif ( cd "$DOTFILES" && git fetch origin && git -c pull.rebase=false -c merge.autoStash=false pull --ff-only origin "$df_branch" ) >> "$LOG" 2>&1; then
     log "OK:  dotfiles pulled ($df_branch)"
+    checklist_add done "dotfiles pull ($df_branch)"
   else
     log "WARN: dotfiles pull failed (continuing with local state)"
     df_pull_ok=0
+    checklist_add fail "dotfiles pull ($df_branch)"
   fi
 
   # jcode config + hooks (symlink-safe install)
   if [ -f "$DOTFILES/jcode/.jcode/config.toml" ]; then
-    install_if_different "$DOTFILES/jcode/.jcode/config.toml" "$HOME/.jcode/config.toml"
+    install_live_jcode_config
   fi
   if [ -d "$DOTFILES/jcode/.jcode/hooks" ]; then
     for hook in "$DOTFILES/jcode/.jcode/hooks/"*.sh; do
@@ -402,19 +475,17 @@ sync_configs() {
     run "install babysitter processes (global)" cp -R "$DOTFILES/babysitter/processes/." "$HOME/.a5c/processes/"
   fi
 
-  # Commit + push the dotfiles repo. We ONLY push the paths this updater owns
-  # (never `git add -A`, which sweeps in unrelated edits and nested git repos).
-  # And we only push if the ff-only pull above succeeded, so we never overwrite
-  # remote commits we failed to merge.
+  # Only push a clean branch after successful ff-only pull. No source files
+  # were generated by this phase, so there is nothing safe to stage or commit.
   if [ "$DRY" = 1 ]; then log "DRY: commit+push dotfiles"; return; fi
   if [ "$df_pull_ok" = 1 ]; then
-    ( cd "$DOTFILES" \
-      && git add jcode/ herdr/.config/herdr/plugins/config/pickr babysitter/ \
-      && git -c user.name="prem-modha" -c user.email="prem-modha@users.noreply.github.com" \
-           commit -m "update-all: sync configs/skills/updater" --allow-empty \
-      && git push origin HEAD ) >> "$LOG" 2>&1 \
-    && log "OK: dotfiles committed + pushed" \
-    || log "WARN: dotfiles commit/push failed (see log)"
+    # This phase installs outward and owns no source edits. Never stage user
+    # work (including an unrelated index), nor create empty update commits.
+    if [ -z "$(git -C "$DOTFILES" status --porcelain)" ]; then
+      run "push clean dotfiles branch $df_branch" git -C "$DOTFILES" push origin "$df_branch"
+    else
+      checklist_add skip "dotfiles push (concurrent edits, manual review required)"
+    fi
   else
     log "WARN: skipping dotfiles push (pull failed; remote may have commits we did not merge)"
   fi
@@ -423,6 +494,7 @@ sync_configs() {
 # --- 6. self-review: run ponytail + tiger-style on the new code -------------
 self_review() {
   log "=== self-review (ponytail + tiger-style on new code) ==="
+  if [ "$DRY" = 1 ]; then log "DRY: self-review"; return 0; fi
   local review_dir="$SKILLS_DIR"
   local review_out="$LOG_DIR/self-review"
   mkdir -p "$review_out"
@@ -471,6 +543,7 @@ self_review() {
 # --- 7. manifest ------------------------------------------------------------
 write_manifest() {
   log "=== skill manifest ==="
+  if [ "$DRY" = 1 ]; then log "DRY: manifest -> $MANIFEST"; return 0; fi
   local out="$MANIFEST"
   local tmp="$out.tmp"
   {
@@ -489,7 +562,7 @@ write_manifest() {
       local source="bundled/manual"
       local repo=""
       case "$name" in
-        babysit)        source="a5c-ai/babysitter (custom harness=pi)"; repo="$UPDATER_SRC/babysitter" ;;
+        babysit)        source="a5c-ai/babysitter (custom harness=jcode)"; repo="$UPDATER_SRC/babysitter" ;;
         herdr)          source="herdrdev/herdr"; repo="$UPDATER_SRC/herdr" ;;
         tuicr)          source="agavra/tuicr"; repo="$UPDATER_SRC/tuicr" ;;
         ponytail*|compress) source="DietrichGebert/ponytail"; repo="$UPDATER_SRC/ponytail" ;;
@@ -505,21 +578,71 @@ write_manifest() {
   } > "$tmp"
   if [ "$DRY" = 1 ]; then log "DRY: manifest -> $out"; rm -f "$tmp"; return; fi
   mv "$tmp" "$out"
-  log "OK: manifest written to $out ($(grep -c '^| ' "$out" | awk '{print $1-2}') skills)"
+  log "OK: manifest written to $out ($(grep -c '^| ' "$out" | awk '{print $1-1}') skills)"
+  checklist_add done "write skill manifest"
+}
+
+update_skills() { skill_sources; sync_skills; }
+update_core_phase() { update_jcode; self_review; }
+
+show_context() {
+  printf '%s\n' \
+    "Canonical script: $DOTFILES/jcode/update-all.sh" \
+    "Canonical skill: $DOTFILES/jcode/skills/update-all/SKILL.md" \
+    "Next-run context: $DOTFILES/jcode/skills/update-all/CONTEXT.md" \
+    "Checklist: $CHECKLIST" "Latest log: $LOG" \
+    'Run --parallel for independent core/skills/tools, then configs and manifest.' \
+    'Dirty core fails. Live-only config keys are preserved. Read CONTEXT.md before updating.'
+}
+
+main() {
+  # No shell options, filesystem writes, argument parsing or work on source.
+  set -uo pipefail
+  local parsed rc=0
+  parsed=0
+  parse_args "$@" || parsed=$?
+  [ "$parsed" != 2 ] || return 0
+  [ "$parsed" = 0 ] || return 2
+  command -v flock >/dev/null || { echo 'flock is required' >&2; return 1; }
+  mkdir -p "$LOG_DIR"
+  exec 9>"$LOG_DIR/update-all.lock"
+  flock -n 9 || { echo 'Another update-all run owns the lock' >&2; return 1; }
+  export GIT_TERMINAL_PROMPT=0 GIT_MERGE_AUTOEDIT=no
+  RUN_DIR=$(mktemp -d "$LOG_DIR/update-all-$(date -u +%Y%m%dT%H%M%SZ).XXXXXX")
+  local shared_log="$LOG"
+  LOG="$RUN_DIR/update-all.log"
+  CHECKLIST_TMP="$RUN_DIR/checklist.tsv"
+  mkdir -p "$UPDATER_SRC"
+  checklist_init
+  log "update-all started (dry_run=$DRY parallel=$PARALLEL); private run: $RUN_DIR"
+  local -a phases=()
+  [ "$DO_JCODE" = 0 ] || phases+=(update_core_phase)
+  [ "$DO_SKILLS" = 0 ] || phases+=(update_skills)
+  [ "$DO_TOOLS" = 0 ] || phases+=(update_tools)
+  run_jobs "${phases[@]}"
+  rc=$?
+  # Do not install/publish a mixed partial update after an independent failure.
+  if [ "$rc" = 0 ]; then
+    phases=()
+    [ "$DO_CONFIG" = 0 ] || phases+=(sync_configs)
+    [ "$DO_SKILLS" = 0 ] || phases+=(write_manifest)
+    PARALLEL=0
+    run_jobs "${phases[@]}"
+    rc=$?
+  else
+    checklist_add skip "configs/manifest (earlier phase failed)"
+  fi
+  if grep -q '^fail' "$CHECKLIST_TMP"; then rc=1; fi
+  mkdir -p "$(dirname "$CHECKLIST")"
+  checklist_write "$rc"
+  log "update-all finished (exit=$rc); restart/reload only successful updates"
+  cp "$LOG" "$shared_log" || rc=1
+  flock -u 9
+  exec 9>&-
+  return "$rc"
 }
 
 # --- main -------------------------------------------------------------------
-log "=============================================="
-log "update-all started (dry_run=$DRY)"
-checklist_init
-[ "$DO_JCODE" = 1 ]   && update_jcode
-[ "$DO_SKILLS" = 1 ] && { skill_sources; sync_skills; }
-[ "$DO_TOOLS" = 1 ]  && update_tools
-[ "$DO_CONFIG" = 1 ] && sync_configs
-[ "$DO_JCODE" = 1 ]  && self_review
-[ "$DO_SKILLS" = 1 ] && write_manifest
-checklist_write
-log "update-all finished — restart jcode (or reload skills) to pick up the new list."
-log "next: jcode self-dev --reload   (if jcode core was rebuilt)"
-log "checklist: $CHECKLIST"
-log "=============================================="
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi
