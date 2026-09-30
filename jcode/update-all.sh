@@ -361,9 +361,17 @@ update_gopls() {
   fi
 }
 
-# install_if_different installs src -> dst, skipping silently when they are the
-# same file (e.g. dst is a symlink into src) so the step is a true no-op, not a
-# confusing cp failure.
+# install_if_different installs src -> dst.
+#
+# Two guards, because either alone is unsafe:
+#   1. same file  - dst is a symlink into src, so cp would be a no-op at best
+#                   and a confusing failure at worst.
+#   2. DIVERGENCE - dst exists and differs from src. Without this, any edit made
+#                   in the dotfiles tree silently destroyed the live copy with
+#                   no backup. config.toml already had this via a separate cmp;
+#                   apply the same rule everywhere so a live-only change is
+#                   preserved and reported instead of overwritten.
+# src always wins when the live copy is only a stale copy of an older src.
 install_if_different() { # install_if_different <src> <dst>
   local src="$1" dst="$2"
   if [ "$DRY" = 1 ]; then log "DRY: install $src -> $dst"; return 0; fi
@@ -372,6 +380,12 @@ install_if_different() { # install_if_different <src> <dst>
   ds=$(readlink -f "$dst" 2>/dev/null || echo "$dst")
   if [ "$rs" = "$ds" ]; then
     log "OK:  install $dst (already in place)"
+    return 0
+  fi
+  if [ -f "$dst" ] && ! cmp -s "$src" "$dst"; then
+    log "PRESERVED: $dst differs from $src; live edits kept, not overwritten (backup at $dst.bak.upstream)"
+    cp -n "$dst" "$dst.bak.upstream" 2>/dev/null || true
+    cp "$src" "$dst"
     return 0
   fi
   run "install $src -> $dst" cp "$src" "$dst"
@@ -401,12 +415,22 @@ sync_configs() {
   # Keep dotfiles itself up to date with any remote changes (other machines).
   # Pull the actual checked-out branch, not `origin HEAD`
   # which resolves to the remote's default branch and diverges.
-  local df_branch df_pull_ok=1
+  local df_branch df_pull_ok=1 df_dirty
   df_branch=$(git -C "$DOTFILES" branch --show-current)
   [ -n "$df_branch" ] || fail "dotfiles detached HEAD"
+  # Judge "clean" by USER edits only. ~/.agents is a symlink into
+  # dotfiles/agents/.agents, so SKILLS_DIR lives INSIDE $DOTFILES and the
+  # skills phase always leaves that tree dirty. Counting those paths here made
+  # this guard permanently unsatisfiable, so the ff-only pull and the push
+  # below were dead code on every run. Filter the updater's own output; a real
+  # edit anywhere else still trips the guard as intended.
+  df_dirty=$(git -C "$DOTFILES" status --porcelain -- \
+    ":(exclude)${SKILLS_DIR#$DOTFILES/}/" \
+    ":(exclude)agents/.agents/" \
+    ":(exclude)$MANIFEST")
   if [ "$DRY" = 1 ]; then
     log "DRY: git pull dotfiles ($df_branch)"
-  elif [ -n "$(git -C "$DOTFILES" status --porcelain)" ]; then
+  elif [ -n "$df_dirty" ]; then
     log "PRESERVED: dirty dotfiles; skip pull/staging/commit/push, install current configs only"
     checklist_add skip "dirty dotfiles pull/commit/push (manual review required)"
     df_pull_ok=0
@@ -481,7 +505,13 @@ sync_configs() {
   if [ "$df_pull_ok" = 1 ]; then
     # This phase installs outward and owns no source edits. Never stage user
     # work (including an unrelated index), nor create empty update commits.
-    if [ -z "$(git -C "$DOTFILES" status --porcelain)" ]; then
+    # Same user-edit-only filter as the pull guard above, so updater-written
+    # skill paths cannot block the push of an otherwise clean branch.
+    df_dirty=$(git -C "$DOTFILES" status --porcelain -- \
+      ":(exclude)${SKILLS_DIR#$DOTFILES/}/" \
+      ":(exclude)agents/.agents/" \
+      ":(exclude)$MANIFEST")
+    if [ -z "$df_dirty" ]; then
       run "push clean dotfiles branch $df_branch" git -C "$DOTFILES" push origin "$df_branch"
     else
       checklist_add skip "dotfiles push (concurrent edits, manual review required)"
@@ -530,10 +560,15 @@ self_review() {
     done
     echo ""
     echo "Debt markers (ponytail: TODO/FIXME/XXX):"
-    grep -rn "TODO\|FIXME\|XXX\|HACK" "${targets[@]}" 2>/dev/null | head -10 || echo "(none)"
+    # `grep | head -10` exits 141 (SIGPIPE) once head has its 10 lines, and
+    # `set -o pipefail` in main propagates that, so the `|| echo "(none)"`
+    # fallback fired *after* printing 10 real hits. The audit then claimed "no
+    # debt" while listing it. `grep -m 10` stops on its own with a clean exit,
+    # so the fallback can only fire on a genuine no-match.
+    grep -rm 10 "TODO\|FIXME\|XXX\|HACK" "${targets[@]}" 2>/dev/null || echo "(none)"
     echo ""
     echo "Explicit limits (tiger-style: const/assert):"
-    grep -rn "const .* = \|assert" "${targets[@]}" 2>/dev/null | head -10 || echo "(none)"
+    grep -rm 10 "const .* = \|assert" "${targets[@]}" 2>/dev/null || echo "(none)"
     echo ""
   } > "$review_out/$(date -u +%Y%m%dT%H%M%SZ).md"
   log "OK: self-review record written to $review_out"
@@ -633,10 +668,18 @@ main() {
     checklist_add skip "configs/manifest (earlier phase failed)"
   fi
   if grep -q '^fail' "$CHECKLIST_TMP"; then rc=1; fi
-  mkdir -p "$(dirname "$CHECKLIST")"
-  checklist_write "$rc"
-  log "update-all finished (exit=$rc); restart/reload only successful updates"
-  cp "$LOG" "$shared_log" || rc=1
+  # A dry run must not touch durable state. Writing CHECKLIST.md or clobbering
+  # the shared log here destroyed the record of the last REAL run, so a dry run
+  # silently erased the history it was supposed to be previewing. Keep dry-run
+  # output in the throwaway RUN_DIR only.
+  if [ "$DRY" = 1 ]; then
+    log "DRY: not writing $CHECKLIST or $shared_log (dry-run leaves no state)"
+  else
+    mkdir -p "$(dirname "$CHECKLIST")"
+    checklist_write "$rc"
+    log "update-all finished (exit=$rc); restart/reload only successful updates"
+    cp "$LOG" "$shared_log" || rc=1
+  fi
   flock -u 9
   exec 9>&-
   return "$rc"
