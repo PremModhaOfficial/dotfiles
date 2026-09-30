@@ -40,3 +40,39 @@ before fanning out real work. For small file sets, just do the edits directly.
   while this machine is `/home/prm/`, and sources a `tokens.fish` that does not
   exist in the repo. Grep every candidate merge for foreign home paths before
   accepting.
+
+## 2026-09-30 — adversarial jury (agent-mesh)
+
+Three `stealth/space-bunny-alpha` reviewers on a 3-member jury, 2/3 to pass.
+Read their plan at `/tmp/jury/PLAN.md`; findings in `r2-notes.md`, `r3-findings.md`.
+
+What they caught that I missed:
+
+- **0-byte files parse clean.** `bash -n` and `json.tool` both accept an empty
+  file, so the whole parse-sweep lens was blind to it. Commit `216b8af`
+  ("chore: checkpoint work") had truncated `zed/.../fluoromachine-zed-theme.json`
+  (95707 -> 0) and `prime-agent/update-all.sh` (3467 -> 0). Every branch I
+  diffed against already had the empty version, so no diff surfaced it.
+  **Check blob size (`git cat-file -s`), never just parse validity.**
+- **Compare against the commit that last held real content,** not against
+  another branch tip. `git branch --contains <good-sha>` then
+  `git cat-file -s <sha>:<path>`.
+- **Absolute symlinks into an ignored cache dangle on any other machine.**
+  `dms/.../plugins/dank*` -> `/home/prm/.config/.../.repos/<hash>/`. The
+  `.repos/` cache was untracked, so nothing tracked could satisfy them.
+- **A glob in .gitignore does not always match the file you meant.** `dank*/`
+  did not match; had to name all four paths explicitly.
+- **Every branch head can be wrong in the same way.** "No diff" is not
+  "nothing changed" when the defect predates every branch you compare to.
+
+### Environment gotchas hit this session
+
+- `herdr pane run <pane> <cmd>` **silently no-ops** in this build: exit 0,
+  nothing runs. Use `pane send-text` + `pane send-keys <pane> enter`.
+- `mesh-peer.sh` defaults `MESH_WORK=leya`, so it publishes into the wrong
+  namespace for any other workID. Set `MESH_WORK` or use raw `nats`.
+- KV `mesh.members.*` needs a `pane` field or `mesh-peer.sh peers` reports
+  every member `dead` and nobody can be woken.
+- `fish` rejects command substitution in command position, so
+  `herdr pane run w:p cmd ... "$(cat f.txt)"` fails. Quote for fish or use
+  send-text.
