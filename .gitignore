@@ -80,3 +80,7 @@ config/kitty/kitty.conf.bak
 tmux/.config/tmux/tmux.conf.bak
 # vendored plugin-manager caches
 dms/.config/DankMaterialShell/plugins/.repos/
+
+# DMS plugin symlinks point into this machine's .repos/ cache; never portable
+dms/.config/DankMaterialShell/plugins/dank*/
+dms/.config/DankMaterialShell/plugins/wallpaperDiscovery
