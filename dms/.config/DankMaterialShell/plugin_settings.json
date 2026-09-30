@@ -1,0 +1,17 @@
+{
+  "dankLauncherKeys": {
+    "enabled": true
+  },
+  "dankBatteryAlerts": {
+    "enabled": true
+  },
+  "wallpaperDiscovery": {
+    "enabled": true,
+    "downloadLocation": "~/Pictures/Wallpapers/dms"
+  },
+  "dankKDEConnect": {
+    "enabled": true,
+    "scanSubdirectories": false,
+    "selectedDeviceId": "a027eb1722ea4e9b9706c14744bfb930"
+  }
+}

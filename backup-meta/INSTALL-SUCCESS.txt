@@ -1,0 +1,8 @@
+Ryoku desktop installed: 2026-08-24
+Reboot lands in Ryoku greeter + new session.
+  updates forever:   ryoku update
+  health checks:     ryoku doctor
+  old configs:       ~/.local/state/ryoku/shell-install/backup-20260824-122403
+                     (restore.sh inside undoes this run's changes)
+  install log:       ~/.local/state/ryoku/shell-install.log
+First steps: Super+Space launcher | Super+, settings | Super+K keybinds

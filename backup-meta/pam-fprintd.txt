@@ -1,0 +1,3 @@
+# fingerprint-related PAM entries
+/etc/pam.d/greetd:auth sufficient pam_fprintd.so max-tries=1 timeout=5
+/etc/pam.d/system-auth:auth       sufficient                    pam_fprintd.so      timeout=5

@@ -1,0 +1,5 @@
+found 1 devices
+Device at /net/reactivated/Fprint/Device/0
+Using device /net/reactivated/Fprint/Device/0
+Fingerprints for user prm on FocalTech Systems Co., Ltd fingerprint (press):
+ - #0: right-index-finger

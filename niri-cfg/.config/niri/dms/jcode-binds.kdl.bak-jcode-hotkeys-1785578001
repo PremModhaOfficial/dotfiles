@@ -1,0 +1,7 @@
+// jcode launch hotkeys (managed by jcode)
+// This file is included from the main config.kdl via `include "dms/jcode-binds.kdl"`.
+binds {
+    Super+Semicolon hotkey-overlay-title="jcode: home" { spawn "sh" "-c" "if [ -d '/home/prm' ]; then cd '/home/prm'; else cd \"$HOME\"; fi; exec 'kitty' '/home/prm/.jcode/builds/versions/0.64.2/jcode-linux-x86_64.bin' --spawn-hotkey 'cmd+;'"; }
+    Super+Apostrophe hotkey-overlay-title="jcode: last project" { spawn "sh" "-c" "if [ -d '/home/prm' ]; then cd '/home/prm'; else cd \"$HOME\"; fi; exec 'kitty' '/home/prm/.jcode/builds/versions/0.64.2/jcode-linux-x86_64.bin' --spawn-hotkey \"cmd+'\""; }
+    Super+Shift+Apostrophe hotkey-overlay-title="jcode: self-dev" { spawn "sh" "-c" "if [ -d '/home/prm' ]; then cd '/home/prm'; else cd \"$HOME\"; fi; exec 'kitty' '/home/prm/.jcode/builds/versions/0.64.2/jcode-linux-x86_64.bin' --spawn-hotkey \"cmd+shift+'\"" "self-dev"; }
+}
