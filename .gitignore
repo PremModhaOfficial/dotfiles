@@ -63,3 +63,20 @@ kitty/.config/kitty/current-*.conf
 
 # nvim bisect sandbox (scratch/debug artifacts - never publish)
 nvim/.bisect-wt/
+
+# runtime state / scratch (never publish)
+nvim/.config/nvim/nvim.log
+nvim/.config/nvim/damsn.log
+nvim/.config/nvim/.srclight/
+nvim/.config/nvim/.omg/
+nvim/.config/nvim/.omc/
+nvim/.omc/
+.omc/
+# dated config snapshots (see niri-cfg/ and the .bak-* history for the originals)
+*.bak
+*.bak-*
+*.backup[0-9]*
+config/kitty/kitty.conf.bak
+tmux/.config/tmux/tmux.conf.bak
+# vendored plugin-manager caches
+dms/.config/DankMaterialShell/plugins/.repos/
