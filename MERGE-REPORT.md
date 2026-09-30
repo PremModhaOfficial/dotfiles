@@ -94,3 +94,72 @@ Rejected on evidence: a claim that `mcp-remote` was missing — it runs via
   here.** `cmd --yolo -p` is the working headless path.
 - `cmd help` documents `-p/--print` as the headless mode — this is what makes
   unattended review runs possible.
+
+## Addendum — second review pass (`jcode run -p openrouter -m stealth/space-bunny-alpha`)
+
+The round-1 gap (`jcode/update-all.sh`, unreviewed because R1 never reported)
+was reviewed by a second pass. Findings below; every headline claim was
+independently re-verified by me before recording.
+
+### VERDICT: FIX-FIRST — 11 defects in `jcode/update-all.sh`
+
+**1. Confirmed — the dotfiles pull/push is unreachable dead code.**
+`SKILLS_DIR` (:45) resolves *inside* `$DOTFILES` (:50), because
+`~/.agents` is a symlink to `dotfiles/agents/.agents`. Phase order runs
+`update_skills` (:620) before `sync_configs` (:627), so the tree is always
+dirty by the time the guards at :409 and :484 test it.
+Verified: `git -C /home/prm/dotfiles status --porcelain | wc -l` = **85**.
+
+**2. Confirmed — phase 5 installs from, and pushes to, the wrong checkout.**
+`DOTFILES=/home/prm/dotfiles` is the main worktree on `DATA` @ `047247c`.
+The merged code is in the linked worktree on `master` @ `3f8dbf3`. The live
+entrypoint `~/.jcode/bin/update-all.sh` symlinks to the **DATA** copy, so the
+code reviewed here never executes, and `git push origin "$df_branch"` (:485)
+targets `origin/DATA`.
+
+**3. Confirmed — `--dry-run` is dishonest.** `main` unconditionally runs
+`mkdir -p` (:636), `checklist_write` (:637) and `cp "$LOG" "$shared_log"`
+(:639) with no `$DRY` guard. A dry run destroys the previous real run's log.
+Verified by reading :634-639 — no conditional. It also appends to the live
+`CHECKLIST.md` and leaks a run dir per invocation (10 already retained).
+
+**4. Live config overwritten with no divergence guard.** `install_if_different`
+(:365-372) compares `readlink -f` **paths**, never content. Only
+`config.toml` is protected, by a separate `cmp -s` (:383). Verified by reading
+:365-375. Hooks, themes, jcode-theme and pickr config are blind-overwritten.
+
+**5. `.a5c/processes` install is CWD-relative** (:471-472) while every sibling
+path is absolute — a silent no-op under the documented invocation.
+
+**6. No `trap` for INT/TERM** while `git rebase` (:204) is in flight; leaves
+`.git/rebase-merge` and the tree on the gate branch.
+
+**7. `self_review` can print "(none)" after 10 real matches** (:533, :536):
+`grep | head -10 || echo "(none)"` under `set -o pipefail` returns 141 on
+SIGPIPE, firing the fallback. The audit artifact claims "no debt" while
+listing ten.
+
+**8-11.** `upstream` remote never verified (:182-188); four duplicated dry-run
+guards plus a duplicated `local` from the merge (:264/266, :311/316, :497/516,
+:546/579, :105-106); `skill_sources` has no `DRY` guard of its own; and
+`install_if_different`'s documented purpose is unachievable as written.
+
+**Positively verified as safe:** the `git push --force-with-lease` at :196 is
+correct — fork origin, lease read after `git fetch origin` (:189), explicit
+expected OID, `rev-parse` guard firing on a missing ref.
+
+### Not completed
+
+The nvim treesitter/obsidian pass (round-1 candidate C8) did **not** finish:
+full-config `nvim --headless` startup exceeded 200s on slow plugins, and the
+reviewer spent its budget isolating plugins instead of reporting. That set
+remains **unverified**.
+
+### How the pass was driven
+
+    jcode run -p openrouter -m stealth/space-bunny-alpha -C "$PWD" "<prompt>"
+
+`jcode auth status` reports a provider `available` on a *credential presence*
+check, not a balance check — all four configured providers 402 on an actual
+run until `-m` pins the free model. See
+`~/.agents/skills/agent-mesh/LEARNINGS-jcode.md`.
