@@ -6,6 +6,14 @@
   home.packages = with pkgs; [
     # Fonts (made available to system via fontconfig.enable above)
     nerd-fonts.caskaydia-cove
+    # alacritty.toml asks for "Cascadia Mono NF" and ghostty/config asks for
+    # "Cascadia Code". Only caskaydia-cove was installed, which registers as
+    # "CaskaydiaCove NF" / "CaskaydiaCove Nerd Font" -- neither requested name
+    # -- so both terminals silently fell back. caskaydia-mono registers the
+    # plain "Caskaydia Mono" family that matches the configs.
+    # NOTE: there is no nerd-fonts.cascadia-mono or .cascadia-code attribute;
+    # verified via nix eval against the pinned flake. Use the caskaydia-* names.
+    nerd-fonts.caskaydia-mono
     nerd-fonts.victor-mono
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
