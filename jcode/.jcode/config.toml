@@ -236,7 +236,7 @@ imported = true
 
 [[launch_hotkeys.entries]]
 chord = "cmd+;"
-dir = "/home/prem-modha/dotfiles/nvim/.config/nvim"
+dir = "/home/prm/dotfiles/nvim/.config/nvim"
 label = "nvim"
 self_dev = false
 

@@ -269,9 +269,12 @@ fzf --fish | source
 mise activate fish | source
 mise completions fish | source
 
-alias wi='wimi -1 1 && exit'
+# jury-r2: neither `wimi` nor `tmux-sessionizer` exists on this machine
+# (command -v returns nothing), so both aliases were dead. Re-point them at
+# real binaries when those land, or delete these lines.
+# alias wi='wimi -1 1 && exit'
 alias t='tmux a || tmux'
-alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
+# alias nv='pgrep tmux:\ cli && pkill tmux:\ cli ; tmux-sessionizer $(pwd)'
 alias ob='obsidian --disable-gpu'
 #alias pi="ping google.com"
 alias sds='sdn s'

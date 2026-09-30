@@ -157,6 +157,6 @@ y = 0
 live_config_reload = true
 
 import = [
-"/home/prem-modha/.config/alacritty/dank-theme.toml",
+"/home/prm/.config/alacritty/dank-theme.toml",
 ]
 
