@@ -12,18 +12,18 @@ TERM = "xterm-256color"
 size = 19.0
 
 [font.normal]
-family = "CaskaydiaMono Nerd Font Propo"
+family = "Cascadia Mono NF"
 
 [font.bold]
-family = "CaskaydiaMono Nerd Font Propo"
+family = "Cascadia Mono NF"
 style = "Bold"
 
 [font.italic]
-family = "CaskaydiaMono Nerd Font Propo"
+family = "Cascadia Mono NF"
 style = "Italic"
 
 [font.bold_italic]
-family = "CaskaydiaMono Nerd Font Propo"
+family = "Cascadia Mono NF"
 style = "Bold Italic"
 
 # fontconfig handles emoji fallback via noto-fonts-color-emoji

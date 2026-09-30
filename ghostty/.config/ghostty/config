@@ -31,16 +31,17 @@
 # # The config file consists of simple key-value pairs,
 # # separated by equals signs.
 # Best looking font config for Iosevka Nerd Font
-font-family = "IosevkaTerm Nerd Font"
-#font-family = "Victor mono"
-# font-family = "Cascadia Code"
+# font-family = "IosevkaTerm Nerd Font"
+# font-family = "Victor mono"
+# font-family = "randome mono"
+font-family = "Cascadia Code"
 # Font Features for Cascadia Code PL - toggle/comment out to enable/disable
 # Ligatures (beautiful code-specific ligatures like =>, !=, ==, ->, etc.)
 font-feature = "liga"
 # Contextual alternates (smarter character rendering based on context)
 font-feature = "calt"
 # Stylistic set 01 (THIS WAS MAKING IT ITALIC/CURSIVE - DISABLED)
-#font-feature = "ss01"
+# font-feature = "ss01"
 # Stylistic set 02 (more glyph variants)
 font-feature = "ss02"
 # Stylistic set 03 (additional glyph variants)

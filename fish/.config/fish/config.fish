@@ -267,6 +267,7 @@ fzf --fish | source
 
 ### SETUP MISE ###
 mise activate fish | source
+mise completions fish | source
 
 alias wi='wimi -1 1 && exit'
 alias t='tmux a || tmux'

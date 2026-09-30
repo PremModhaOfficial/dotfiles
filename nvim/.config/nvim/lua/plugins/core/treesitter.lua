@@ -27,6 +27,7 @@ return {
 				"gomod",
 				"gowork",
 				"gosum",
+				"haskell",
 				"html",
 				"lua",
 				"luadoc",

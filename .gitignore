@@ -60,3 +60,6 @@ fish/.config/fish/conf.d/
 alacritty/.config/alacritty/colors.toml
 tmux/.config/tmux/ryoku-colors.conf
 kitty/.config/kitty/current-*.conf
+
+# nvim bisect sandbox (scratch/debug artifacts - never publish)
+nvim/.bisect-wt/
