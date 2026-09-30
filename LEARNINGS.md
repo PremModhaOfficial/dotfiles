@@ -76,3 +76,21 @@ What they caught that I missed:
 - `fish` rejects command substitution in command position, so
   `herdr pane run w:p cmd ... "$(cat f.txt)"` fails. Quote for fish or use
   send-text.
+
+## 2026-09-30 — Orca agent rule (user-mandated)
+
+**Dispatch Command Code on Orca. Nothing else.** No `zcode`, no `codex`, no
+`opencode`, no `opencode2`, no `cursor` -- even when one reports
+`state: ready`. `ready` only means a terminal opened; the wrong agent inside
+it is a silent failure. Ask before dispatching any other agent.
+
+Corollary learned the hard way: `--worktree current` runs the worker in the
+coordinator's own terminal, so its output and keystrokes collide with the
+coordinator session. Use `--worktree new-child`.
+
+Fuller notes live in:
+  ~/.commandcode/skills/orca-cli/LEARNINGS.md
+  ~/.commandcode/skills/orchestration/LEARNINGS.md
+
+Those SKILL.md files are stubs whose real content is served from the Orca
+binary, so learnings go in the sibling LEARNINGS.md to avoid being overwritten.
