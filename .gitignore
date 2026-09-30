@@ -82,5 +82,7 @@ tmux/.config/tmux/tmux.conf.bak
 dms/.config/DankMaterialShell/plugins/.repos/
 
 # DMS plugin symlinks point into this machine's .repos/ cache; never portable
-dms/.config/DankMaterialShell/plugins/dank*/
+dms/.config/DankMaterialShell/plugins/dankBatteryAlerts
+dms/.config/DankMaterialShell/plugins/dankKDEConnect
+dms/.config/DankMaterialShell/plugins/dankLauncherKeys
 dms/.config/DankMaterialShell/plugins/wallpaperDiscovery
