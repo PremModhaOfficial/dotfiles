@@ -60,3 +60,9 @@ fish/.config/fish/conf.d/
 alacritty/.config/alacritty/colors.toml
 tmux/.config/tmux/ryoku-colors.conf
 kitty/.config/kitty/current-*.conf
+
+# agent-mesh runtime state: downloaded binary, pid, log, jsdata cache.
+agents/.agents/skills/agent-mesh/nats-server
+agents/.agents/skills/agent-mesh/server.pid
+agents/.agents/skills/agent-mesh/server.log
+agents/.agents/skills/agent-mesh/jsdata/
