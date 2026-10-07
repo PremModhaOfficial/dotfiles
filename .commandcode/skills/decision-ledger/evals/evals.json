@@ -1,0 +1,29 @@
+{
+  "skill_name": "decision-ledger",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set up fingerprint login on my Ubuntu laptop. fprintd is not installed yet.",
+      "expected_output": "Ledger that includes PAM fprintd timeout and max-tries, password fallback, boot persistence; failure path tested. Not-done ledger lists omissions (e.g. sudo/passwordless login, fingerprint-only, extra fingers) each with why-not.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Harden SSH on my home server so only I can log in with a key.",
+      "expected_output": "Ledger covering PasswordAuthentication, PermitRootLogin, AllowUsers, MaxAuthTries, LoginGraceTime, ClientAliveInterval, port, lockout recovery path; asks before disabling password auth. Not-done ledger lists omissions (e.g. changing port, fail2ban, 2FA) with why-not.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Add a systemd service that runs my Go binary at boot and restarts it if it crashes.",
+      "expected_output": "Ledger covering Restart policy, RestartSec, StartLimitBurst/Interval, User, WorkingDirectory, After/Wants ordering, log destination, resource limits. Not-done ledger lists omissions (e.g. hardening directives, watchdog) with why-not.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Rename the variable foo to bar in this one file.",
+      "expected_output": "Does NOT run the full process (trivial, reversible). At most Lite or no ledger.",
+      "files": []
+    }
+  ]
+}
