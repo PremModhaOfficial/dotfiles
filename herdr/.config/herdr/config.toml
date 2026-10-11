@@ -9,20 +9,11 @@
 #   type = "shell"         → runs inline shell command (no TTY issues)
 #   type = "pane"          → opens a temporary pane (may have TTY issues)
 #
-#   prefix+o → herdr-sesh plugin action (opens floating picker overlay)
+#   prefix+o → sessionizer binary (tv picker, creates/focuses workspace)
 #   prefix+f → herdr-plus projects (deprecated in favor of tv-based picker)
 #
-# Plugin wiring (config.toml is NOT enough):
-#   Plugin files live in ~/.config/herdr/plugins/local/herdr-sesh/
-#   After editing plugin files: `herdr plugin unlink herdr-sesh`
-#     then `herdr plugin link ~/.config/herdr/plugins/local/herdr-sesh`
-#   Config.toml changes only need `herdr server reload-config`
-#
 # Connected files:
-#   plugins/local/herdr-sesh/herdr-plugin.toml — manifest, defines panes & actions
-#   plugins/local/herdr-sesh/action.sh         — invoked by prefix+o
-#   plugins/local/herdr-sesh/pane.sh           — runs tv in overlay pane
-#   ~/.config/television/cable/herdr-sesh.toml — tv channel for project picker
+#   ~/.config/herdr/bin/sessionizer — Go binary, project picker + workspace manager
 # ──────────────────────────────────────────────────────────────────
 
 onboarding = false
@@ -93,6 +84,8 @@ pane_borders = true
 pane_gaps = true
 show_agent_labels_on_pane_borders = true
 
+agent_panel_sort = "spaces"
+status_indicators = "symbols"
 [ui.toast]
 delivery = "system"
 delay_seconds = 1
@@ -102,3 +95,28 @@ enabled = true
 
 [experimental]
 pane_history = true
+
+# >>> furkankly.zoetrope keys (managed: `setup-keys` writes this block, `remove-keys` deletes it)
+[[keys.command]]
+key = "prefix+shift+z"
+type = "plugin_action"
+command = "furkankly.zoetrope.open"
+description = "zoetrope: session graph (overlay)"
+
+# The graph opens over the focused pane and gives the layout back when
+# it closes. The same key closes it. Two other placements, if you would
+# rather keep the graph on screen: uncomment one, or point the binding
+# above at its action. Then: herdr server reload-config
+# [[keys.command]]
+# key = "prefix+shift+v"
+# type = "plugin_action"
+# command = "furkankly.zoetrope.open-split"
+# description = "zoetrope: session graph (split)"
+
+# [[keys.command]]
+# key = "prefix+shift+c"
+# type = "plugin_action"
+# command = "furkankly.zoetrope.open-tab"
+# description = "zoetrope: session graph (tab)"
+
+# <<< furkankly.zoetrope keys
