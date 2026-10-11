@@ -16,6 +16,12 @@
 -- HDR10+ (per-scene dynamic metadata) is not advertised by the panel's EDID and
 -- no Linux compositor consumes it yet -- what you get is HDR10 baseline, which
 -- is the real thing.
+--
+-- PANEL CAVEAT (tested 2026-09-10): switching this panel to hdredid commits
+-- cleanly (modeset + page-flip, no DRM errors) but the panel paints NOTHING --
+-- blank backlight. Its HDR brightness path is not driven on Linux; Windows
+-- handles it via vendor firmware. hdrMode stays false unless you run the
+-- 12-second auto-revert experiment and actually see an image.
 
 local home = os.getenv("HOME")
 

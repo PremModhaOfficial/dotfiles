@@ -21,7 +21,7 @@ Problems, fixes, and design decisions for the herdr + pi-intercom multi-agent sy
 ### Lesson 4: Session naming requires a turn to sync
 - `/name` sets pi's session name but intercom doesn't refresh until a turn starts (`syncPresenceIdentity`).
 - **Fix:** Send the actual task after `/name` — the turn it triggers syncs the name.
-- Forked `nicobailon/pi-intercom` → `PremModhaOfficial/pi-intercom` to add `session_info_changed` handler that syncs immediately.
+- No fork needed: `session_info_changed` is not an ExtensionAPI event, so an extension handler for it never fires. Upstream calls `syncPresenceIdentity()` directly where identity changes, which is why `/alias` reaches peers immediately. Run the stock `npm:pi-intercom`.
 
 ### Lesson 5: Workers must always CC main
 - Workers cross-communicating without CC'ing main means main loses visibility.
@@ -37,10 +37,10 @@ Problems, fixes, and design decisions for the herdr + pi-intercom multi-agent sy
 - `@earendil-works/pi-coding-agent` is a built-in import — no npm install.
 - The `/hragent` handler loads protocol, spawns workers, returns orchestration instructions. Main agent does the actual orchestration.
 
-### Lesson 8: Fork management for pi-intercom
-- Forked `nicobailon/pi-intercom` → `PremModhaOfficial/pi-intercom` for the `session_info_changed` patch.
-- Update: change commit hash in `package.json`, run `npm install`.
-- Merge upstream: `git remote add upstream ... && git fetch upstream && git merge upstream/main`.
+### Lesson 8: pi-intercom is stock npm, no fork
+- `pi-intercom` is installed as `npm:pi-intercom` and tracks upstream releases. The old local fork is unused and pending deletion.
+- Update: `pi update --extensions`. Check what's new with `npm view pi-intercom version`; upstream is `nicobailon/pi-intercom`.
+- Do not fork for presence-sync bugs. `session_info_changed` is not an ExtensionAPI event; fix the sync call site upstream-style instead.
 
 ### Lesson 9: Context budget
 - Main agent context fills with subagent messages. Use context-mode `ctx_index` to store, `ctx_search` to retrieve.

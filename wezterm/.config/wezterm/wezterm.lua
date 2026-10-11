@@ -6,6 +6,8 @@ local config = wezterm.config_builder()
 config.enable_wayland = true
 config.enable_tab_bar = false
 config.font = wezterm.font_with_fallback({
+	-- "VictorMono Nerd Font Mono",
+	"Jetbrains Mono Nerd Font Mono",
 	"CaskaydiaCove Nerd Font",
 	"Noto Color Emoji",
 })
