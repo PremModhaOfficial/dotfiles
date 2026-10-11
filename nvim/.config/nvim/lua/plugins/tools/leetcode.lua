@@ -34,8 +34,8 @@ return {
 			provider = nil,
 		},
 		storage = {
-			home = vim.fn.expand("~/projects/unsortedProjects/DSA/leetcode/"),
-			cache = vim.fn.expand("~/projects/unsortedProjects/DSA/leetcode/cache/"),
+			home = vim.fn.expand("~/project/unsortedProjects/DSA/leetcode/"),
+			cache = vim.fn.expand("~/project/unsortedProjects/DSA/leetcode/cache/"),
 		},
 		hooks = {
 			["enter"] = {},

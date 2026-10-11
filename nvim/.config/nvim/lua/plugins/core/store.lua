@@ -3,6 +3,7 @@ return {
 	dependencies = {
 		{
 			"OXY2DEV/markview.nvim",
+			enabled = vim.g.markdown_enabled,
 			init = function()
 				-- We use blink.cmp. Skip markview's legacy nvim-cmp source
 				-- registration: it calls `cmp.setup.filetype(...)`, which

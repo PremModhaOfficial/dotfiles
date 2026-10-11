@@ -19,7 +19,7 @@ return {
 			})
 
 			-- Install parsers (this is a no-op if already installed)
-			ts.install({
+			local parsers = {
 				"bash",
 				"c",
 				"diff",
@@ -30,15 +30,21 @@ return {
 				"html",
 				"lua",
 				"luadoc",
-				"markdown",
 				"vim",
 				"vimdoc",
-			})
+			}
+			if vim.g.markdown_enabled then
+				table.insert(parsers, "markdown")
+			end
+			ts.install(parsers)
 
 			-- Auto-install parser on FileType if available
 			vim.api.nvim_create_autocmd("FileType", {
 				callback = function()
 					local lang = vim.bo.filetype
+					if lang == "markdown" and not vim.g.markdown_enabled then
+						return
+					end
 					local available = ts.get_available()
 					local has_parser = vim.tbl_contains(available, lang)
 					if has_parser then

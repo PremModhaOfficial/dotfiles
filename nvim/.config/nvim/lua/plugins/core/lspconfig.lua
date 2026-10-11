@@ -18,13 +18,6 @@ return {
 			cmd = "Neoconf",
 			opts = {},
 		},
-		-- Useful status updates for LSP.
-		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-		-- Artifact its GONE
-		-- { "j-hui/fidget.nvim", opts = {} },
-
-		-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
-		-- used for completion, annotations and signatures of Neovim apis
 	},
 	config = function()
 		-- Brief aside: **What is LSP?**
@@ -351,28 +344,7 @@ return {
 				},
 			},
 			-- Additional useful servers
-			marksman = {
-				filetypes = { "markdown" }, -- Only attach to markdown files
-				root_dir = function(fname)
-					if type(fname) ~= "string" then
-						return vim.fn.getcwd()
-					end
-					local util = require("lspconfig.util")
-					return util.find_git_ancestor(fname) or vim.fs.dirname(fname) or vim.fn.getcwd()
-				end,
-				settings = {
-					marksman = {
-						core = {
-							title_from_heading = true, -- Treat # headings as titles
-						},
-						completion = {
-							wiki = {
-								style = "title-slug", -- Preferred for Obsidian wiki links
-							},
-						},
-					},
-				},
-			},
+			-- marksman = { filetypes = { "markdown" } }, -- disabled: caused lag on markdown buffers
 		}
 
 		-- Workaround for gopls semantic tokens issue
@@ -459,18 +431,17 @@ return {
 			"lua_ls", -- Lua LSP server
 			"stylua", -- Used to format Lua code
 			"prettierd", -- Code formatter (conform's first choice)
-			"markdownlint-cli2", -- Used by none-ls markdown source
 			"eslint_d", -- Fast ESLint
 			"shellcheck", -- Shell script linting
 			"shfmt", -- Shell script formatting
 			-- Go development tools
-			"goimports", -- Go import management
-			"gofumpt", -- Stricter Go formatting
-			"gomodifytags", -- Go struct tag generator
-			"impl", -- Go interface implementation generator
-			"golangci-lint", -- Go linter
+			"gomodifytags", -- Go struct tag code actions (none-ls)
+			"impl", -- Go interface stub code action (none-ls)
 			"delve", -- Go debugger
 		})
+		if vim.g.markdown_enabled then
+			table.insert(ensure_installed, "markdownlint-cli2") -- Used by none-ls markdown source
+		end
 		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 		require("mason-lspconfig").setup({

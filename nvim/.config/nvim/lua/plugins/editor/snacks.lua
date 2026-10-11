@@ -107,7 +107,7 @@ return {
 		},
 		scratch = {
 			enabled = true,
-			ft = "markdown",
+			ft = vim.g.markdown_enabled and "markdown" or "text",
 			icon = "󰠮",
 			name = "Scratch",
 		},
