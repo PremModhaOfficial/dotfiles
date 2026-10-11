@@ -72,3 +72,39 @@ reporting/lock files. Validate with a scratch HOME and stubs before a real run.
 Updater implementation was tested syntactically and with scratch/stub workflows.
 These tests are not an end-to-end live update. Coordinator owns the next real
 `bash -x ./jcode/update-all.sh --parallel` run, validation, commit and push.
+
+## 2026-09-29 run — closed out
+
+Fork branch `local/turn-end-gate` rebased onto upstream master and **pushed**:
+`1a7bd2687 -> 507f6a2b2` (v0.89.0), verified via both `git ls-remote` and the
+GitHub API. Skill manifest regenerated (34 skills). Bundle backup
+`~/.jcode/backups/turn-end-gate-507f6a2b2.bundle` is now redundant but retained.
+
+### Traps hit during that run
+
+- **Pushing upstream changes to `.github/workflows/*` needs the `workflow` OAuth
+  scope.** A token with only `repo` is rejected server-side. The rebase drags in
+  7 workflow files across a 997-file push, so this hits every core update.
+- **`gh auth refresh` must not be wrapped in `script`/a PTY for automation.** It
+  emits a terminal cursor-position query, wedges on the reply that never comes,
+  prints the device code, and then silently never starts polling. Every browser
+  approval is then lost with no error anywhere. Run it with a plain pipe
+  (`GH_BROWSER=true gh auth refresh -h github.com -s workflow`) and confirm the
+  `Open this URL to continue` line actually appears before handing a code to the
+  user.
+- **The manifest is now its own phase flag.** `--manifest-only` was added so a
+  core-phase failure can be repaired with one cheap command. `--config-only` no
+  longer writes the manifest; a full or `--skills-only` run still does.
+
+### Still open (deliberately not done)
+
+- **Dotfiles tree is dirty, so its pull/commit/push is skipped** by the guard in
+  `update-all.sh`. Correct behaviour, not a bug. `~/dotfiles` is on branch `DATA`
+  with ~20 modified/deleted paths plus untracked files. The tree includes
+  deletions of `.agents/skills/ask-first/SKILL.md` and
+  `.agents/skills/decision-logging/SKILL.md`, which are **live and working** in
+  `~/.agents/skills`. Do not let a blind `git add -A` commit those deletions
+  without a look.
+- **Uncommitted in that same dirty tree:** the `provider.default_model =
+  "stealth/space-bunny-alpha"` edit to `jcode/.jcode/config.toml`, and the new
+  `--manifest-only` code in `jcode/update-all.sh`. Neither has reached the remote.

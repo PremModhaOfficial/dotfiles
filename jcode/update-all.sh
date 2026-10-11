@@ -9,11 +9,11 @@
 #     1. jcode core   — fetch upstream (1jehuang/jcode), rebase our fork branch
 #                       (local/turn-end-gate) onto upstream master, push to our
 #                       fork only after a successful build, with an explicit lease.
-#     2. Skill sources — git pull ponytail, tiger-style, tuicr, babysitter,
+#     2. Skill sources — git pull ponytail, tiger-style, caveman, babysitter,
 #                       herdr; re-sync installed skills into ~/.agents/skills.
 #     3. Regenerated skills — babysit keeps our jcode harness=jcode adaptation;
 #                       herdr is a plain sync.
-#     4. Tools         — mise herdr, herdr-pickr plugin, babysitter SDK via npx
+#     4. Tools         — mise herdr, babysitter SDK via npx
 #                       (always latest), gopls best-effort.
 #     5. Configs       — install dotfiles configs into live locations
 #                       (~/.jcode, ~/.config/herdr, repo .a5c). Preserve divergent
@@ -21,7 +21,7 @@
 #     6. Skill manifest — ~/.agents/skills/README.md regenerated.
 #
 #   Preserved custom things: local/turn-end-gate jcode branch (in the fork),
-#   pickr config.toml, herdr-agent-state.sh hook, babysitter-gate.sh hook,
+#   herdr-agent-state.sh hook, babysitter-gate.sh hook,
 #   .a5c/processes/* (babysitter processes), any skill in ~/.agents/skills/
 #   with no upstream source listed below.
 #
@@ -32,11 +32,14 @@
 #     ~/.jcode/bin/update-all.sh --skills-only
 #     ~/.jcode/bin/update-all.sh --tools-only
 #     ~/.jcode/bin/update-all.sh --config-only
+#     ~/.jcode/bin/update-all.sh --manifest-only  # just rebuild README.md from installed skills
 #     ~/.jcode/bin/update-all.sh --parallel   # independent phases and sources
 #     ~/.jcode/bin/update-all.sh --context    # fast, read-only context pointers
 #
 #   After it finishes: restart jcode (or reload skills) so the new skill list
-#   takes effect, then run: jcode self-dev --reload  (if jcode itself updated).
+#   takes effect. If jcode itself updated, restart jcode or run /rebuild in a
+#   session (needs ~/.jcode/debug_control; see SELFDEV-NOTES.md, which also
+#   covers how to check which build the running server actually has mapped).
 # ============================================================================
 
 # --- config -----------------------------------------------------------------
@@ -56,7 +59,7 @@ UPDATER="${BASH_SOURCE[0]}"
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG"; }
 fail() { log "ERROR: $*"; checklist_add fail "$*"; exit 1; }
 
-DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1
+DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1; DO_MANIFEST=1
 parse_args() {
 for arg in "$@"; do
   case "$arg" in
@@ -66,7 +69,11 @@ for arg in "$@"; do
     --jcode-only) DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0 ;;
     --skills-only) DO_JCODE=0; DO_TOOLS=0; DO_CONFIG=0 ;;
     --tools-only) DO_JCODE=0; DO_SKILLS=0; DO_CONFIG=0 ;;
-    --config-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0 ;;
+    --config-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_MANIFEST=0 ;;
+    # Manifest reads installed skills, not sources, so it is safe to run alone
+    # after a partial run. It is its own flag so a core-phase failure can still
+    # be repaired with one cheap command instead of a whole full run.
+    --manifest-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0 ;;
     *) echo "unknown arg: $arg" >&2; return 1 ;;
   esac
 done
@@ -217,7 +224,7 @@ update_jcode() {
   if [ -n "$current" ] && [ "$current" != "$GATE_BRANCH" ]; then
     require "checkout back to $current" git -C "$JCODE_SRC" checkout "$current"
   fi
-  log "to run the updated jcode: jcode self-dev --reload  (or restart jcode)"
+  log "to run the updated jcode: restart jcode, or /rebuild in a session (needs ~/.jcode/debug_control)"
   return "$rc"
 }
 
@@ -228,7 +235,6 @@ skill_sources() {
     ["ponytail"]="https://github.com/DietrichGebert/ponytail"
     ["caveman"]="https://github.com/JuliusBrussee/caveman"
     ["tiger-style"]="https://github.com/PremModhaOfficial/tiger-style"
-    ["tuicr"]="https://github.com/agavra/tuicr"
     ["babysitter"]="https://github.com/a5c-ai/babysitter"
     ["herdr"]="https://github.com/herdrdev/herdr"
   )
@@ -295,9 +301,6 @@ sync_skills() {
   sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style-help"   "$SKILLS_DIR/tiger-style-help"
   sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style-review" "$SKILLS_DIR/tiger-style-review"
 
-  # tuicr skill (has herdr wrappers)
-  sync_dir "$UPDATER_SRC/tuicr/skills/tuicr" "$SKILLS_DIR/tuicr"
-
   # herdr skill (plain upstream copy)
   sync_dir "$UPDATER_SRC/herdr/skills/herdr" "$SKILLS_DIR/herdr"
 
@@ -342,9 +345,6 @@ update_herdr_tools() {
   if command -v mise >/dev/null; then
     run "mise herdr latest" mise install herdr@latest
     run "mise use herdr@latest" mise use -g herdr@latest
-  fi
-  if command -v herdr >/dev/null; then
-    run "herdr plugin reinstall pickr" herdr plugin install tomasvarga/herdr-pickr -y
   fi
 }
 verify_babysitter_sdk() {
@@ -459,12 +459,6 @@ sync_configs() {
     done
   fi
 
-  # herdr config (only the pickr config we maintain)
-  if [ -f "$DOTFILES/herdr/plugins/config/pickr/config.toml" ]; then
-    run "install pickr config" mkdir -p "$HOME/.config/herdr/plugins/config/pickr"
-    install_if_different "$DOTFILES/herdr/plugins/config/pickr/config.toml" "$HOME/.config/herdr/plugins/config/pickr/config.toml"
-  fi
-
   # babysitter processes (custom .a5c processes) — install into the current repo
   # and the global ~/.a5c/processes so babysitter can find them anywhere.
   if [ -d "$DOTFILES/babysitter/processes" ]; then
@@ -564,7 +558,6 @@ write_manifest() {
       case "$name" in
         babysit)        source="a5c-ai/babysitter (custom harness=jcode)"; repo="$UPDATER_SRC/babysitter" ;;
         herdr)          source="herdrdev/herdr"; repo="$UPDATER_SRC/herdr" ;;
-        tuicr)          source="agavra/tuicr"; repo="$UPDATER_SRC/tuicr" ;;
         ponytail*|compress) source="DietrichGebert/ponytail"; repo="$UPDATER_SRC/ponytail" ;;
         caveman*|cavecrew) source="JuliusBrussee/caveman"; repo="$UPDATER_SRC/caveman" ;;
         tiger-style*)   source="PremModhaOfficial/tiger-style"; repo="$UPDATER_SRC/tiger-style" ;;
@@ -625,7 +618,7 @@ main() {
   if [ "$rc" = 0 ]; then
     phases=()
     [ "$DO_CONFIG" = 0 ] || phases+=(sync_configs)
-    [ "$DO_SKILLS" = 0 ] || phases+=(write_manifest)
+    [ "$DO_MANIFEST" = 0 ] || phases+=(write_manifest)
     PARALLEL=0
     run_jobs "${phases[@]}"
     rc=$?

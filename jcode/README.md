@@ -100,7 +100,8 @@ change up on reload (prefix+shift+r) or the next launch.
 ## First-time / notes
 
 - Requires the jcode build with the `turn_end_gate` feature (the fork branch,
-  or newer upstream). `jcode self-dev --reload` after a rebuild.
+  or newer upstream). After a rebuild, restart jcode or run `/rebuild` in a session.
 - Pushing the jcode fork needs `workflow` scope on the gh token:
   `gh auth refresh -h github.com -s workflow`
-- `update-all.sh --dry-run` shows every step without touching anything.
+- `update-all.sh --dry-run` shows every step without applying any of them. It does
+  still append the (clearly marked `dry-run` / `skip`) pass to `CHECKLIST.md`.
