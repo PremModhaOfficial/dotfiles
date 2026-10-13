@@ -8,6 +8,8 @@ config.enable_tab_bar = false
 config.font = wezterm.font_with_fallback({
 	"IosevkaTerm Nerd Font Mono",
 	"ZedMono Nerd Font Mono",
+	"Jetbrains Mono Nerd Font Mono",
+	"CaskaydiaCove Nerd Font",
 	"VictorMono Nerd Font Mono",
 	"Noto Color Emoji",
 	"WenQuanYi Zen Hei",

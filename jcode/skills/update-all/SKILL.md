@@ -82,8 +82,11 @@ the shared ledger/log or call main. Coordinator merges their private reports.
   `babysitter-gate.sh` / `herdr-agent-state.sh` remain installed.
 - Confirm live-only config keys survive. Skipped config divergence is not a merge.
 - Reload skills through `skill_manage reload_all`. If core rebuilt successfully,
-  coordinate `jcode self-dev --reload` or restart separately. A build is not proof
-  that the running server has changed.
+  run `/rebuild` in a jcode session (needs `~/.jcode/debug_control`), or restart
+  jcode. A build is not proof that the running server is on the new binary:
+  verify with `grep -o '/home/prm/[^ ]*jcode' /proc/$(pgrep -f 'jcode serve' |
+  head -1)/maps`. The daemon hot-reloads via exec, so its PID and start time are
+  preserved and useless as a staleness signal. See SELFDEV-NOTES.md.
 
 Report source commits, failures/skips, exact ledger/log paths and remaining
 restart/migration work. Do not claim a dry-run or stub test was a real update.

@@ -10,7 +10,7 @@ return {
 			---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
 			sources = function(buf, _)
 				local sources = require("dropbar.sources")
-				if vim.bo[buf].ft == "markdown" then
+				if vim.g.markdown_enabled and vim.bo[buf].ft == "markdown" then
 					return {
 						sources.path,
 						sources.markdown,

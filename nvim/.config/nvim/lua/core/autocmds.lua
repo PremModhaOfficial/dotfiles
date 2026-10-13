@@ -9,13 +9,15 @@ autocmd("TextYankPost", {
 	end,
 })
 
-autocmd("FileType", {
-	pattern = "markdown",
-	callback = function()
-		vim.opt_local.conceallevel = 2
-		vim.opt_local.concealcursor = "nc"
-	end,
-})
+if vim.g.markdown_enabled then
+	autocmd("FileType", {
+		pattern = "markdown",
+		callback = function()
+			vim.opt_local.conceallevel = 2
+			vim.opt_local.concealcursor = "nc"
+		end,
+	})
+end
 
 vim.filetype.add({
 	pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },

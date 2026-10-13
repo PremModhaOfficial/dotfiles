@@ -1,5 +1,6 @@
 return {
 	"3rd/diagram.nvim",
+	enabled = vim.g.markdown_enabled,
 	cond = function()
 		return vim.fn.has("gui_running") == 0 and vim.env.TERM ~= nil and vim.api.nvim_list_uis()[1] ~= nil
 	end,

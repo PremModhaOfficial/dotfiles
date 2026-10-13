@@ -11,31 +11,6 @@
           ]
         }
       }
-    },
-  },
-  "null-ls": {
-    "sources": {
-      "prettier": {
-        "filetypes": [
-          "javascript",
-          "typescript",
-          "json",
-          "yaml",
-          "markdown"
-        ]
-      },
-      "eslint": {
-        "filetypes": [
-          "javascript",
-          "typescript"
-        ]
-      }
-    }
-  },
-  "neodev": {
-    "library": {
-      "enabled": true,
-      "plugins": true
     }
   }
 }

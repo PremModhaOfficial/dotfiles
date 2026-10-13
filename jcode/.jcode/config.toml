@@ -134,7 +134,7 @@ trusted_external_sources = []
 
 [provider]
 default_provider = "openrouter"
-default_model = "cohere/north-mini-code:free"
+default_model = "stealth/space-bunny-alpha"
 max_retries = 8
 retry_backoff_cap_secs = 30
 openai_reasoning_effort = "low"
