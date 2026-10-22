@@ -41,7 +41,7 @@
     fish
 
     # Editors
-    emacs-pgtk
+    # emacs-pgtk
 
     # Shell
     starship
