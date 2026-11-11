@@ -25,6 +25,16 @@
 #   .a5c/processes/* (babysitter processes), any skill in ~/.agents/skills/
 #   with no upstream source listed below.
 #
+#   UPSTREAM PRECEDENCE (critical constraint):
+#   jcode core is upstream-managed. Our fork carries local/turn-end-gate only
+#   where it does not conflict with upstream direction. On rebase conflict,
+#   upstream wins and we adapt:
+#     - Equal upstream functionality   -> drop our version, keep upstream's
+#     - Upstream absorbed our patch     -> keep merged result (not duplicate)
+#     - turn_end_gate is the SOLE continuation-decision hook.
+#       turn_end / post_tool_feedback are fire-and-forget observers only.
+#       Do not duplicate continuation control flow across hooks.
+#
 #   Usage:
 #     ~/.jcode/bin/update-all.sh              # full update
 #     ~/.jcode/bin/update-all.sh --dry-run    # show what would run
@@ -265,14 +275,37 @@ pull_process_library() {
 }
 
 # --- 3. sync skills ---------------------------------------------------------
+# Provenance ledger: which skill dirs this script wrote, and from where. Recorded
+# at sync time because a later run cannot otherwise tell an upstream skill the
+# repo dropped from a hand-written local skill that merely looks like one.
+stamp_source() { # stamp_source <src> <dst>
+  local src="$1" dst="$2" name ledger tmp
+  [ "$DRY" = 1 ] && return 0
+  name=$(basename "$dst")
+  # Kept out of $SKILLS_DIR on purpose: that tree is git-tracked, and a ledger
+  # file there would look like a skill to anything that globs the directory.
+  ledger="$HOME/.jcode/state/upstream-sources"
+  tmp="$ledger.tmp"
+  mkdir -p "$(dirname "$ledger")"
+  { awk -F'\t' -v n="$name" '$1 != n' "$ledger" 2>/dev/null || true; } > "$tmp"
+  printf '%s\t%s\n' "$name" "$src" >> "$tmp"
+  mv "$tmp" "$ledger"
+}
+
 sync_dir() { # sync_dir <src> <dst>
   local src="$1" dst="$2"
   if [ "$DRY" = 1 ]; then log "DRY: sync $src -> $dst"; return 0; fi
   [ -d "$src" ] || { log "ERROR (missing): $src"; checklist_add fail "sync $src (missing)"; return 1; }
   if [ "$DRY" = 1 ]; then log "DRY: sync $src -> $dst"; return; fi
   mkdir -p "$dst"
-  cp -R "$src/." "$dst/"
+  # cp's status was ignored, so a failed copy still logged OK and counted as done.
+  cp -R "$src/." "$dst/" || {
+    log "ERROR: copy failed $src -> $dst"
+    checklist_add fail "sync $(basename "$dst")"
+    return 1
+  }
   log "OK: sync $src -> $dst"
+  stamp_source "$src" "$dst"
   checklist_add done "sync $(basename "$dst")"
 }
 
@@ -285,14 +318,35 @@ sync_skills() {
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-gain"   "$SKILLS_DIR/ponytail-gain"
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-help"   "$SKILLS_DIR/ponytail-help"
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-review" "$SKILLS_DIR/ponytail-review"
-  # caveman + friends (now its own repo: JuliusBrussee/caveman)
-  sync_dir "$UPDATER_SRC/caveman/skills/caveman"         "$SKILLS_DIR/caveman"
-  sync_dir "$UPDATER_SRC/caveman/skills/caveman-commit"  "$SKILLS_DIR/caveman-commit"
-  sync_dir "$UPDATER_SRC/caveman/skills/caveman-compress" "$SKILLS_DIR/caveman-compress"
-  sync_dir "$UPDATER_SRC/caveman/skills/caveman-help"    "$SKILLS_DIR/caveman-help"
-  sync_dir "$UPDATER_SRC/caveman/skills/caveman-review"  "$SKILLS_DIR/caveman-review"
-  sync_dir "$UPDATER_SRC/caveman/skills/caveman-stats"   "$SKILLS_DIR/caveman-stats"
-  sync_dir "$UPDATER_SRC/caveman/skills/cavecrew"        "$SKILLS_DIR/cavecrew"
+  # caveman + friends (now its own repo: JuliusBrussee/caveman). Since 4.0 upstream
+  # ships a registry-driven suite and adds skills between releases, so enumerate
+  # the registry instead of naming skills: the old hardcoded seven silently left
+  # 15 upstream skills (ultracave, megacave, the native/* workflows) uninstalled.
+  # Count them: an unmatched glob must fail loudly, not sync zero and report OK.
+  local caveman_skill caveman_count=0 caveman_rc=0
+  for caveman_skill in "$UPDATER_SRC/caveman/skills"/*/SKILL.md; do
+    [ -f "$caveman_skill" ] || continue
+    caveman_skill=$(basename "$(dirname "$caveman_skill")")
+    caveman_count=$((caveman_count+1))
+    sync_dir "$UPDATER_SRC/caveman/skills/$caveman_skill" "$SKILLS_DIR/$caveman_skill" || caveman_rc=1
+  done
+  if [ "$caveman_count" = 0 ]; then
+    log "ERROR: no caveman skills matched $UPDATER_SRC/caveman/skills/*/SKILL.md (clone missing or upstream restructured)"
+    checklist_add fail "sync caveman (no source skills)"
+    caveman_rc=1
+  fi
+  # A sync only copies, so a skill upstream drops or renames stays installed and
+  # keeps loading. Warn when a ledger entry's source is gone: a name prefix cannot
+  # tell an upstream skill from a local one. No rm -rf yet, so a wrong ledger can
+  # never delete user files; add a delete only once this is known-good.
+  local stale from
+  if [ -f "$HOME/.jcode/state/upstream-sources" ]; then
+    while IFS=$'\t' read -r stale from; do
+      [ -n "$from" ] || continue
+      [ -e "$from" ] && continue
+      log "WARN: $stale is installed but its upstream source is gone: $from"
+    done < "$HOME/.jcode/state/upstream-sources"
+  fi
 
   # tiger-style family
   sync_dir "$UPDATER_SRC/tiger-style/skills/tiger-style"        "$SKILLS_DIR/tiger-style"
@@ -306,6 +360,9 @@ sync_skills() {
 
   # babysit — REGENERATED with our jcode adaptation preserved
   regenerate_babysit
+  # A caveman-only failure must not report the whole family set as done, but it
+  # must not skip tiger-style or herdr either.
+  return "$caveman_rc"
 }
 
 regenerate_babysit() {
@@ -403,6 +460,29 @@ install_live_jcode_config() {
 }
 
 # --- 5. configs: preserve runtime state and unrelated dotfiles work --------
+# SKILLS_DIR is ~/.agents/skills which is a symlink into
+# dotfiles/agents/.agents/skills, so "${SKILLS_DIR#$DOTFILES/}" does NOT strip
+# and git rejects the absolute :(exclude) as outside the repo. Resolve through
+# the symlink first, then strip the DOTFILES prefix.
+rel_to_dotfiles() { # rel_to_dotfiles <abs-path> -> repo-relative or empty
+  local abs="$1" rp
+  rp=$(readlink -f "$abs" 2>/dev/null || echo "$abs")
+  case "$rp" in
+    "$DOTFILES"/*) echo "${rp#$DOTFILES/}" ;;
+    *) echo "" ;;
+  esac
+}
+
+dotfiles_user_edits() { # echo porcelain lines for USER edits only
+  local skills_rel manifest_rel
+  skills_rel=$(rel_to_dotfiles "$SKILLS_DIR")
+  manifest_rel=$(rel_to_dotfiles "$MANIFEST")
+  local -a excludes=( ":(exclude)agents/.agents/" ":(exclude).agents/" )
+  [ -n "$skills_rel" ] && excludes+=( ":(exclude)$skills_rel/" )
+  [ -n "$manifest_rel" ] && excludes+=( ":(exclude)$manifest_rel" )
+  git -C "$DOTFILES" status --porcelain -- "${excludes[@]}"
+}
+
 sync_configs() {
   log "=== configs (dotfiles -> live, then push dotfiles) ==="
   if [ "$DRY" = 1 ]; then
@@ -424,10 +504,7 @@ sync_configs() {
   # this guard permanently unsatisfiable, so the ff-only pull and the push
   # below were dead code on every run. Filter the updater's own output; a real
   # edit anywhere else still trips the guard as intended.
-  df_dirty=$(git -C "$DOTFILES" status --porcelain -- \
-    ":(exclude)${SKILLS_DIR#$DOTFILES/}/" \
-    ":(exclude)agents/.agents/" \
-    ":(exclude)$MANIFEST")
+  df_dirty=$(dotfiles_user_edits)
   if [ "$DRY" = 1 ]; then
     log "DRY: git pull dotfiles ($df_branch)"
   elif [ -n "$df_dirty" ]; then
@@ -501,10 +578,7 @@ sync_configs() {
     # work (including an unrelated index), nor create empty update commits.
     # Same user-edit-only filter as the pull guard above, so updater-written
     # skill paths cannot block the push of an otherwise clean branch.
-    df_dirty=$(git -C "$DOTFILES" status --porcelain -- \
-      ":(exclude)${SKILLS_DIR#$DOTFILES/}/" \
-      ":(exclude)agents/.agents/" \
-      ":(exclude)$MANIFEST")
+    df_dirty=$(dotfiles_user_edits)
     if [ -z "$df_dirty" ]; then
       run "push clean dotfiles branch $df_branch" git -C "$DOTFILES" push origin "$df_branch"
     else
@@ -590,13 +664,22 @@ write_manifest() {
       name=$(basename "$dir")
       local source="bundled/manual"
       local repo=""
-      case "$name" in
-        babysit)        source="a5c-ai/babysitter (custom harness=jcode)"; repo="$UPDATER_SRC/babysitter" ;;
-        herdr)          source="herdrdev/herdr"; repo="$UPDATER_SRC/herdr" ;;
-        ponytail*|compress) source="DietrichGebert/ponytail"; repo="$UPDATER_SRC/ponytail" ;;
-        caveman*|cavecrew) source="JuliusBrussee/caveman"; repo="$UPDATER_SRC/caveman" ;;
-        tiger-style*)   source="PremModhaOfficial/tiger-style"; repo="$UPDATER_SRC/tiger-style" ;;
-      esac
+      # Probe the clones instead of naming skills. A name list goes stale on the
+      # first upstream addition, which is the exact bug this replaced: the old
+      # caveman*|cavecrew case left 8 installed skills as "bundled/manual".
+      # Require SKILL.md: caveman also ships native/ and generated/ there, which
+      # are not skills and must not claim a skill of the same name.
+      if [ -f "$UPDATER_SRC/caveman/skills/$name/SKILL.md" ]; then
+        source="JuliusBrussee/caveman"; repo="$UPDATER_SRC/caveman"
+      elif [ -f "$UPDATER_SRC/ponytail/skills/$name/SKILL.md" ]; then
+        source="DietrichGebert/ponytail"; repo="$UPDATER_SRC/ponytail"
+      elif [ -f "$UPDATER_SRC/tiger-style/skills/$name/SKILL.md" ]; then
+        source="PremModhaOfficial/tiger-style"; repo="$UPDATER_SRC/tiger-style"
+      elif [ -f "$UPDATER_SRC/herdr/skills/$name/SKILL.md" ]; then
+        source="herdrdev/herdr"; repo="$UPDATER_SRC/herdr"
+      elif [ "$name" = babysit ]; then
+        source="a5c-ai/babysitter (custom harness=jcode)"; repo="$UPDATER_SRC/babysitter"
+      fi
       commit="—"
       if [ -n "$repo" ] && [ -d "$repo/.git" ]; then
         commit=$(git -C "$repo" rev-parse --short HEAD 2>/dev/null || echo "—")
