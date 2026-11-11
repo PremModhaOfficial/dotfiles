@@ -459,7 +459,18 @@ apply_overlays() {
 # --- 4. tools ---------------------------------------------------------------
 update_tools() {
   log "=== tools ==="
-  run_jobs update_herdr_tools verify_babysitter_sdk update_gopls
+  run_jobs update_herdr_tools verify_babysitter_sdk update_gopls update_caveman_cli
+}
+# The caveman CLI is a hard dependency of five installed skills (learn, stats,
+# optimize, evidence-review, manage). Installing it by hand once is how those
+# skills ended up documented-but-dead on this machine, so the updater owns it.
+update_caveman_cli() {
+  if command -v npm >/dev/null 2>&1; then
+    run "caveman cli (npm global)" npm i -g @caveman-ai/cli@latest
+    # Ships the six Go binaries (proxy, engine, mcp, browse, shrink, cavemem).
+    # Idempotent: the signed installer skips components already at version.
+    run "caveman binaries (signed installer)" caveman setup --install
+  fi
 }
 update_herdr_tools() {
   if command -v mise >/dev/null; then
