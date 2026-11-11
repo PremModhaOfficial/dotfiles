@@ -113,6 +113,27 @@ for f in "$HOME"/dotfiles/skills-overlay/host/*.sh; do
   [ -f "$HOST_SKILLS_DIR/$s/.overlay-applied" ] || bad "overlay not applied (host): $s"
 done
 
+# 7. dead relative links: a skill that points at a file the install does not
+#    carry is unfollowable where it runs. External URLs are out of scope.
+#    Allowlisted below are three links that sit inside documentation examples
+#    (a rendered-output sample, a see-also template row, a ticket template), so
+#    the target is a placeholder on purpose. Keep those names here if they move.
+for f in "$SKILLS_DIR"/*/SKILL.md "$SKILLS_DIR"/*/README.md; do
+  [ -f "$f" ] || continue
+  d=$(dirname "$f")
+  grep -oE '\]\([^)]+\)' "$f" 2>/dev/null | sed 's/^](//;s/)$//' |
+    grep -vE '^(https?:|#|mailto:)' | while read -r l; do
+      t=${l%%#*}
+      [ -n "$t" ] || continue
+      case "$f:$t" in
+        */archify/SKILL.md:/abs/path/checkout-timing.html) continue ;;
+        */rust-skills/README.md:other-rule.md) continue ;;
+        */wayfinder/SKILL.md:link) continue ;;
+      esac
+      [ -e "$d/$t" ] || echo "AUDIT: dead relative link in $f -> $l" >> "$findings"
+    done
+done
+
 sort -u "$findings"
 count=$(wc -l < "$findings" | tr -d ' ')
 echo "AUDIT-TOTAL: $count"
