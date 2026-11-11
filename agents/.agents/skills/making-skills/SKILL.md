@@ -1,6 +1,6 @@
 ---
 name: making-skills
-description: Write, review, and shrink agent skills (SKILL.md). Use when creating a new skill, editing an existing one, or when a skill feels too long, vague, or rigid.
+description: Write, review, and shrink agent skills (SKILL.md). Use when reviewing, judging, or shrinking an existing skill, or when a skill feels too long, vague, or rigid. Writing a brand-new skill from scratch belongs to writing-for-agents.
 ---
 
 A skill is a short set of orders, not a document. The agent needs constraints, not philosophy.

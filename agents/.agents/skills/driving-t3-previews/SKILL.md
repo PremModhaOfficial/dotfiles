@@ -1,6 +1,6 @@
 ---
 name: driving-t3-previews
-description: Drive T3 Code's shared browser preview. Use when the request needs browser work or names a page or tab.
+description: Drive T3 Code's shared browser preview. Use only inside T3 Code, when the request needs that editor's shared browser preview or names a page or tab in it. General browser automation belongs to ghostex-browser-use or cua-driver.
 ---
 
 # T3 preview

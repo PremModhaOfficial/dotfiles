@@ -89,9 +89,10 @@ for arg in "$@"; do
 done
 }
 
-# Per-run checklist ledger: appended to CHECKLIST.md in the skill folder so the
-# skill (and the user) can see exactly what was done, and verify next time.
-CHECKLIST_DIR="$SKILLS_DIR/update-all"
+# Per-run checklist ledger: appended to CHECKLIST.md so the skill (and the user)
+# can see exactly what was done, and verify next time. Kept out of $SKILLS_DIR:
+# a dir there with no SKILL.md reads as a broken skill to every harness scanner.
+CHECKLIST_DIR="$HOME/.jcode/state/update-all"
 CHECKLIST="$CHECKLIST_DIR/CHECKLIST.md"
 CHECKLIST_TMP="$LOG_DIR/checklist.tmp"
 
@@ -375,7 +376,11 @@ regenerate_babysit() {
   local out="$dst/SKILL.md"
   if [ "$DRY" = 1 ]; then log "DRY: regenerate $dst from $src_skill"; return; fi
 
+  # Two upstream sentences assume files the install never gets: the SDK version
+  # reader points at versions.json (repo-only) and the sed below already replaced
+  # the version itself, so the sentence would contradict the code under it.
   sed -e 's|^SDK_VERSION=.*$|SDK_VERSION=latest|' \
+      -e 's|^Read the SDK version from `versions.json`.*$|Use the latest published babysitter SDK; the version pin lives in SDK_VERSION below.|' \
       -e 's|{{harness}}|jcode|g' \
       "$src_skill" > "$out"
 
@@ -391,6 +396,9 @@ EOF
   fi
   log "OK: regenerated $dst (harness=jcode, jcode note appended)"
   checklist_add done "regenerate babysit (harness=jcode)"
+  # Generated, not copied, so sync_dir never stamped it: record it here or the
+  # manifest can attribute babysit to a repo the ledger has no line for.
+  stamp_source "$src_skill" "$dst"
 }
 
 # --- 4. tools ---------------------------------------------------------------
@@ -643,7 +651,25 @@ self_review() {
   log "note: for full ponytail/tiger review, invoke /ponytail-review and /tiger-style-review on: ${targets[*]}"
 }
 
-# --- 7. manifest ------------------------------------------------------------
+# --- 7. skills audit --------------------------------------------------------
+# Runs after the manifest: catches frontmatter gaps, duplicate descriptions,
+# manifest drift, dangling host links and lost provenance. Every check here
+# failed at least once on this machine, so the gate is worth its runtime.
+audit_skills() {
+  log "=== skills audit ==="
+  if [ "$DRY" = 1 ]; then log "DRY: bash $DOTFILES/jcode/skills-audit.sh"; return 0; fi
+  local out rc=0 line
+  out=$(bash "$DOTFILES/jcode/skills-audit.sh" 2>&1) || rc=$?
+  while IFS= read -r line; do log "$line"; done <<< "$out"
+  # Non-fatal on purpose: a stale link must not stop configs from installing, but
+  # it does mark the run failed so it cannot be missed.
+  if [ "$rc" = 0 ]; then checklist_add done "skills audit (clean)"; else
+    checklist_add fail "skills audit (issues listed above)"
+  fi
+  return 0
+}
+
+# --- 8. manifest ------------------------------------------------------------
 write_manifest() {
   log "=== skill manifest ==="
   if [ "$DRY" = 1 ]; then log "DRY: manifest -> $MANIFEST"; return 0; fi
@@ -720,6 +746,11 @@ main() {
   flock -n 9 || { echo 'Another update-all run owns the lock' >&2; return 1; }
   export GIT_TERMINAL_PROMPT=0 GIT_MERGE_AUTOEDIT=no
   RUN_DIR=$(mktemp -d "$LOG_DIR/update-all-$(date -u +%Y%m%dT%H%M%SZ).XXXXXX")
+  # Retention was missing, so each run left its private dir behind forever (58
+  # dirs, 7 MB, after two months). Keep the newest few, delete only our own dirs.
+  # Trailing slash keeps this to directories, so a run report file survives.
+  find "$LOG_DIR" -maxdepth 1 -type d -name 'update-all-*' 2>/dev/null \
+    | sort -r | tail -n +11 | xargs -r rm -rf
   local shared_log="$LOG"
   LOG="$RUN_DIR/update-all.log"
   CHECKLIST_TMP="$RUN_DIR/checklist.tsv"
@@ -736,7 +767,7 @@ main() {
   if [ "$rc" = 0 ]; then
     phases=()
     [ "$DO_CONFIG" = 0 ] || phases+=(sync_configs)
-    [ "$DO_MANIFEST" = 0 ] || phases+=(write_manifest)
+    [ "$DO_MANIFEST" = 0 ] || phases+=(write_manifest audit_skills)
     PARALLEL=0
     run_jobs "${phases[@]}"
     rc=$?

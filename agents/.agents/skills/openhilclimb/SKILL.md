@@ -76,4 +76,4 @@ Accuracy/pass rate (train + held-out), latency, cost (tokens/$), plus domain-spe
 - Local maxima (occasionally try a big change)
 - Eval contamination (don't leak test answers into prompts)
 
-See `RESEARCH_HILL_CLIMBING.md` and `HILL_CLIMBING_RESEARCH.md` for full background.
+See `HILL_CLIMBING_RESEARCH.md` (shipped beside this file) for full background.
