@@ -23,6 +23,11 @@ Last reviewed: 2026-09-17. Read this before rediscovering sources or changing pa
   still needs migration**. Keep the local niri patch temporarily until that
   include has been migrated and validated. Do not drop it just because an upstream
   fix exists. This updater change does not touch core or niri configuration.
+- **Upstream precedence.** On rebase conflict upstream wins and we adapt:
+  equivalent upstream functionality means dropping ours; absorbed patches mean
+  keeping the merge result. `turn_end_gate` stays the single continuation-
+  decision point — observers (`turn_end`, `post_tool_feedback`) are
+  fire-and-forget only. Do not duplicate control flow across hooks.
 - The custom **turn_end_gate is still needed** for babysitter continuation.
   Preserve the gate branch, babysitter-gate hook and non-hook-driven babysit note.
   Historical commit IDs may change after rebase. Verify behavior, not old hashes.
@@ -72,6 +77,31 @@ reporting/lock files. Validate with a scratch HOME and stubs before a real run.
 Updater implementation was tested syntactically and with scratch/stub workflows.
 These tests are not an end-to-end live update. Coordinator owns the next real
 `bash -x ./jcode/update-all.sh --parallel` run, validation, commit and push.
+
+## Skill overlays (2026-11-11)
+
+A sync replaces a skill dir wholesale, so anything the skill points at outside it
+(`../../README.md`, `docs/*`, `agents/*.md`) is gone after install, and an edit
+made in the installed copy is erased by the next sync. Fixes are recorded
+patches now: `~/dotfiles/skills-overlay/<skill>.sh`, applied by
+`apply_overlays()` at the end of `update_skills`, after the family syncs and
+before the manifest.
+
+- Contract: cwd + `SKILL_DIR` = installed skill dir, `CLONE` = `~/.jcode/updater-src`,
+  idempotent, exit 0 with an `OVERLAY-WARN` line when it cannot patch, touch
+  `.overlay-applied` last.
+- `skills-overlay/host/<skill>.sh` is the same contract for a skill installed
+  outside `~/.agents/skills` (pi's npm-packaged ones, e.g. `paperclip` at
+  `~/.pi/agent/skills/paperclip`, a symlink into the npm package). It runs
+  against `~/.pi/agent/skills/<skill>`; the marker lands in the package dir
+  through the symlink, which is the same file the audit stats.
+- Missing installed dir = `OVERLAY-WARN` and skip, never fatal. A failed overlay
+  is recorded in the checklist but never blocks configs or the manifest.
+- `jcode/skills-audit.sh` rule 6: every `skills-overlay/**/<skill>.sh` needs
+  `<install-dir>/.overlay-applied`, else "overlay not applied: <skill>".
+- Fix rules: prefer the upstream URL over inventing content; ship a local file
+  only when the skill routes to it (cavecrew's `agents/*.md`); reword prose that
+  points at a file that does not exist upstream either.
 
 ## 2026-09-29 run — closed out
 

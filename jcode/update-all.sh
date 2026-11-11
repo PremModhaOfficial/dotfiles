@@ -56,6 +56,9 @@
 HOME_DIR="$HOME"
 JCODE_SRC="$HOME/.jcode/source/jcode"
 SKILLS_DIR="$HOME/.agents/skills"
+# Skills a host installs outside SKILLS_DIR (pi's npm-packaged ones). Overlays
+# for those live in skills-overlay/host/ instead.
+HOST_SKILLS_DIR="$HOME/.pi/agent/skills"
 UPDATER_SRC="$HOME/.jcode/updater-src"          # git clones we own for skill sync
 LOG_DIR="$HOME/.jcode/logs"
 LOG="$LOG_DIR/update-all.log"
@@ -401,6 +404,58 @@ EOF
   stamp_source "$src_skill" "$dst"
 }
 
+# --- 3b. skill overlays -----------------------------------------------------
+# A sync copies the skill's own dir, so everything a SKILL.md points at outside
+# it (repo README, docs/, agents/) is gone after install, and an in-place fix is
+# wiped by the next sync. Each fix therefore lives in
+# ~/dotfiles/skills-overlay/<skill>.sh and is re-applied here, after every
+# family sync and before the manifest, so the manifest and the audit always see
+# the patched tree.
+# Overlay contract: run with cwd = the installed skill dir, SKILL_DIR and CLONE
+# exported, idempotent, exit 0 with an OVERLAY-WARN line when it cannot patch,
+# and .overlay-applied touched last so skills-audit can prove it ran.
+run_overlay() { # run_overlay <script> <base-dir>
+  local f="$1" base="$2" skill
+  skill=$(basename "$f" .sh)
+  if [ ! -d "$base/$skill" ]; then
+    # Warn, not fail: killing the run because one overlay targets a skill this
+    # host does not have helps nobody. The audit turns a genuinely unapplied
+    # overlay into an issue.
+    log "OVERLAY-WARN: no installed skill $skill in $base"
+    return 0
+  fi
+  # Subshell keeps the overlay's own cwd out of the runner and puts the whole
+  # contract env in one place.
+  if ( cd "$base/$skill" && SKILL_DIR="$base/$skill" CLONE="$UPDATER_SRC" bash "$f" ); then
+    log "OK:  overlay $skill"
+    checklist_add done "overlay $skill"
+  else
+    # Deliberately not fatal: the audit fails the run if a patch is missing,
+    # and a broken overlay must not block the manifest or the configs.
+    log "OVERLAY-WARN: $skill exited non-zero"
+    checklist_add fail "overlay $skill (non-zero exit)"
+  fi
+  return 0
+}
+apply_overlays() {
+  log "=== skill overlays ==="
+  if [ "$DRY" = 1 ]; then
+    log "DRY: bash $DOTFILES/skills-overlay/*.sh and skills-overlay/host/*.sh"
+    checklist_add skip "skill overlays (dry-run)"
+    return 0
+  fi
+  local f
+  # One file per skill, named after the skill. host/ is the same contract for a
+  # skill that lives outside $SKILLS_DIR (see HOST_SKILLS_DIR above).
+  for f in "$DOTFILES"/skills-overlay/*.sh; do
+    [ -f "$f" ] && run_overlay "$f" "$SKILLS_DIR"
+  done
+  for f in "$DOTFILES"/skills-overlay/host/*.sh; do
+    [ -f "$f" ] && run_overlay "$f" "$HOST_SKILLS_DIR"
+  done
+  return 0
+}
+
 # --- 4. tools ---------------------------------------------------------------
 update_tools() {
   log "=== tools ==="
@@ -719,7 +774,7 @@ write_manifest() {
   checklist_add done "write skill manifest"
 }
 
-update_skills() { skill_sources; sync_skills; }
+update_skills() { skill_sources; sync_skills; local rc=$?; apply_overlays; return "$rc"; }
 update_core_phase() { update_jcode; self_review; }
 
 show_context() {

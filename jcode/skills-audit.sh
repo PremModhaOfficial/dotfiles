@@ -9,6 +9,9 @@
 set -uo pipefail
 
 SKILLS_DIR="$HOME/.agents/skills"
+# Skills a host installs elsewhere (pi's npm-packaged ones); their overlays live
+# in skills-overlay/host/ and patch these dirs instead.
+HOST_SKILLS_DIR="$HOME/.pi/agent/skills"
 MANIFEST="$SKILLS_DIR/README.md"
 LEDGER="$HOME/.jcode/state/upstream-sources"
 [ "${1:-}" = "--quiet" ] && QUIET=1 || QUIET=0
@@ -94,6 +97,21 @@ if [ -f "$LEDGER" ]; then
 else
   bad "no provenance ledger at $LEDGER (skills cannot be traced to a source)"
 fi
+
+# 6. overlays: the sync recreates dead references on every run, so an overlay
+#    script with no .overlay-applied marker in its skill dir means the installed
+#    copy is still shipping whatever that overlay fixes. host/ scripts patch a
+#    skill outside SKILLS_DIR, so they are checked against HOST_SKILLS_DIR.
+for f in "$HOME"/dotfiles/skills-overlay/*.sh; do
+  [ -f "$f" ] || continue
+  s=$(basename "$f" .sh)
+  [ -f "$SKILLS_DIR/$s/.overlay-applied" ] || bad "overlay not applied: $s"
+done
+for f in "$HOME"/dotfiles/skills-overlay/host/*.sh; do
+  [ -f "$f" ] || continue
+  s=$(basename "$f" .sh)
+  [ -f "$HOST_SKILLS_DIR/$s/.overlay-applied" ] || bad "overlay not applied (host): $s"
+done
 
 sort -u "$findings"
 count=$(wc -l < "$findings" | tr -d ' ')
