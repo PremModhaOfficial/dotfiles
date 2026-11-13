@@ -15,13 +15,12 @@
 - If a harness needs a fixed path, keep the content in `~/.agents` and add the smallest pointer.
 
 ## Never block
-- Long means builds, tests, watchers, servers, any headless agent run.
-- Never block a shell command: start long work backgrounded or monitored, then return; never sit in a blocking call waiting on it.
-- Never block on an agent: launch it detached, get woken on completion.
-- Do not wrap a wait call or any poll loop around an agent or long job.
+- Long means builds, tests, watchers, servers, agent runs.
+- Never block a shell command: start long work backgrounded or monitored, record `$!` and the log path, then return; never sit in an unbounded call waiting on it.
+- Never block on an agent: launch it detached, then wait on its event.
+- Wait with the harness's own wait call (the one blocking call allowed, because it is bounded), one event at a time; never a poll loop, never a timer.
 - Say one line about what is running, then stop; the signal is the next message.
 - Peek at the job's log, then report one line: finished, running, next.
-- One wait alone, or none; it ends on the event, never a timer loop.
 - User waiting on one delegated result: one event-wait, delivered in the same turn.
 - Kill what you started before done; free the ports.
 
@@ -33,7 +32,7 @@
 
 ## Subagents
 - Synchronous work: the harness's own subagent tool; several in one message run concurrently.
-- Detached work: the harness's detached spawn, never a blocking wait.
+- Detached work: the harness's detached spawn; then one event-wait, never a poll loop.
 - Hand off on disk with absolute artifact paths.
 - Never paste upstream content into a prompt.
 - Bound scope: labelled slices, one artifact each.
@@ -46,7 +45,7 @@
 
 ## Web access
 - Read pages with `oc` rather than the built-in fetcher.
-- If built-in search or fetch is denied, use the `donsetch` MCP tools.
+- If built-in search or fetch is denied, use a fallback fetch server only if the harness has one configured; if it has none, report the denial.
 - Never retry a denied built-in call.
 
 ## Order of operations
@@ -54,15 +53,9 @@
 - Questions, research and chat do not need it.
 
 ## Herdr / `hc` delegation
-- Interactive agents only, never one-shot: a one-shot agent cannot report back.
+- Interactive agents only: a one-shot cannot report back. A guard that blocks one-shot is right; headless is legal only for a harness no guard covers, and is still discouraged.
 - Every spawned agent's task text must tell it to report progress, findings and questions back.
 - Check on it rather than assuming: its output, its recent lines, its session log.
 
 ## References
-- Ambiguity cost — `~/.agents/references/memory-clarify.md` — when a score is borderline.
-- Harness paths, pointer forms — `~/.agents/references/memory-harness-home.md` — before adding harness config.
-- Background, wait, kill — `~/.agents/references/memory-never-block.md` — before long work or delegating.
-- graft/deepwiki forms — `~/.agents/references/memory-code-lookup.md` — before reading code or a dependency.
-- Delegation hygiene — `~/.agents/references/memory-subagents.md` — before spawning a subagent.
-- `oc` and donsetch forms — `~/.agents/references/memory-web-access.md` — before fetching a page.
-- flow phases — `~/.agents/references/memory-flow.md` — when starting repository work.
+- `~/.agents/references/`: `memory-clarify.md` (borderline score), `memory-harness-home.md` (pointer forms, machine layout), `memory-never-block.md` (wait and kill forms), `memory-code-lookup.md` (graft, deepwiki), `memory-subagents.md` (delegation), `memory-web-access.md` (`oc`, fetch fallback), `memory-flow.md` (phases).

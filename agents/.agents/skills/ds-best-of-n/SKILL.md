@@ -1,6 +1,6 @@
 ---
 name: ds-best-of-n
-description: "Run N independent attempts at the same task in parallel, pick the strongest as the base, and graft the best parts of the others into it. Use when one attempt at a non-trivial artifact could land on the wrong shape, or for /ds-best-of-n, 'try a few versions', 'best of 3'."
+description: "Run N independent attempts at the same task in parallel, pick the strongest as the base, and graft the best parts of the others into it. Use when: /ds-best-of-n, one attempt at a non-trivial artifact could land on the wrong shape, try a few versions, best of 3."
 ---
 
 # ds-best-of-n

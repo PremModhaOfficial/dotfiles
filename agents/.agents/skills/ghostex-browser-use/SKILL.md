@@ -1,12 +1,6 @@
 ---
 name: ghostex-browser-use
-description: >-
-  Use this skill when an agent needs to inspect or automate web content in
-  Chrome, Chromium, Edge, or a supported Electron app through Trycua's
-  CLI-first typed browser tools. It covers exact native-window binding,
-  explicit browser preparation, semantic page snapshots, navigation, clicks,
-  typing, pointer actions, dialogs, uploads, downloads, and verification. Use
-  ghostex-embedded-browser-use instead for browser panes built into Ghostex.
+description: "Use when: an agent needs to inspect, automate web content in Chrome, Chromium, Edge, CLI-first."
 disable-model-invocation: true
 ---
 

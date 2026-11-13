@@ -1,6 +1,6 @@
 ---
 name: prem-search
-description: Research that recons first. Before searching, establish the best way to research this Topic at this Time on this Harness, then run that Method. Use only when the user asks how the research should be done, or when the method itself is worth choosing rather than assumed. A plain "research X" belongs to the research skill.
+description: "Research that recons first. Use when: research X, how the research should be done, the method itself is worth choosing rather than assumed."
 ---
 
 # prem-search

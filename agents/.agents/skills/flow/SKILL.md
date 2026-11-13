@@ -1,6 +1,6 @@
 ---
 name: flow
-description: "Order of operations for real repository work on this machine: locate, plan, build, review, ship, each phase naming one default skill and pointing at that skill's own stop condition. Use when starting or resuming a bug fix, a feature, or a pull request, and when a rule learned earlier applies. Which single skill fits is ds-help's job."
+description: "Order of operations for real repository work on this machine. Use when: starting, resuming a bug fix, a feature, a pull request, a rule learned earlier applies."
 ---
 
 # flow

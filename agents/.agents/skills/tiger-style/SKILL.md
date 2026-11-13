@@ -1,15 +1,6 @@
 ---
 name: tiger-style
-description: >
-  Safety-first coding mode inspired by TigerBeetle's Tiger Style. Enforces
-  assertions, explicit limits, static resource management, zero technical debt,
-  and back-of-the-envelope performance thinking in any codebase and any
-  language. Channels NASA's Power of Ten rules adapted for everyday software.
-  Supports intensity levels: lite, full (default), strict. Use when the user
-  says "tiger style", "tiger mode", "assert everything", "safety first",
-  "zero technical debt", "bound everything", "NASA rules", or invokes
-  /tiger-style. Also triggers when correctness, determinism, or defensive
-  coding is the priority.
+description: "Safety-first coding mode inspired by TigerBeetle's Tiger Style. Use when: tiger mode, assert everything, safety first, zero technical debt, bound everything, NASA rules, /tiger-style, correctness, determinism, defensive coding is the priority."
 argument-hint: "[lite|full|strict]"
 ---
 

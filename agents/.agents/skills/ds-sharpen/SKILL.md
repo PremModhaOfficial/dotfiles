@@ -1,6 +1,6 @@
 ---
 name: ds-sharpen
-description: "Restate the user's goal, make the task deeper rather than bigger, rewrite the prompt, and optionally attack the plan to find weak spots. Use before starting vague or high-stakes work, for 'sharpen this', 'what am I really asking', 'stress test this plan', or /ds-sharpen."
+description: "Restate the user's goal, make the task deeper rather than bigger. Use when: /ds-sharpen, starting vague, high-stakes work, for 'sharpen this', what am I really asking, stress test this plan."
 ---
 
 # ds-sharpen

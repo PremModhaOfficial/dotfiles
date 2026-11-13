@@ -12,7 +12,10 @@
 #     2. Skill sources — git pull ponytail, tiger-style, caveman, babysitter,
 #                       herdr; re-sync installed skills into ~/.agents/skills.
 #     3. Regenerated skills — babysit keeps our jcode harness=jcode adaptation;
-#                       herdr is a plain sync.
+#                       herdr is a plain sync; then skills-cap.py caps every
+#                       description at the catalogue budget (see 3c).
+#     3d. pi rules file — ~/.pi/agent/AGENTS.md generated from ~/.agents/AGENTS.md
+#                       plus jcode/pi-agents.fragment.md (see 3d).
 #     4. Tools         — mise herdr, babysitter SDK via npx
 #                       (always latest), gopls best-effort.
 #     5. Configs       — install dotfiles configs into live locations
@@ -43,6 +46,7 @@
 #     ~/.jcode/bin/update-all.sh --tools-only
 #     ~/.jcode/bin/update-all.sh --config-only
 #     ~/.jcode/bin/update-all.sh --manifest-only  # just rebuild README.md from installed skills
+#     ~/.jcode/bin/update-all.sh --pi-only    # just regenerate ~/.pi/agent/AGENTS.md
 #     ~/.jcode/bin/update-all.sh --parallel   # independent phases and sources
 #     ~/.jcode/bin/update-all.sh --context    # fast, read-only context pointers
 #
@@ -72,7 +76,7 @@ UPDATER="${BASH_SOURCE[0]}"
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG"; }
 fail() { log "ERROR: $*"; checklist_add fail "$*"; exit 1; }
 
-DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1; DO_MANIFEST=1
+DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1; DO_MANIFEST=1; DO_PI=1
 parse_args() {
 for arg in "$@"; do
   case "$arg" in
@@ -87,6 +91,9 @@ for arg in "$@"; do
     # after a partial run. It is its own flag so a core-phase failure can still
     # be repaired with one cheap command instead of a whole full run.
     --manifest-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0 ;;
+    # Same reason as --manifest-only: a generated file that drifted must be repairable
+    # without a full run, which is also how the failure path gets tested.
+    --pi-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0; DO_MANIFEST=0 ;;
     *) echo "unknown arg: $arg" >&2; return 1 ;;
   esac
 done
@@ -456,6 +463,58 @@ apply_overlays() {
   return 0
 }
 
+# --- 3c. catalogue cap ------------------------------------------------------
+# A sync overwrites SKILL.md frontmatter, so a shortened description is undone by
+# the next pull. The 98 catalogue entries cost 40,191 B of every request (73% of
+# the prompt) before this cap, and descriptions were 24 KB of that. The transform
+# is part of the sync, not a one-off: it runs after the overlays so the manifest
+# and the audit see the capped tree, and the run fails if any description is over
+# the cap or any recorded routing term went missing.
+apply_skill_cap() {
+  log "=== skill catalogue cap ==="
+  if [ "$DRY" = 1 ]; then
+    log "DRY: python3 $DOTFILES/jcode/skills-cap.py && python3 $DOTFILES/jcode/skills-cap-check.py"
+    checklist_add skip "skill catalogue cap (dry-run)"
+    return 0
+  fi
+  local rc=0
+  python3 "$DOTFILES/jcode/skills-cap.py" 2>&1 | tee -a "$LOG" || rc=1
+  python3 "$DOTFILES/jcode/skills-cap-check.py" 2>&1 | tee -a "$LOG" || rc=1
+  if [ "$rc" = 0 ]; then
+    checklist_add done "skill catalogue cap"
+  else
+    # Fatal on purpose: an uncapped catalogue is 6 KB of prompt on every turn,
+    # and silence is how the last hand-edited fix was lost.
+    log "ERROR: skill catalogue cap failed; descriptions are not capped"
+    checklist_add fail "skill catalogue cap"
+  fi
+  return "$rc"
+}
+
+# --- 3d. pi rules file ------------------------------------------------------
+# pi has no `@` import for context files, so ~/.agents/AGENTS.md is inlined. Kept by
+# hand it drifted: 42 diff lines against the shared file, two of which changed the
+# instruction, and no step owned it. It is generated after the skill steps so one edit
+# to the shared file reaches pi, and a broken fragment fails the run like the cap does:
+# a stale rules file is invisible until an agent reads both copies.
+generate_pi_agents() {
+  log "=== pi rules file (generated) ==="
+  if [ "$DRY" = 1 ]; then
+    log "DRY: python3 $DOTFILES/jcode/gen-pi-agents.py"
+    checklist_add skip "pi rules file (dry-run)"
+    return 0
+  fi
+  if python3 "$DOTFILES/jcode/gen-pi-agents.py" 2>&1 | tee -a "$LOG"; then
+    checklist_add done "pi rules file (~/.pi/agent/AGENTS.md)"
+  else
+    # Fatal on purpose: the shared rules changed and pi is now running stale text,
+    # so silence here is the exact drift this step exists to stop.
+    log "ERROR: pi rules file generation failed; ~/.pi/agent/AGENTS.md is stale"
+    checklist_add fail "pi rules file (~/.pi/agent/AGENTS.md)"
+    return 1
+  fi
+}
+
 # --- 4. tools ---------------------------------------------------------------
 update_tools() {
   log "=== tools ==="
@@ -785,7 +844,7 @@ write_manifest() {
   checklist_add done "write skill manifest"
 }
 
-update_skills() { skill_sources; sync_skills; local rc=$?; apply_overlays; return "$rc"; }
+update_skills() { skill_sources; sync_skills; local rc=$?; apply_overlays; apply_skill_cap || rc=1; return "$rc"; }
 update_core_phase() { update_jcode; self_review; }
 
 show_context() {
@@ -826,6 +885,7 @@ main() {
   local -a phases=()
   [ "$DO_JCODE" = 0 ] || phases+=(update_core_phase)
   [ "$DO_SKILLS" = 0 ] || phases+=(update_skills)
+  [ "$DO_PI" = 0 ] || phases+=(generate_pi_agents)
   [ "$DO_TOOLS" = 0 ] || phases+=(update_tools)
   run_jobs "${phases[@]}"
   rc=$?

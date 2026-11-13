@@ -1,6 +1,6 @@
 ---
 name: ds-lessons
-description: "Find mistakes agents keep repeating in this repo and turn each into structure that blocks it, preferring types over lint over tests over docs, plus an end-of-session reflection. Use after a user correction, when the same fix comes up twice, at the end of a long session, or for /ds-lessons or a retro."
+description: "Use when: /ds-lessons, a user correction, the same fix comes up twice, at the end of a long session, a retro."
 ---
 
 # ds-lessons

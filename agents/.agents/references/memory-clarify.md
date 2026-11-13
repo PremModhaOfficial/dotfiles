@@ -2,7 +2,8 @@
 
 The single full definition of the ambiguity rule. It lives here because the rule fires
 before any skill is loaded: `AGENTS.md` states the threshold and `flow` points here rather
-than carrying a second copy. Do not restate this wording elsewhere.
+than carrying a second copy. Do not restate this wording elsewhere, except the one
+imperative line pi must carry inline (pi has no import); that line and this file agree.
 
 Score each prompt 0-10 before acting, short ones and follow-ups included; above 3, do not
 start the task.
@@ -12,7 +13,11 @@ start the task.
 - State the score and competing readings in one line before asking.
 - Ask only about ambiguities that change the work; never about preferences.
 - Never resolve ambiguity by silent assumption.
-- Told to skip: state score, open readings, assumption; proceed only on confirm.
+- Told to start anyway: state the score and the reading you guessed, then go.
+
+Decision (IT2-1): the override wins. The gate exists to stop silent guessing, not to
+block a user who decides for you, so the only thing it still demands is that the guess
+be named out loud before the work starts.
 
 Decision 2026-11-13 (FIX-6): where the older `flow` one-liner disagreed with the wording
 above, this file won — a question must be score-moving and about the work (not a

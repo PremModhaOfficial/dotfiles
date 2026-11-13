@@ -1,6 +1,6 @@
 ---
 name: intent-interview
-description: Extract the real outcome from a vague ask before any work. Use when a request is broad, multi-step, has unstated decisions, or the user says "let's go deep", "get your context ready", "which skills", "how should I prompt", or names a goal without a shape. Pairs with a decision ledger.
+description: "Extract the real outcome from a vague ask before any work. Use when: let's go deep, get your context ready, which skills, how should I prompt, a request is broad, multi-step, has unstated decisions, names a goal without a shape."
 ---
 
 # Intent interview

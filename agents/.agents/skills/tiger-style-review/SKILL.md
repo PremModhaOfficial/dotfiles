@@ -1,14 +1,6 @@
 ---
 name: tiger-style-review
-description: >
-  Code review focused exclusively on Tiger Style violations: missing
-  assertions, unbounded loops and queues, unhandled errors, hidden control
-  flow, unchecked invariants, unsafe memory practices, and violated explicit
-  limits. One line per finding: location, violation, fix. Use when the user
-  says "review for safety", "tiger style review", "assert everything review",
-  "check my invariants", "review this for correctness", or invokes
-  /tiger-style-review. Complements correctness-focused review, this one hunts
-  missing safety.
+description: "Code review focused exclusively on Tiger Style violations. Use when: review for safety, tiger style review, assert everything review, check my invariants, review this for correctness, /tiger-style-review."
 ---
 
 Review diffs and code for Tiger Style violations. One line per finding:

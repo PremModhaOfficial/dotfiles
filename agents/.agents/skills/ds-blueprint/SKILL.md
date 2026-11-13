@@ -1,6 +1,6 @@
 ---
 name: ds-blueprint
-description: "Design the types, function signatures and module layout first, agree on that shape, then implement against it. Use when work is non-trivial and coding straight away would lock in the wrong structure, or for /ds-blueprint, 'design this first', 'architect this'."
+description: "Design the types, function signatures and module layout first, agree on that shape, then implement against it. Use when: /ds-blueprint, work is non-trivial, coding straight away would lock in the wrong structure, design this first, architect this."
 ---
 
 # ds-blueprint

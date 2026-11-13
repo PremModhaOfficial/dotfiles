@@ -1,12 +1,6 @@
 ---
 name: tiger-style-audit
-description: >
-  Whole-repo audit for Tiger Style safety. Like tiger-style-review, but scans
-  the entire codebase instead of a diff: a ranked report of every missing
-  assertion, unbounded loop, unhandled error, unsafe allocation, and deferred
-  debt. Use when the user says "audit this codebase", "tiger audit", "audit
-  for safety", "find the unguarded paths", "harden this repo", or
-  "/tiger-style-audit". One-shot report, does not apply fixes.
+description: "Whole-repo audit for Tiger Style safety. Use when: audit this codebase, tiger audit, audit for safety, find the unguarded paths, harden this repo, /tiger-style-audit."
 ---
 
 Audit the whole codebase for Tiger Style violations. Do not read every file

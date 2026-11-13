@@ -1,6 +1,6 @@
 ---
 name: ds-catchup
-description: "Give the user a short plain-language catch-up on what changed since their last message, followed by every decision still waiting on them. Use when the user returns after a long or unattended run, asks 'where are we', 'what did I miss', or types /ds-catchup."
+description: "Give the user a short plain-language catch-up on what changed since their last message, followed by every decision still waiting on them. Use when: returns after a long, unattended run, asks 'where are we', what did I miss, types /ds-catchup."
 ---
 
 # ds-catchup

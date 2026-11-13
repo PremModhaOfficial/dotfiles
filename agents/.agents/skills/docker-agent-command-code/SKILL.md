@@ -1,6 +1,6 @@
 ---
 name: docker-agent-command-code
-description: Run the Command Code CLI (`cmd`) as a docker-agent harness — the wiring is upstream, so use your docker-agent build or build from main if it predates it. Use when the user asks how to run command-code in docker-agent, wants an agent config with harness.type command-code, or hits `unsupported harness.type "command-code"`.
+description: "Run the Command Code CLI (`cmd`) as a docker-agent harness. Use when: how to run command-code in docker-agent, wants an agent config with harness.type command-code, hits `unsupported harness.type \"command-code\"`."
 argument-hint: "[--build] [config.yaml]"
 ---
 

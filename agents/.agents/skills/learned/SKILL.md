@@ -1,6 +1,6 @@
 ---
 name: learned
-description: The dag/stagehand PR-pipeline playbook. Use when working the dag/stagehand PR pipeline, when driving multiple cmd/opencode agents through herdr, or whenever a PR must go adversarial-review -> whiteboard -> refiner -> merge. Covers worktree-per-issue, the four gates, identity tags, compressed-Chinese comms, the greedy/background law, matt triage, and local whiteboard export.
+description: "The dag/stagehand PR-pipeline playbook. Use when: working the dag/stagehand PR pipeline, driving multiple cmd/opencode agents through herdr, a PR must go adversarial-review -> whiteboard -> refiner -> merge."
 ---
 
 # learned — the dag PR-pipeline playbook

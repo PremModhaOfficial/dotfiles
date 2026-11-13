@@ -1,6 +1,6 @@
 ---
 name: openhilclimb
-description: "Eval-driven hill climbing for AI agents. Use when the user wants to iteratively improve an agent or prompt or harness performance on a task by measuring against evals, proposing one change per round, and keeping only improvements that raise the held-out test score. Triggers include hill climb, hillclimb, optimize agent, improve eval score."
+description: "Use when: iteratively improve an agent, prompt, harness performance on a task by measuring against evals, proposing one change per round, keeping only improvements that raise the held-out test score, include hill climb, hillclimb, optimize agent, improve eval score."
 ---
 
 # OpenHillClimb
