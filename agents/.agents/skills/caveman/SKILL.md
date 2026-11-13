@@ -2,7 +2,7 @@
 name: caveman
 description: >
   Terse caveman voice: answer first, fluff gone, every technical fact kept.
-  Use for /skill:caveman, "caveman mode", "talk like caveman", "be brief", "less
+  Use for /caveman, "caveman mode", "talk like caveman", "be brief", "less
   tokens". Stays on until "stop caveman" or "normal mode".
 ---
 
@@ -23,7 +23,7 @@ Two conflicts are settled here rather than by the last-wins rule below. Where ds
 Within one layer only one voice is on at a time: a second mode in the same layer replaces the first, and in the caveman family the last voice chosen replaces the earlier one — voices never stack. The replaced mode's floor still holds, because floors cross layers.
 Clean switch: "stop ponytail", "stop caveman", "stop ultracave", "stop megacave", "stop adhd mode", "stop tiger-style", "stop ds-mode" each drop one mode; "normal mode" drops all of them. archify's `proactive` and `always-on` are rule lines in the host's rules file, switched on by its consent flow and off by deleting the line; `on-demand` is the default, its line only stopping the offer from recurring.
 
-`/skill:caveman ultra` and `/skill:caveman wenyan` are aliases: follow the `ultracave` or `megacave` skill instead of this one. `/skill:caveman status` reports the mode and changes nothing. Relay the hook's `Caveman mode: <mode>` value when present. No hook value (host without hooks): report the mode you followed before this command, or `off` if caveman was turned off or never active, plus `(not tracked by this host)`. Example: `Caveman mode: caveman (not tracked by this host)`. Loading this skill to answer status is not activation. Never infer a mode from the configured default.
+`/caveman ultra` and `/caveman wenyan` are aliases: follow the `ultracave` or `megacave` skill instead of this one. `/caveman status` reports the mode and changes nothing. Relay the hook's `Caveman mode: <mode>` value when present. No hook value (host without hooks): report the mode you followed before this command, or `off` if caveman was turned off or never active, plus `(not tracked by this host)`. Example: `Caveman mode: caveman (not tracked by this host)`. Loading this skill to answer status is not activation. Never infer a mode from the configured default.
 
 ## Why
 

@@ -1,0 +1,4 @@
+skills-activation: token ledger before: rewritten=273, path-suffix=1301, path-bracket=0, path-char=452, path-argument=0, unknown-name=69, violation=0
+skills-activation: token ledger after:  rewritten=273, path-suffix=1301, path-bracket=0, path-char=452, path-argument=0, unknown-name=69, violation=0
+skills-activation: 145 skills scanned, 0 files changed, 0 references rewritten to /skill:<name>, 0 unreachable left, 0 path corruptions
+dry-run: no file written

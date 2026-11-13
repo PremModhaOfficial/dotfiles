@@ -1,0 +1,144 @@
+PASS table/bracket paren (link target)
+PASS lint-agrees/bracket paren
+PASS table/bracket square (markdown link target)
+PASS lint-agrees/bracket square
+PASS table/bracket brace (template path)
+PASS lint-agrees/bracket brace
+PASS table/relative (relative path)
+PASS lint-agrees/relative
+PASS table/dot relative (relative path)
+PASS lint-agrees/dot relative
+PASS table/home (absolute path)
+PASS lint-agrees/home
+PASS table/angle path (output file)
+PASS lint-agrees/angle path
+PASS table/double slash (protocol-relative path)
+PASS lint-agrees/double slash
+PASS table/extension (file)
+PASS lint-agrees/extension
+PASS table/segment (directory)
+PASS lint-agrees/segment
+PASS table/retina (file name)
+PASS lint-agrees/retina
+PASS table/url query (root-relative URL)
+PASS lint-agrees/url query
+PASS table/fragment (root-relative URL)
+PASS lint-agrees/fragment
+PASS table/glob star (shell glob)
+PASS lint-agrees/glob star
+PASS table/glob class (shell glob)
+PASS lint-agrees/glob class
+PASS table/brace glob (shell glob)
+PASS lint-agrees/brace glob
+PASS table/path parameter (matrix URL parameter)
+PASS lint-agrees/path parameter
+PASS table/list path (path in a list)
+PASS lint-agrees/list path
+PASS table/prefix name (no such skill)
+PASS lint-agrees/prefix name
+PASS table/cd (directory argument)
+PASS lint-agrees/cd
+PASS table/cat (file argument)
+PASS lint-agrees/cat
+PASS table/ls (directory argument)
+PASS lint-agrees/ls
+PASS table/rm (file argument)
+PASS lint-agrees/rm
+PASS table/rm -rf (flag between command and path)
+PASS lint-agrees/rm -rf
+PASS table/cp (file argument)
+PASS lint-agrees/cp
+PASS table/mv (file argument)
+PASS lint-agrees/mv
+PASS table/ln (file argument)
+PASS lint-agrees/ln
+PASS table/grep (file argument)
+PASS lint-agrees/grep
+PASS table/head (file argument)
+PASS lint-agrees/head
+PASS table/tail (file argument)
+PASS lint-agrees/tail
+PASS table/source (file argument)
+PASS lint-agrees/source
+PASS table/bare dot (source builtin)
+PASS lint-agrees/bare dot
+PASS table/marked cd (list item whose value is a path)
+PASS lint-agrees/marked cd
+PASS table/sudo (exec path)
+PASS lint-agrees/sudo
+PASS table/man (man page path)
+PASS lint-agrees/man
+PASS table/bash only /tmp (not an installed skill)
+PASS lint-agrees/bash only /tmp
+PASS table/bash only /clear (not an installed skill)
+PASS lint-agrees/bash only /clear
+PASS table/prose then run (a space is an opener again)
+PASS lint-agrees/prose then run
+PASS table/prose or (a comma precedes a command)
+PASS lint-agrees/prose or
+PASS table/sentence end (period ends the token)
+PASS lint-agrees/sentence end
+PASS table/labelled trigger (trigger field names a command)
+PASS lint-agrees/labelled trigger
+PASS table/labelled use when (trigger field names a command)
+PASS lint-agrees/labelled use when
+PASS table/labelled use for (trigger field names a command)
+PASS lint-agrees/labelled use for
+PASS table/prose in parens (the command is after a space, not after the paren)
+PASS lint-agrees/prose in parens
+PASS table/bare line (line start)
+PASS lint-agrees/bare line
+PASS lint-agrees/bare line
+PASS table/heading (heading activation)
+PASS lint-agrees/heading
+PASS table/indented bullet (bullet activation)
+PASS lint-agrees/indented bullet
+PASS table/numbered bullet (list marker activation)
+PASS lint-agrees/numbered bullet
+PASS table/indented (indented line start)
+PASS lint-agrees/indented
+PASS table/quoted activation (an opening quote is an activation position)
+PASS lint-agrees/quoted activation
+PASS table/backticked activation (a backtick is an activation position)
+PASS lint-agrees/backticked activation
+PASS table/fenced block (fenced usage is prose on this host)
+PASS lint-agrees/fenced block
+PASS lint-agrees/fenced block
+PASS lint-agrees/fenced block
+PASS lint-agrees/fenced block
+PASS table/already rewritten (idempotent)
+PASS lint-agrees/already rewritten
+PASS lint counts rewritten
+PASS lint counts path-argument
+PASS lint counts path-bracket
+PASS lint counts path-char
+PASS lint counts path-suffix
+PASS lint counts unknown-name
+PASS lint counts the prose and field violations
+PASS lint counts rewritten after the rewrite
+PASS lint counts no violation after rewrite
+PASS lint refuses the bare trigger field
+PASS lint refuses bare prose
+PASS floor/empty-tree exits non-zero
+PASS floor/empty-tree says why
+PASS floor/139-files exits non-zero
+PASS floor/145-files passes
+PASS card exits 0 with only path shapes left
+PASS card rewrote prose and the trigger field
+PASS card reports zero violations
+PASS card counts the path argument
+PASS card counts the link bracket
+PASS mixed-tree exits non-zero
+PASS mixed-tree says REFUSED
+PASS mixed-tree writes nothing (bytes unchanged)
+PASS old-matcher fails the table (so the table is not vacuous)
+PASS old-matcher corrupts the @2x path
+PASS old-matcher corrupts the cd path
+PASS old corruption check reports clean on the @2x path
+PASS lint flags every seeded corruption
+PASS lint counts the prose zero
+PASS lint refuses a bare activation
+PASS pair check rejects a renamed token
+PASS pair check rejects @ after the name
+
+all checks passed

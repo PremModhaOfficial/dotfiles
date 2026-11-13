@@ -2,7 +2,7 @@
 name: ponytail-gain
 description: >
   Show ponytail's measured savings (code, cost, speed) from the benchmark.
-  One-shot display. Use for /skill:ponytail-gain, "what does ponytail save",
+  One-shot display. Use for /ponytail-gain, "what does ponytail save",
   "ponytail impact".
 ---
 
@@ -36,7 +36,7 @@ no-skill baseline; the label carries the exact figure:
   Hidden checks passed   97%  (no-skill 96%)
   Tests where the logic needs one   98%  (no-skill 68%)
 
-  This repo:  /skill:ponytail-debt  (shortcuts you deferred)
+  This repo:  /ponytail-debt  (shortcuts you deferred)
               /skill:ponytail-audit (what's still cuttable)
 ```
 

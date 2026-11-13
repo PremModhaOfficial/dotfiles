@@ -7,8 +7,8 @@
 # the shared file cannot silently leave pi with a stale rule.
 #
 # This file holds only what pi must obey and the shared file cannot deliver: the six
-# tool-form imperatives, the exact command for checking on an hc agent, and the one
-# override line. Everything else in the generated file is the shared file as-is.
+# tool-form imperatives and the exact command for checking on an hc agent. Everything
+# else in the generated file is the shared file as-is, clarify gate included.
 
 @header
 # Global instructions
@@ -16,9 +16,6 @@
 Shared memory is `~/.agents/AGENTS.md`; `~/.commandcode/AGENTS.md` is not read in pi.
 
 Why this block is duplicated: pi has no `@` import for context files, so a pointer line is inert — a rule behind a pointer fires only if a model chooses to go read another file, and these must fire without that choice. This is the one authorized exception to the no-duplication rule in `~/.agents/AGENTS.md`.
-
-@after Full scale, refusal path and retry detail
-- If told to start anyway: state the score and the reading you guessed, then go.
 
 @replace start long work backgrounded or monitored
 - Never block a shell command: long work gets its own terminal — `hc run --bg --name <n> '<cmd>'` — so `hc wait <n>` is legal later; if it truly must be `bash`, use `nohup <cmd> > <log> 2>&1 &`, record `$!` and the log path, then return. Never sit in an unbounded call waiting on it.

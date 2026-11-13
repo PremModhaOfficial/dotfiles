@@ -1,0 +1,4 @@
+skills-activation: token ledger before: bare=0, not-activation-position=78, bad-end=1301, unknown-name=511
+skills-activation: token ledger after:  bare=0, not-activation-position=78, bad-end=1301, unknown-name=511
+skills-activation: 145 skills scanned, 0 carried a bare activation, 0 references rewritten to /skill:<name>, 0 bare left, 0 path corruptions
+dry-run: no file written

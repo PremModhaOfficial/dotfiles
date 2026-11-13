@@ -87,13 +87,19 @@ def main():
         on_disk = {}
         for root in roots:
             for path in glob.glob(os.path.join(root, "*", "SKILL.md")):
-                on_disk.setdefault(os.path.basename(os.path.dirname(path)), path)
+                on_disk.setdefault(
+                    os.path.basename(os.path.dirname(path)), []).append(path)
         for name, terms in sorted(wanted.items()):
             if name not in on_disk:
                 continue
-            desc = (description(on_disk[name]) or "").lower()
+            # A skill can be installed twice (an upstream copy under
+            # ~/.agents/skills and a host copy under ~/.pi/agent/skills) with
+            # different wording, and the ledger records the terms of both. The
+            # term is lost only when neither installed copy carries it.
+            descs = ((description(path) or "").lower() for path in on_disk[name])
+            haystack = "\n".join(descs)
             for term in terms:
-                if term.lower() not in desc:
+                if term.lower() not in haystack:
                     lost.append((name, term))
 
     print(f"skills-cap-check: {checked} descriptions, cap {cap} B "

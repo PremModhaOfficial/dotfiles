@@ -14,11 +14,11 @@ Display this reference card when invoked. One-shot — do NOT change mode, write
 | Mode | Trigger | What change |
 |------|---------|-------------|
 | **caveman** | `/skill:caveman` | The voice. Answer first, no fluff, every fact kept. Default. |
-| **ultracave** | `/skill:ultracave` (alias `/skill:caveman ultra`) | Grammar stripped. Fragments, one word when enough, each fact once. |
-| **megacave** | `/skill:megacave` (alias `/skill:caveman wenyan`) | Classical Chinese 文言文. Far fewer characters, technical terms verbatim. |
+| **ultracave** | `/skill:ultracave` (alias `/caveman ultra`) | Grammar stripped. Fragments, one word when enough, each fact once. |
+| **megacave** | `/skill:megacave` (alias `/caveman wenyan`) | Classical Chinese 文言文. Far fewer characters, technical terms verbatim. |
 
 Mode stick until changed or session end.
-`/skill:caveman status` reports current mode without changing it. Claude Code and the standalone OpenCode plugin read stored state; other hosts answer from the conversation and mark it `(not tracked by this host)`.
+`/caveman status` reports current mode without changing it. Claude Code and the standalone OpenCode plugin read stored state; other hosts answer from the conversation and mark it `(not tracked by this host)`.
 
 ## Skills
 
@@ -27,7 +27,7 @@ Mode stick until changed or session end.
 | **caveman-commit** | `/skill:caveman-commit` | Terse commit messages. Conventional Commits. ≤50 char subject. |
 | **tiger-style-review** | `/skill:tiger-style-review` | One-line PR comments: `L42: assert: user null after find. Add guard.` Safety tags only. |
 | **caveman-review** | `/skill:caveman-review` | Terse review of any diff: `L42: 🔴 bug: user can be null after .find(). Add guard before .email.` |
-| **caveman-compress** | `/skill:caveman-compress <file>` | Compress .md files to caveman prose. 33.2% fewer tokens on the repo's five test files. |
+| **caveman-compress** | `/caveman-compress <file>` | Compress .md files to caveman prose. 33.2% fewer tokens on the repo's five test files. |
 | **caveman-help** | `/skill:caveman-help` | This card. |
 
 ## Deactivate

@@ -1,0 +1,7 @@
+[2026-11-13T15:11:27Z] === skill activation form ===
+STUB python3 /home/prm/dotfiles/jcode/skills-activation.py
+[2026-11-13T15:11:27Z] ERROR: skill activation form refused; see the log for a bare /<skill> or a tree that shrank against ~/.jcode/state/skills-activation.json
+[2026-11-13T15:11:27Z] === skill catalogue cap ===
+STUB python3 /home/prm/dotfiles/jcode/skills-cap.py
+STUB python3 /home/prm/dotfiles/jcode/skills-cap-check.py
+[2026-11-13T15:11:27Z] ERROR: skill catalogue cap failed; descriptions are not capped

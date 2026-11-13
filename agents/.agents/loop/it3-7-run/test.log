@@ -1,0 +1,313 @@
+PASS table/quoted path argument (review D: cat "/brag" was rewritten)
+PASS lint-agrees/quoted path argument
+PASS bucket/quoted path argument (review D: cat "/brag" was rewritten)
+PASS idempotent/quoted path argument
+PASS table/cd argument (review D: path argument)
+PASS lint-agrees/cd argument
+PASS bucket/cd argument (review D: path argument)
+PASS idempotent/cd argument
+PASS table/markdown link (review D: link target)
+PASS lint-agrees/markdown link
+PASS bucket/markdown link (review D: link target)
+PASS idempotent/markdown link
+PASS table/output file (review D: <output-dir>/brag.mp4)
+PASS lint-agrees/output file
+PASS bucket/output file (review D: <output-dir>/brag.mp4)
+PASS idempotent/output file
+PASS table/dir command not in a list (review D: unlisted command is no longer guessed at)
+PASS lint-agrees/dir command not in a list
+PASS bucket/dir command not in a list (review D: unlisted command is no longer guessed at)
+PASS idempotent/dir command not in a list
+PASS table/vim (review D: unlisted command)
+PASS lint-agrees/vim
+PASS bucket/vim (review D: unlisted command)
+PASS idempotent/vim
+PASS table/sort (review D: unlisted command)
+PASS lint-agrees/sort
+PASS bucket/sort (review D: unlisted command)
+PASS idempotent/sort
+PASS table/python (review D: unlisted command)
+PASS lint-agrees/python
+PASS bucket/python (review D: unlisted command)
+PASS idempotent/python
+PASS table/windows dir (review D: windows path command)
+PASS lint-agrees/windows dir
+PASS bucket/windows dir (review D: windows path command)
+PASS idempotent/windows dir
+PASS table/quoted single (review D: single-quoted path)
+PASS lint-agrees/quoted single
+PASS bucket/quoted single (review D: single-quoted path)
+PASS idempotent/quoted single
+PASS table/quoted in cd (review D: quoted path)
+PASS lint-agrees/quoted in cd
+PASS bucket/quoted in cd (review D: quoted path)
+PASS idempotent/quoted in cd
+PASS table/list item with a command (review D: the marker's value is a command, the token is not the value)
+PASS lint-agrees/list item with a command
+PASS bucket/list item with a command (review D: the marker's value is a command, the token is not the value)
+PASS idempotent/list item with a command
+PASS table/table cell (review D: pipe shape, not one of the four)
+PASS lint-agrees/table cell
+PASS bucket/table cell (review D: pipe shape, not one of the four)
+PASS idempotent/table cell
+PASS table/bold (review D: asterisk shape, not one of the four)
+PASS lint-agrees/bold
+PASS bucket/bold (review D: asterisk shape, not one of the four)
+PASS idempotent/bold
+PASS table/bang (review D: bang shape, not one of the four)
+PASS lint-agrees/bang
+PASS bucket/bang (review D: bang shape, not one of the four)
+PASS idempotent/bang
+PASS table/bang in a marker (the bang shape rewrites when it sits in a position)
+PASS lint-agrees/bang in a marker
+PASS bucket/bang in a marker (the bang shape rewrites when it sits in a position)
+PASS idempotent/bang in a marker
+PASS table/star in a marker (the asterisk shape rewrites when it sits in a position)
+PASS lint-agrees/star in a marker
+PASS bucket/star in a marker (the asterisk shape rewrites when it sits in a position)
+PASS idempotent/star in a marker
+PASS table/pipe after a label (a pipe token does not start the label's value, so it is left)
+PASS lint-agrees/pipe after a label
+PASS bucket/pipe after a label (a pipe token does not start the label's value, so it is left)
+PASS idempotent/pipe after a label
+PASS table/bare trigger without space (the label position is enumerated, colon spacing is free)
+PASS lint-agrees/bare trigger without space
+PASS bucket/bare trigger without space (the label position is enumerated, colon spacing is free)
+PASS idempotent/bare trigger without space
+PASS table/prefix run (review D: /brag- was counted in no bucket)
+PASS lint-agrees/prefix run
+PASS bucket/prefix run (review D: /brag- was counted in no bucket)
+PASS idempotent/prefix run
+PASS table/prefix run at start (the run is glued onto an installed name)
+PASS lint-agrees/prefix run at start
+PASS bucket/prefix run at start (the run is glued onto an installed name)
+PASS idempotent/prefix run at start
+PASS table/prose (prose after a space is not a safe position)
+PASS lint-agrees/prose
+PASS bucket/prose (prose after a space is not a safe position)
+PASS idempotent/prose
+PASS table/prose in parens (prose in parens is not a safe position)
+PASS lint-agrees/prose in parens
+PASS bucket/prose in parens (prose in parens is not a safe position)
+PASS idempotent/prose in parens
+PASS table/label with prose (the token does not start the label's value)
+PASS lint-agrees/label with prose
+PASS bucket/label with prose (the token does not start the label's value)
+PASS idempotent/label with prose
+PASS table/extension (file extension)
+PASS lint-agrees/extension
+PASS bucket/extension (file extension)
+PASS idempotent/extension
+PASS table/segment (further segment)
+PASS lint-agrees/segment
+PASS bucket/segment (further segment)
+PASS idempotent/segment
+PASS table/retina (file name)
+PASS lint-agrees/retina
+PASS bucket/retina (file name)
+PASS idempotent/retina
+PASS table/query (query, no boundary)
+PASS lint-agrees/query
+PASS bucket/query (query, no boundary)
+PASS idempotent/query
+PASS table/fragment (fragment)
+PASS lint-agrees/fragment
+PASS bucket/fragment (fragment)
+PASS idempotent/fragment
+PASS table/brace glob (glob)
+PASS lint-agrees/brace glob
+PASS bucket/brace glob (glob)
+PASS idempotent/brace glob
+PASS table/error code (two separators, no boundary: the old lint refused this whole)
+PASS lint-agrees/error code
+PASS bucket/error code (two separators, no boundary: the old lint refused this whole)
+PASS idempotent/error code
+PASS table/unknown command (not installed)
+PASS lint-agrees/unknown command
+PASS bucket/unknown command (not installed)
+PASS idempotent/unknown command
+PASS table/not a name (no name after the slash)
+PASS lint-agrees/not a name
+PASS bucket/not a name (no name after the slash)
+PASS idempotent/not a name
+PASS table/prefixed path (an already rewritten token with a path tail is left and counted)
+PASS lint-agrees/prefixed path
+PASS bucket/prefixed path (an already rewritten token with a path tail is left and counted)
+PASS idempotent/prefixed path
+PASS table/P1 bare (line start)
+PASS lint-agrees/P1 bare
+PASS bucket/P1 bare (line start)
+PASS idempotent/P1 bare
+PASS table/P1 indented (indented)
+PASS lint-agrees/P1 indented
+PASS bucket/P1 indented (indented)
+PASS idempotent/P1 indented
+PASS table/P1 with args (line start, arguments after the token)
+PASS lint-agrees/P1 with args
+PASS bucket/P1 with args (line start, arguments after the token)
+PASS idempotent/P1 with args
+PASS table/P1 bang (the bang shape rewrites when it sits in a position)
+PASS lint-agrees/P1 bang
+PASS bucket/P1 bang (the bang shape rewrites when it sits in a position)
+PASS idempotent/P1 bang
+PASS table/P1 code span (a whole-name code span at line start)
+PASS lint-agrees/P1 code span
+PASS bucket/P1 code span (a whole-name code span at line start)
+PASS idempotent/P1 code span
+PASS table/P2 dash (dash bullet)
+PASS lint-agrees/P2 dash
+PASS bucket/P2 dash (dash bullet)
+PASS idempotent/P2 dash
+PASS table/P2 star (star bullet)
+PASS lint-agrees/P2 star
+PASS bucket/P2 star (star bullet)
+PASS idempotent/P2 star
+PASS table/P2 plus (plus bullet)
+PASS lint-agrees/P2 plus
+PASS bucket/P2 plus (plus bullet)
+PASS idempotent/P2 plus
+PASS table/P2 indented (indented bullet)
+PASS lint-agrees/P2 indented
+PASS bucket/P2 indented (indented bullet)
+PASS idempotent/P2 indented
+PASS table/P2 heading (heading)
+PASS lint-agrees/P2 heading
+PASS bucket/P2 heading (heading)
+PASS idempotent/P2 heading
+PASS table/P2 numbered (ordered list)
+PASS lint-agrees/P2 numbered
+PASS bucket/P2 numbered (ordered list)
+PASS idempotent/P2 numbered
+PASS table/P2 numbered paren (ordered list, paren form)
+PASS lint-agrees/P2 numbered paren
+PASS bucket/P2 numbered paren (ordered list, paren form)
+PASS idempotent/P2 numbered paren
+PASS table/P2 spaces (the token still ends the marker's run)
+PASS lint-agrees/P2 spaces
+PASS bucket/P2 spaces (the token still ends the marker's run)
+PASS idempotent/P2 spaces
+PASS table/P3 trigger (trigger label with a space)
+PASS lint-agrees/P3 trigger
+PASS bucket/P3 trigger (trigger label with a space)
+PASS idempotent/P3 trigger
+PASS table/P3 trigger no space (the label form is enumerated)
+PASS lint-agrees/P3 trigger no space
+PASS bucket/P3 trigger no space (the label form is enumerated)
+PASS idempotent/P3 trigger no space
+PASS table/P3 use when (no space after the colon)
+PASS lint-agrees/P3 use when
+PASS bucket/P3 use when (no space after the colon)
+PASS idempotent/P3 use when
+PASS table/P3 use for (dot is a token end)
+PASS lint-agrees/P3 use for
+PASS bucket/P3 use for (dot is a token end)
+PASS idempotent/P3 use for
+PASS table/P3 activate (activate label)
+PASS lint-agrees/P3 activate
+PASS bucket/P3 activate (activate label)
+PASS idempotent/P3 activate
+PASS table/P3 invoke (invoke label)
+PASS lint-agrees/P3 invoke
+PASS bucket/P3 invoke (invoke label)
+PASS idempotent/P3 invoke
+PASS table/P3 frontmatter (the label is inside a quoted frontmatter value)
+PASS lint-agrees/P3 frontmatter
+PASS bucket/P3 frontmatter (the label is inside a quoted frontmatter value)
+PASS idempotent/P3 frontmatter
+PASS table/P4 span (the whole span is the name)
+PASS lint-agrees/P4 span
+PASS bucket/P4 span (the whole span is the name)
+PASS idempotent/P4 span
+PASS table/P4 span then dot (text after the closing backtick)
+PASS lint-agrees/P4 span then dot
+PASS bucket/P4 span then dot (text after the closing backtick)
+PASS idempotent/P4 span then dot
+PASS table/P4 two spans (two spans, two rewrites)
+PASS lint-agrees/P4 two spans
+PASS bucket/P4 two spans (two spans, two rewrites)
+PASS idempotent/P4 two spans
+PASS table/already rewritten (the transform is idempotent)
+PASS lint-agrees/already rewritten
+PASS bucket/already rewritten (the transform is idempotent)
+PASS idempotent/already rewritten
+PASS table/label rewritten (label, already rewritten)
+PASS lint-agrees/label rewritten
+PASS bucket/label rewritten (label, already rewritten)
+PASS idempotent/label rewritten
+PASS ledger/sum equals slash total
+PASS ledger/slashes counted
+PASS ledger/total
+PASS ledger/safe-bare
+PASS ledger/position
+PASS ledger/token-suffix
+PASS ledger/name-continues
+PASS ledger/unknown-name
+PASS ledger/not-name
+PASS ledger/rewritten
+PASS ledger/prefixed-tail
+PASS ledger/the /brag- hole is counted
+PASS ledger/problems are the safe-position rows
+PASS ledger/after sum equals slash total
+PASS ledger/after has no safe-bare
+PASS ledger/after has the same total
+PASS ledger/after has no problems
+PASS position/P1 rewrites
+PASS position/P1 leaves the same token outside
+PASS position/P2 rewrites
+PASS position/P2 leaves the same token outside
+PASS position/P3 rewrites
+PASS position/P3 leaves the same token outside
+PASS position/P4 rewrites
+PASS position/P4 leaves the same token outside
+PASS card/exits 0 with a bare token outside a position
+PASS card/rewrites only the safe positions
+PASS card/reports zero safe-bare
+PASS card/reports four rewrites
+PASS card/reports the after state
+PASS card/reports the before state
+PASS card/counts the position bucket
+PASS card/asserts the bucket sum
+PASS prefixed/exit 0
+PASS prefixed/left byte-identical
+PASS prefixed/counted as prefixed-tail
+PASS old-matcher fails the table
+PASS old-matcher rewrote the quoted path
+PASS old-matcher left the bracket link alone
+PASS old-matcher left /brag- alone
+PASS old lint booked no bucket for /brag-
+PASS new ledger books exactly one bucket for /brag-
+PASS lint refuses a bare line-start token
+PASS lint refuses a bare trigger field
+PASS lint leaves a bare prose token and counts it
+PASS pair check rejects a rewritten path
+PASS pair check accepts a legal rewrite
+PASS pair check rejects a rewrite of prose
+PASS matcher and lint agree on every live line
+PASS baseline/empty-tree-no-state exits 0
+PASS baseline/empty-tree records count 0
+PASS baseline/empty-tree is not a refusal
+PASS baseline/full-tree-no-state exits 0
+PASS baseline/full-tree records count 145
+PASS baseline/unchanged exits 0
+PASS baseline/unchanged is quiet
+PASS baseline/shrink-by-20 exits 1
+PASS baseline/shrink-by-20 says REFUSED
+PASS baseline/shrink-by-20 names both counts
+PASS baseline/shrink-by-20 names the escape hatch
+PASS baseline/shrink does not move the baseline
+PASS baseline/deliberate-shrink exits 0
+PASS baseline/deliberate-shrink warns once
+PASS baseline/deliberate-shrink re-baselines
+PASS baseline/after rebaseline is quiet
+PASS baseline/growth exits 0
+PASS baseline/growth warns once
+PASS baseline/growth re-baselines
+PASS baseline/growth keeps the fingerprint for identical bytes
+PASS baseline/edited card exits 0
+PASS baseline/edited card moves the fingerprint
+PASS baseline/corrupt-state exits 0
+PASS baseline/corrupt-state is rewritten
+PASS baseline/dry-run exits 0
+PASS baseline/dry-run writes no state
+
+all checks passed

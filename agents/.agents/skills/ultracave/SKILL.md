@@ -2,7 +2,7 @@
 name: ultracave
 description: >
   Caveman at maximum compression: fragments, one word when one word is enough,
-  each fact once. Invoke only with /skill:ultracave or /skill:caveman ultra. Stays on until
+  each fact once. Invoke only with /ultracave or /caveman ultra. Stays on until
   "stop caveman" or "normal mode".
 disable-model-invocation: true
 ---
@@ -15,7 +15,7 @@ Ultracave is caveman with the grammar stripped. Payload only.
 
 ## Persistence
 
-Every response, whole session, until "stop ultracave" or "normal mode". Unsure? Still on. `/skill:caveman status` reports the mode and changes nothing: relay the hook's `Caveman mode: <mode>` value; with no hook, the mode you were in (or `off`) plus `(not tracked by this host)`.
+Every response, whole session, until "stop ultracave" or "normal mode". Unsure? Still on. `/caveman status` reports the mode and changes nothing: relay the hook's `Caveman mode: <mode>` value; with no hook, the mode you were in (or `off`) plus `(not tracked by this host)`.
 
 ## Precedence
 

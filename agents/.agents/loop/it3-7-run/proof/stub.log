@@ -1,0 +1,4 @@
+[2026-11-13T15:11:27Z] === skill catalogue cap ===
+STUB python3 /home/prm/dotfiles/jcode/skills-cap.py
+STUB python3 /home/prm/dotfiles/jcode/skills-cap-check.py
+[2026-11-13T15:11:27Z] ERROR: skill catalogue cap failed; descriptions are not capped

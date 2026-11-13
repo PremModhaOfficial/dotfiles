@@ -15,9 +15,9 @@ write flag files, or persist anything.
 
 | Level | Trigger | What change |
 |-------|---------|-------------|
-| **Lite** | `/skill:tiger-style lite` | Build what's asked, flag missing assertions and unbounded resources in one line. |
+| **Lite** | `/tiger-style lite` | Build what's asked, flag missing assertions and unbounded resources in one line. |
 | **Full** | `/skill:tiger-style` | All pillars enforced: assertions, bounds, explicit control flow, performance sketches. Default. |
-| **Strict** | `/skill:tiger-style strict` | NASA-grade. Paired assertions, every resource bounded, every branch has an else, zero warnings. |
+| **Strict** | `/tiger-style strict` | NASA-grade. Paired assertions, every resource bounded, every branch has an else, zero warnings. |
 
 Level sticks until changed or session end.
 
@@ -61,7 +61,7 @@ Before writing any code, run through these seven steps. Stop at the first one th
 Say "stop tiger-style" or "normal mode". Resume anytime with `/skill:tiger-style`.
 
 There is no `off` level — the skill's levels are lite, full and strict only — so
-`/skill:tiger-style off` is not a trigger. Deactivate with the phrases above.
+`/tiger-style off` is not a trigger. Deactivate with the phrases above.
 
 ## Configure Default Mode
 
@@ -91,7 +91,7 @@ Config file (`~/.config/tiger-style/config.json`, Windows:
 
 With the hooks installed, `"off"` in that file turns auto-activation off at
 session start, and you activate manually with `/skill:tiger-style` when wanted. That
-is a config value for the hooks, not a `/skill:tiger-style off` trigger.
+is a config value for the hooks, not a `/tiger-style off` trigger.
 
 Resolution (hooks only): env var > config file > `full`.
 

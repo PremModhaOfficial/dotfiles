@@ -1,0 +1,30 @@
+[2026-11-13T15:02:57Z] update-all started (dry_run=0 parallel=0); private run: /tmp/it37/home/.jcode/logs/update-all-20261113T150257Z.vENUvh
+[2026-11-13T15:02:57Z] === prerequisites ===
+[2026-11-13T15:02:57Z] OK: git, bash, python3, flock, sha256sum, cmp, cp present
+[2026-11-13T15:02:57Z] OK: PyYAML present (/home/prm/.local/lib/python3.14/site-packages/yaml/__init__.py)
+[2026-11-13T15:02:57Z] === symlink fleet (~/.agents is read by every later phase) ===
+[2026-11-13T15:02:57Z] OK:  link /tmp/it37/home/.agents -> /tmp/it37/fake/agents/.agents (in place)
+[2026-11-13T15:02:57Z] OK:  link /tmp/it37/home/AGENTS.md -> /tmp/it37/fake/agents/AGENTS.md (in place)
+[2026-11-13T15:02:57Z] OK:  link /tmp/it37/home/skills -> /tmp/it37/fake/agents/.agents/skills (in place)
+[2026-11-13T15:02:57Z] OK:  link /tmp/it37/home/.skill-lock.json -> /tmp/it37/fake/agents/.agents/.skill-lock.json (in place)
+[2026-11-13T15:02:57Z] OK:  link /tmp/it37/home/.jcode/bin/update-all.sh -> /tmp/it37/fake/jcode/update-all.sh (in place)
+[2026-11-13T15:02:57Z] === pi rules file (generated) ===
+ERROR: missing /tmp/it37/home/.agents/AGENTS.md
+[2026-11-13T15:02:57Z] ERROR: pi rules file generation failed; ~/.pi/agent/AGENTS.md is stale
+[2026-11-13T15:02:57Z] === pi patches (npm tree, re-applied) ===
+apply-pi-patches: SKIP: no pi install found; tried:
+  /usr/lib/node_modules/@earendil-works/pi-coding-agent
+  /tmp/it37/home/.npm-global/lib/node_modules/@earendil-works/pi-coding-agent
+  /usr/local/lib/node_modules/@earendil-works/pi-coding-agent
+apply-pi-patches: install pi, or export PI_ROOT=<package root>
+[2026-11-13T15:02:58Z] SKIP: pi patches — no pi install found (paths above; install pi or export PI_ROOT)
+[2026-11-13T15:02:58Z] === skill manifest ===
+[2026-11-13T15:02:58Z] OK: manifest written to /tmp/it37/home/.agents/skills/README.md (180 skills)
+[2026-11-13T15:02:58Z] === skills audit ===
+[2026-11-13T15:03:04Z] AUDIT-TOTAL: 0
+[2026-11-13T15:03:04Z] OK: checklist appended to /tmp/it37/home/.jcode/state/update-all/CHECKLIST.md (8/11 ok, 2 failed, 1 skipped)
+[2026-11-13T15:03:04Z] not done this run:
+  fail: phase generate_pi_agents
+  fail: pi rules file (~/.pi/agent/AGENTS.md)
+  skip: pi patches (no pi install found)
+[2026-11-13T15:03:04Z] update-all finished (exit=1); restart/reload only successful updates

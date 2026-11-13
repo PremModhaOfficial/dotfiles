@@ -1,6 +1,6 @@
 ---
 name: tiger-style-audit
-description: "Whole-repo audit for Tiger Style safety. Use when: audit this codebase, tiger audit, audit for safety, find the unguarded paths, harden this repo, /skill:tiger-style-audit."
+description: "Whole-repo audit for Tiger Style safety. Use when: audit this codebase, tiger audit, audit for safety, find the unguarded paths, harden this repo, /tiger-style-audit."
 ---
 
 Audit the whole codebase for Tiger Style violations. Do not read every file

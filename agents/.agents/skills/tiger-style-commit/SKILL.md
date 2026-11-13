@@ -1,6 +1,6 @@
 ---
 name: tiger-style-commit
-description: "Commit message generator that follows Tiger Style's documentation rules: say why, not just what; be descriptive, precise, and delight the reader. Use when: write a commit, generate commit, /skill:tiger-style-commit."
+description: "Commit message generator that follows Tiger Style's documentation rules: say why, not just what; be descriptive, precise, and delight the reader. Use when: write a commit, generate commit, /tiger-style-commit."
 ---
 
 Write commit messages the Tiger Style way: the reader of `git blame` must

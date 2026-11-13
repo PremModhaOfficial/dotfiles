@@ -1,0 +1,7 @@
+[2026-11-13T14:39:10Z] === skill activation form ===
+STUB python3 /home/prm/dotfiles/jcode/skills-activation.py
+[2026-11-13T14:39:10Z] ERROR: a bare /<skill> activation survived; pi only registers /skill:<name>
+[2026-11-13T14:39:10Z] === skill catalogue cap ===
+STUB python3 /home/prm/dotfiles/jcode/skills-cap.py
+STUB python3 /home/prm/dotfiles/jcode/skills-cap-check.py
+[2026-11-13T14:39:10Z] ERROR: skill catalogue cap failed; descriptions are not capped

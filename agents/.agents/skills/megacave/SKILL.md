@@ -2,7 +2,7 @@
 name: megacave
 description: >
   Caveman in Classical Chinese: 文言文 register, far fewer characters, technical
-  terms verbatim. Invoke only with /skill:megacave or /skill:caveman wenyan. Stays on until
+  terms verbatim. Invoke only with /megacave or /caveman wenyan. Stays on until
   "stop caveman" or "normal mode".
 disable-model-invocation: true
 ---
@@ -15,7 +15,7 @@ Megacave is caveman in Classical Chinese. 文言文: subjects omitted where reco
 
 ## Persistence
 
-Every response, whole session, until "stop megacave" or "normal mode". Unsure? Still on. `/skill:caveman status` reports the mode and changes nothing: relay the hook's `Caveman mode: <mode>` value; with no hook, the mode you were in (or `off`) plus `(not tracked by this host)`.
+Every response, whole session, until "stop megacave" or "normal mode". Unsure? Still on. `/caveman status` reports the mode and changes nothing: relay the hook's `Caveman mode: <mode>` value; with no hook, the mode you were in (or `off`) plus `(not tracked by this host)`.
 
 ## Precedence
 

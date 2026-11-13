@@ -4,8 +4,8 @@
 pi has no `@` import for context files, so the shared rules have to be inlined; kept
 by hand they drift (IT2-4: 42 diff lines against the shared file, and two of the
 rewrites changed the instruction rather than adapting it). The fragment carries only
-the six pi tool-form imperatives and the one override line: every other line in the
-generated file comes from the shared file verbatim.
+the six pi tool-form imperatives: every other line in the generated file comes from the
+shared file verbatim.
 
 exit 0 = written or already current, 1 = the fragment no longer matches the shared file.
 """

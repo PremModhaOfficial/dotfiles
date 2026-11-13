@@ -1,0 +1,4 @@
+skills-activation: token ledger before: safe-bare=0, left=397, prefixed-tail=0, unknown-name=206, not-name=123, name-continues=12, token-suffix=13, position=43, rewritten=44, sum=441/441
+skills-activation: token ledger after:  safe-bare=0, left=397, prefixed-tail=0, unknown-name=206, not-name=123, name-continues=12, token-suffix=13, position=43, rewritten=44, sum=441/441
+skills-activation: 180 skills scanned, 0 files changed, 0 bare in a safe position, 397 left with a reason, 0 problems
+dry-run: no file written, state unchanged

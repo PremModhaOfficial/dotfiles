@@ -1,0 +1,1 @@
+skills-lint: safe-bare=0 left=2781 prefixed-tail=0 unknown-name=1748 not-name=917 name-continues=25 token-suffix=42 position=49 rewritten=234 sum=3015/3015

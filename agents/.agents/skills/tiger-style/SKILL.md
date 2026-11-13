@@ -19,7 +19,7 @@ the priority.
 
 ACTIVE EVERY RESPONSE. No drift back to loose coding. Still active if unsure.
 Off only: "stop tiger-style" / "normal mode". Default: **full**.
-Switch: `/skill:tiger-style lite|full|strict`.
+Switch: `/tiger-style lite|full|strict`.
 
 ## Precedence
 

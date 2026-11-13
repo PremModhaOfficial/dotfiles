@@ -1,0 +1,70 @@
+### sandbox root: /home/prm/.cache/it4-4
+### live cards: 128
+
+===== a empty tree, no state =====
+[2026-11-13T15:04:29Z] === skill activation form ===
+skills-activation: token ledger before: safe-bare=0, left=0, prefixed-tail=0, unknown-name=0, not-name=0, name-continues=0, token-suffix=0, position=0, rewritten=0, sum=0/0
+skills-activation: token ledger after:  safe-bare=0, left=0, prefixed-tail=0, unknown-name=0, not-name=0, name-continues=0, token-suffix=0, position=0, rewritten=0, sum=0/0
+skills-activation: 0 skills scanned, 0 files changed, 0 bare in a safe position, 0 left with a reason, 0 problems
+PHASE_EXIT=0
+CHECKLIST=done	skill activation form;
+EXIT=0
+WARN_LINES=0
+STATE=count=0 fingerprint=e3b0c44298fc
+a_exit=0
+
+### c tree built with 128 cards; run 1 writes the baseline
+
+===== c2 full tree, state present, unchanged =====
+[2026-11-13T15:04:31Z] === skill activation form ===
+skills-activation: token ledger before: safe-bare=0, left=1842, prefixed-tail=0, unknown-name=1242, not-name=537, name-continues=21, token-suffix=35, position=7, rewritten=241, sum=2083/2083
+skills-activation: token ledger after:  safe-bare=0, left=1842, prefixed-tail=0, unknown-name=1242, not-name=537, name-continues=21, token-suffix=35, position=7, rewritten=241, sum=2083/2083
+skills-activation: 128 skills scanned, 0 files changed, 0 bare in a safe position, 1842 left with a reason, 0 problems
+PHASE_EXIT=0
+CHECKLIST=done	skill activation form;
+EXIT=0
+WARN_LINES=0
+STATE=count=128 fingerprint=5c7cf2b4aa95
+c_exit=0
+
+### b tree now 108 cards
+
+===== b full tree, state present, 20 deleted =====
+[2026-11-13T15:04:31Z] === skill activation form ===
+skills-activation: REFUSED: 108 skill files found, 128 at the last successful run (5c7cf2b4aa95); 20 recorded file(s) are gone: ai-image-generation, archify, ask-matt, axi, babysit, brag, cavecrew, caveman-commit, caveman-compress, caveman-discover
+skills-activation: nothing written; if the removal is intended, rerun with --rebaseline
+[2026-11-13T15:04:31Z] ERROR: skill activation form refused; see the log for a bare /<skill> or a tree that shrank against ~/.jcode/state/skills-activation.json
+PHASE_EXIT=1
+CHECKLIST=fail	skill activation form;
+EXIT=1
+WARN_LINES=0
+STATE=count=128 fingerprint=5c7cf2b4aa95
+b_exit=1
+
+### d2 128 cards restored under the wiped run's state
+
+===== d2 full tree restored, state says 0 =====
+[2026-11-13T15:04:32Z] === skill activation form ===
+skills-activation: WARN: tree grew 0 -> 128 skill files since the last successful run; re-baselining
+skills-activation: token ledger before: safe-bare=0, left=1842, prefixed-tail=0, unknown-name=1242, not-name=537, name-continues=21, token-suffix=35, position=7, rewritten=241, sum=2083/2083
+skills-activation: token ledger after:  safe-bare=0, left=1842, prefixed-tail=0, unknown-name=1242, not-name=537, name-continues=21, token-suffix=35, position=7, rewritten=241, sum=2083/2083
+skills-activation: 128 skills scanned, 0 files changed, 0 bare in a safe position, 1842 left with a reason, 0 problems
+PHASE_EXIT=0
+CHECKLIST=done	skill activation form;
+EXIT=0
+WARN_LINES=1
+STATE=count=128 fingerprint=5c7cf2b4aa95
+d_exit=0
+### e tree: 35 cards, no state
+
+===== e reviewer's case: 35 cards, no state =====
+[2026-11-13T15:04:33Z] === skill activation form ===
+skills-activation: token ledger before: safe-bare=0, left=779, prefixed-tail=0, unknown-name=521, not-name=222, name-continues=16, token-suffix=18, position=2, rewritten=48, sum=827/827
+skills-activation: token ledger after:  safe-bare=0, left=779, prefixed-tail=0, unknown-name=521, not-name=222, name-continues=16, token-suffix=18, position=2, rewritten=48, sum=827/827
+skills-activation: 35 skills scanned, 0 files changed, 0 bare in a safe position, 779 left with a reason, 0 problems
+PHASE_EXIT=0
+CHECKLIST=done	skill activation form;
+EXIT=0
+WARN_LINES=0
+STATE=count=35 fingerprint=77ebc3e54f66
+e_exit=0

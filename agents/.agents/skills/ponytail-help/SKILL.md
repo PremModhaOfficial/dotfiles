@@ -2,7 +2,7 @@
 name: ponytail-help
 description: >
   Quick reference for ponytail levels, skills and commands. One-shot display.
-  Use for /skill:ponytail-help, "ponytail help", "how do I use ponytail".
+  Use for /ponytail-help, "ponytail help", "how do I use ponytail".
 ---
 
 # Ponytail Help
@@ -14,9 +14,9 @@ write flag files, or persist anything.
 
 | Level | Trigger | What change |
 |-------|---------|-------------|
-| **Lite** | `/skill:ponytail lite` | Build what was asked, name the smaller option in one line. |
+| **Lite** | `/ponytail lite` | Build what was asked, name the smaller option in one line. |
 | **Full** | `/skill:ponytail` | The smallest complete change, a check where the logic needs one, and a reply that names what was skipped and any risk. Default. |
-| **Ultra** | `/skill:ponytail ultra` | Also questions the request and pushes back before building. |
+| **Ultra** | `/ponytail ultra` | Also questions the request and pushes back before building. |
 
 Level sticks until changed or session end.
 
@@ -38,13 +38,13 @@ slash-command forms above (OpenCode ships all six as slash commands).
 ## Deactivate
 
 Say "stop ponytail" or "normal mode". Resume anytime with `/skill:ponytail`.
-`/skill:ponytail off` also works.
+`/ponytail off` also works.
 
 ## Band (Claude Code)
 
-`/skill:ponytail band` hides the band above the prompt, the same command brings it back.
-`/skill:ponytail band on` and `/skill:ponytail band off` set it directly. The level stays.
-`/skill:ponytail band import` adds your past Claude Code sessions (cost, agent time, tokens) to the board.
+`/ponytail band` hides the band above the prompt, the same command brings it back.
+`/ponytail band on` and `/ponytail band off` set it directly. The level stays.
+`/ponytail band import` adds your past Claude Code sessions (cost, agent time, tokens) to the board.
 
 ## Configure Default Mode
 
