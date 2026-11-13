@@ -124,6 +124,23 @@ Acceptance checks
   Reviewer r4-antagonist spawned DIFFERENT: it may run in parallel with w1-diet (read-only, no file edits).
 - rev1 cleanup: w2-memory pane killed and removed (t46); t48 is the kept shell, not a worker.
 
+## Outer loop: when to stop
+
+Keep auditing while an iteration still pays for itself. Define it before looking, never after:
+
+- CONTINUE while an iteration finds at least 3 fixable defects that change behaviour - a rule that
+  cannot be obeyed, a path or tool that is not there, a step that is wasted - and at least one of
+  them ruins a whole session.
+- STOP when a round finds fewer than 3 such defects, or finds none that changes behaviour, or the
+  fixes save under 1 percent of the per-request cost.
+- Hard stop: two rounds in a row below the bar. Two is the number because one quiet round can be a bad
+  lens, and two is enough to call it.
+- Each round uses a different lens, or it re-finds the previous round. Lenses used so far:
+  round 1 structure, round 2 context cost and rule truth, round 3 real task execution and skill contents.
+
+Measured so far: round 1 = 9 defects, several session-ruining; round 2 = 5, two session-ruining
+(two of them introduced by round 1's own fixes); per-request cost 54,967 -> 50,216 B. Both rounds paid.
+
 ## Closed (loop final)
 
 | # | verdict | evidence |

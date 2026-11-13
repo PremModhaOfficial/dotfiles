@@ -72,7 +72,10 @@ def clen(s):
 
 QUOTED = re.compile(r'"([^"]{2,60})"')
 BACKTICK = re.compile(r"`([^`]{2,60})`")
-SLASH = re.compile(r"(?<![\w/])(/[a-z0-9][a-z0-9-]{1,40})")
+# A slash command, optionally in the /skill:<name> form pi requires: without the
+# optional prefix, the term recorded is "/skill" and shorten() then drops the
+# name, so the card keeps a command that runs nothing - or none at all.
+SLASH = re.compile(r"(?<![\w/])(/(?:skill:)?[a-z0-9][a-z0-9-]{1,40})")
 PROPER = re.compile(r"[A-Z]{2,}|[a-z][A-Z]|\d")
 
 

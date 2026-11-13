@@ -1,6 +1,6 @@
 ---
 name: ds-adopt
-description: "Takes over an existing PR, branch or agent thread and finishes its original goal while keeping credit for the first contributors. Use when the user says take over, adopt, pick up or finish this PR, or /ds-adopt."
+description: "Takes over an existing PR, branch or agent thread and finishes its original goal while keeping credit for the first contributors. Use when the user says take over, adopt, pick up or finish this PR, or /skill:ds-adopt."
 ---
 
 Finish someone else's work as if it were yours, but credit them for what they did.

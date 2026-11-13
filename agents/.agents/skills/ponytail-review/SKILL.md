@@ -1,6 +1,6 @@
 ---
 name: ponytail-review
-description: "Quality review of a change: is the logic right, is it safe, does it hold under real load, is risky code tested, is it fast enough, and is every line needed. Use when: code review, review the last commit, review my PR, is this over-engineered, /ponytail-review."
+description: "Quality review of a change: is the logic right, is it safe, does it hold under real load, is risky code tested, is it fast enough, and is every line needed. Use when: code review, review the last commit, review my PR, is this over-engineered, /skill:ponytail-review."
 ---
 
 Review a change like the senior developer who will be paged when it breaks.
@@ -94,7 +94,3 @@ Nothing found: `What this change does:`, then `Looks good. Ship.` and one line
 on what you checked.
 
 Lists findings, changes no code.
-
-## Not this one
-
-`ds-review-loop` is the looping process with a fresh reviewer. `code-review` checks documented standards and the spec. `tiger-style-review` lists only the safety and invariant tags. Use this one for the whole change: correctness, scale, tests, speed, and code that should not exist.

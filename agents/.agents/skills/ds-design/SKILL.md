@@ -1,6 +1,6 @@
 ---
 name: ds-design
-description: "Builds a frontend with a clear visual direction instead of the generic AI look. Use when you create a new page, app screen, or component, or restyle one that looks templated. Run as /ds-design."
+description: "Builds a frontend with a clear visual direction instead of the generic AI look. Use when you create a new page, app screen, or component, or restyle one that looks templated. Run as /skill:ds-design."
 ---
 
 Build a UI that does not look like the default output for any similar prompt.

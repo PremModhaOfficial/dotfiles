@@ -16,6 +16,8 @@
 #                       description at the catalogue budget (see 3c).
 #     3d. pi rules file — ~/.pi/agent/AGENTS.md generated from ~/.agents/AGENTS.md
 #                       plus jcode/pi-agents.fragment.md (see 3d).
+#     3e. pi patches  — ~/dotfiles/pi-patches re-applied to the npm-installed pi
+#                       dist tree, which a pi upgrade overwrites (see 3e).
 #     4. Tools         — mise herdr, babysitter SDK via npx
 #                       (always latest), gopls best-effort.
 #     5. Configs       — install dotfiles configs into live locations
@@ -46,7 +48,8 @@
 #     ~/.jcode/bin/update-all.sh --tools-only
 #     ~/.jcode/bin/update-all.sh --config-only
 #     ~/.jcode/bin/update-all.sh --manifest-only  # just rebuild README.md from installed skills
-#     ~/.jcode/bin/update-all.sh --pi-only    # just regenerate ~/.pi/agent/AGENTS.md
+#     ~/.jcode/bin/update-all.sh --pi-only    # regenerate ~/.pi/agent/AGENTS.md + re-apply pi patches
+#     ~/.jcode/bin/update-all.sh --patches-only  # just re-apply ~/dotfiles/pi-patches to the pi install
 #     ~/.jcode/bin/update-all.sh --parallel   # independent phases and sources
 #     ~/.jcode/bin/update-all.sh --context    # fast, read-only context pointers
 #
@@ -76,7 +79,7 @@ UPDATER="${BASH_SOURCE[0]}"
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG"; }
 fail() { log "ERROR: $*"; checklist_add fail "$*"; exit 1; }
 
-DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1; DO_MANIFEST=1; DO_PI=1
+DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1; DO_MANIFEST=1; DO_PI=1; DO_PATCHES=1
 parse_args() {
 for arg in "$@"; do
   case "$arg" in
@@ -94,6 +97,9 @@ for arg in "$@"; do
     # Same reason as --manifest-only: a generated file that drifted must be repairable
     # without a full run, which is also how the failure path gets tested.
     --pi-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0; DO_MANIFEST=0 ;;
+    # A pi upgrade silently reverts a patch to its dist tree; this repairs that
+    # without paying for a full run.
+    --patches-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0; DO_MANIFEST=0; DO_PI=0 ;;
     *) echo "unknown arg: $arg" >&2; return 1 ;;
   esac
 done
@@ -470,6 +476,37 @@ apply_overlays() {
 # is part of the sync, not a one-off: it runs after the overlays so the manifest
 # and the audit see the capped tree, and the run fails if any description is over
 # the cap or any recorded routing term went missing.
+# pi registers a skill as /skill:<name>; a card that says "invoke /name" is a
+# command that does nothing. 74 installed cards carried the bare form in
+# frontmatter Trigger lines and mode tables, all copied from upstreams where
+# /name works, and hand edits to them are reverted by the next sync. Rewrite
+# them after the sync, and fail the run when a bare one survives: a new upstream
+# card that reintroduces the form must turn the run red, not ship silently.
+#
+# Runs before the catalogue cap on purpose. A sync writes bare text into
+# ~/.agents/skills while the vendored copy of the same skill under
+# ~/.pi/agent/git/ is already rewritten, so the cap would read two forms of one
+# description, record terms from both in its ledger, and then fail its own check
+# on whichever copy it compared against. Normalising first puts every copy in
+# the same form and the cap sees one description per skill.
+apply_skill_activation() {
+  log "=== skill activation form ==="
+  if [ "$DRY" = 1 ]; then
+    log "DRY: python3 $DOTFILES/jcode/skills-activation.py --dry-run"
+    checklist_add skip "skill activation form (dry-run)"
+    return 0
+  fi
+  local rc=0
+  python3 "$DOTFILES/jcode/skills-activation.py" 2>&1 | tee -a "$LOG" || rc=1
+  if [ "$rc" = 0 ]; then
+    checklist_add done "skill activation form"
+  else
+    log "ERROR: a bare /<skill> activation survived; pi only registers /skill:<name>"
+    checklist_add fail "skill activation form"
+  fi
+  return "$rc"
+}
+
 apply_skill_cap() {
   log "=== skill catalogue cap ==="
   if [ "$DRY" = 1 ]; then
@@ -511,6 +548,35 @@ generate_pi_agents() {
     # so silence here is the exact drift this step exists to stop.
     log "ERROR: pi rules file generation failed; ~/.pi/agent/AGENTS.md is stale"
     checklist_add fail "pi rules file (~/.pi/agent/AGENTS.md)"
+    return 1
+  fi
+}
+
+# --- 3e. pi patches ---------------------------------------------------------
+# pi is npm-managed, so an upgrade overwrites its dist/ tree and silently drops the
+# fixes in ~/dotfiles/pi-patches/ (compaction role escaping). Re-applied after the
+# generated rules file, and fatal on drift: a patch that no longer matches means the
+# defect is live again, which must not pass as a green run.
+apply_pi_patches() {
+  log "=== pi patches (npm tree, re-applied) ==="
+  if [ "$DRY" = 1 ]; then
+    log "DRY: bash $DOTFILES/jcode/apply-pi-patches.sh --dry-run"
+    checklist_add skip "pi patches (dry-run)"
+    return 0
+  fi
+  if bash "$DOTFILES/jcode/apply-pi-patches.sh" 2>&1 | tee -a "$LOG"; then
+    # Applied is not the same as working: run the escape test, so an upgrade that
+    # keeps the patch applying but changes the flattening sites still goes red.
+    if bash "$DOTFILES/jcode/compaction-escape.test.sh" 2>&1 | tee -a "$LOG" | tail -1 | grep -q '^PASS'; then
+      checklist_add done "pi patches (re-applied, escape test passed)"
+    else
+      log "ERROR: compaction escape test failed after applying the patch"
+      checklist_add fail "pi patches (applied, escape test failed)"
+      return 1
+    fi
+  else
+    log "ERROR: pi patches did not apply; a pi upgrade probably changed the target"
+    checklist_add fail "pi patches (target changed, refresh the patch)"
     return 1
   fi
 }
@@ -844,7 +910,7 @@ write_manifest() {
   checklist_add done "write skill manifest"
 }
 
-update_skills() { skill_sources; sync_skills; local rc=$?; apply_overlays; apply_skill_cap || rc=1; return "$rc"; }
+update_skills() { skill_sources; sync_skills; local rc=$?; apply_overlays; apply_skill_activation || rc=1; apply_skill_cap || rc=1; return "$rc"; }
 update_core_phase() { update_jcode; self_review; }
 
 show_context() {
@@ -886,6 +952,7 @@ main() {
   [ "$DO_JCODE" = 0 ] || phases+=(update_core_phase)
   [ "$DO_SKILLS" = 0 ] || phases+=(update_skills)
   [ "$DO_PI" = 0 ] || phases+=(generate_pi_agents)
+  [ "$DO_PATCHES" = 0 ] || phases+=(apply_pi_patches)
   [ "$DO_TOOLS" = 0 ] || phases+=(update_tools)
   run_jobs "${phases[@]}"
   rc=$?

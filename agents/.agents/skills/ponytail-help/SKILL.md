@@ -2,7 +2,7 @@
 name: ponytail-help
 description: >
   Quick reference for ponytail levels, skills and commands. One-shot display.
-  Use for /ponytail-help, "ponytail help", "how do I use ponytail".
+  Use for /skill:ponytail-help, "ponytail help", "how do I use ponytail".
 ---
 
 # Ponytail Help
@@ -14,9 +14,9 @@ write flag files, or persist anything.
 
 | Level | Trigger | What change |
 |-------|---------|-------------|
-| **Lite** | `/ponytail lite` | Build what was asked, name the smaller option in one line. |
-| **Full** | `/ponytail` | The smallest complete change, a check where the logic needs one, and a reply that names what was skipped and any risk. Default. |
-| **Ultra** | `/ponytail ultra` | Also questions the request and pushes back before building. |
+| **Lite** | `/skill:ponytail lite` | Build what was asked, name the smaller option in one line. |
+| **Full** | `/skill:ponytail` | The smallest complete change, a check where the logic needs one, and a reply that names what was skipped and any risk. Default. |
+| **Ultra** | `/skill:ponytail ultra` | Also questions the request and pushes back before building. |
 
 Level sticks until changed or session end.
 
@@ -24,12 +24,12 @@ Level sticks until changed or session end.
 
 | Skill | Trigger | What it does |
 |-------|---------|--------------|
-| **ponytail** | `/ponytail` | Lazy mode itself: least new code, clear replies that name skipped work and risks. |
-| **ponytail-review** | `/ponytail-review` | Quality review of a diff: bugs, security, load, missing tests, speed, what to cut. Each finding says what goes wrong and how to fix it. |
-| **ponytail-audit** | `/ponytail-audit` | The same quality review for the whole repo, ranked. |
-| **ponytail-debt** | `/ponytail-debt` | Harvest `shortcut:` comments into a tracked ledger. |
-| **ponytail-gain** | `/ponytail-gain` | Measured-impact scoreboard: less code, less cost, more speed. |
-| **ponytail-help** | `/ponytail-help` | This card. |
+| **ponytail** | `/skill:ponytail` | Lazy mode itself: least new code, clear replies that name skipped work and risks. |
+| **ponytail-review** | `/skill:ponytail-review` | Quality review of a diff: bugs, security, load, missing tests, speed, what to cut. Each finding says what goes wrong and how to fix it. |
+| **ponytail-audit** | `/skill:ponytail-audit` | The same quality review for the whole repo, ranked. |
+| **ponytail-debt** | `/skill:ponytail-debt` | Harvest `shortcut:` comments into a tracked ledger. |
+| **ponytail-gain** | `/skill:ponytail-gain` | Measured-impact scoreboard: less code, less cost, more speed. |
+| **ponytail-help** | `/skill:ponytail-help` | This card. |
 
 In Codex CLI and the IDE extension, invoke skills with `$ponytail:ponytail`,
 `$ponytail:ponytail-review`, or `$ponytail:ponytail-help`. Claude Code and OpenCode use the
@@ -37,14 +37,14 @@ slash-command forms above (OpenCode ships all six as slash commands).
 
 ## Deactivate
 
-Say "stop ponytail" or "normal mode". Resume anytime with `/ponytail`.
-`/ponytail off` also works.
+Say "stop ponytail" or "normal mode". Resume anytime with `/skill:ponytail`.
+`/skill:ponytail off` also works.
 
 ## Band (Claude Code)
 
-`/ponytail band` hides the band above the prompt, the same command brings it back.
-`/ponytail band on` and `/ponytail band off` set it directly. The level stays.
-`/ponytail band import` adds your past Claude Code sessions (cost, agent time, tokens) to the board.
+`/skill:ponytail band` hides the band above the prompt, the same command brings it back.
+`/skill:ponytail band on` and `/skill:ponytail band off` set it directly. The level stays.
+`/skill:ponytail band import` adds your past Claude Code sessions (cost, agent time, tokens) to the board.
 
 ## Configure Default Mode
 
@@ -61,7 +61,7 @@ export PONYTAIL_DEFAULT_MODE=ultra
 ```
 
 Set `"off"` to disable auto-activation on session start, activate manually
-with `/ponytail` when wanted.
+with `/skill:ponytail` when wanted.
 
 Resolution: env var > config file > `full`.
 

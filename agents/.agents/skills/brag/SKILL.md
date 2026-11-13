@@ -3,7 +3,7 @@ name: brag
 description: "Turn the current project website into a short, polished, shareable launch video using Hyperframes. Use when: let's brag about this, make a launch video, turn this into a video, wants to share what they built, URL."
 ---
 
-# /brag
+# /skill:brag
 
 You built it. Now let's brag about it.
 
@@ -11,12 +11,12 @@ You built it. Now let's brag about it.
 
 **Model check.** If you are Claude Opus 5.5 and the invocation doesn't ask for the full workflow (`--full`, "use the full brag") or for voiceover (`--voice`, which brag-slim doesn't do), switch to brag-slim: read `<skill-dir>/slim.md` (the /brag-slim skill, bundled here) and follow it for the rest of this run instead of this file. Pass along the user's input, and pass any other options (`--no-music`, `--title`, …) as plain-language direction. Tell the user in one line first, e.g. "You're on Opus 5.5, so I'm using /brag-slim: I build the whole video myself. Say 'use the full brag' to switch back." If you are any other model, or can't tell which model you are, skip this check.
 
-Before inspecting the project, parse the complete `/brag` invocation. If the
+Before inspecting the project, parse the complete `/skill:brag` invocation. If the
 invocation contains `--voice`, set `voice.enabled = true`. Enable narration
 only for that run. Do not enable narration automatically and do not fall back
 to the normal no-voice workflow.
 
-`/brag` turns the current project website or app into a short, polished, shareable launch video using Hyperframes. It is narrow, opinionated, and fun.
+`/skill:brag` turns the current project website or app into a short, polished, shareable launch video using Hyperframes. It is narrow, opinionated, and fun.
 
 ## What this skill does
 
@@ -31,10 +31,10 @@ to the normal no-voice workflow.
 The user may invoke with natural language or flags:
 
 ```
-/brag
-/brag --tone chaotic
-/brag --tone polished --format vertical
-/brag this. Make it feel like a ridiculous startup launch.
+/skill:brag
+/skill:brag --tone chaotic
+/skill:brag --tone polished --format vertical
+/skill:brag this. Make it feel like a ridiculous startup launch.
 ```
 
 Parse these options:
@@ -111,13 +111,13 @@ When music is selected, include a compact `Music cue guidance` section: read the
 
 ## Step 3: Hand off to Hyperframes
 
-**Read:** The Hyperframes skills — `hyperframes` (contract, `references/format.md`, `references/motion.md`, `references/look.md`), `hyperframes-cli`, `hyperframes-registry`, and `media-use` for audio. /brag is its own workflow: skip the `hyperframes` storyline step: don't read `references/types/*` or `references/story.md`, don't propose storylines, and don't write a `SPEC.md`. The brag plan and composition brief replace them, including the LOOK line `references/look.md` asks for. Also skip its `usage`, `history`, `feedback` and REVIEW.md steps; `check` is brag's gate. Do not route into its generic launch-video workflow.
+**Read:** The Hyperframes skills — `hyperframes` (contract), `hyperframes-cli`, `hyperframes-registry`, and `media-use` for audio. They are not pi skills: pi discovers `~/.agents/skills` and `~/.pi/agent/skills`, and none of the four is installed in either, so pi can neither list nor load them. They exist only under `~/.claude/skills/` (`hyperframes`, `hyperframes-core`, `hyperframes-creative`, `hyperframes-keyframes`, `hyperframes-studio`, `hyperframes-audio`, `hyperframes-animation`, `hyperframes-cli`, `hyperframes-registry`, `media-use`), where Claude Code loads them; under pi read them by absolute path and do not expect skill activation. The contract file names this step used to give are not in that copy: `hyperframes/references/` holds 16 entries and none of the five is among them (`format.md`, `motion.md`, `look.md`, `story.md`, `types/`). List the directory instead of trusting a list in prose; `bash <skill-dir>/checks/check.sh` asserts the four absolute paths below exist and those five names are absent. So under pi: contract from `~/.claude/skills/hyperframes/references/brief-contract.md`, look from `~/.claude/skills/hyperframes-creative/references/house-style.md` and `motion-principles.md`, motion mechanics from `~/.claude/skills/hyperframes-core/references/determinism-rules.md`, audio from `~/.claude/skills/media-use/`. If `~/.claude/skills/hyperframes` is absent, say Step 3 is unavailable here and stop; do not invent the composition rules it was to supply. /skill:brag is its own workflow: skip the `hyperframes` storyline step: don't read `references/types/*` or `references/story.md`, don't propose storylines, and don't write a `SPEC.md`. The brag plan and composition brief replace them, including the LOOK line `house-style.md` asks for. Also skip its `usage`, `history`, `feedback` and REVIEW.md steps; `check` is brag's gate. Do not route into its generic launch-video workflow.
 **Read:** [references/step-3-compose.md](references/step-3-compose.md)
 **Read:** [references/audio.md](references/audio.md)
 
 Write the composition brief and use Hyperframes to create the video implementation in `<output-dir>/composition/`.
 
-`/brag` owns the product angle, source material, storyboard, tone, format, audio selection, music cue guidance, and delivery expectations. Hyperframes owns the concrete composition structure, exact animation timing, animation mechanics, runtime choices, linting rules, and render workflow.
+`/skill:brag` owns the product angle, source material, storyboard, tone, format, audio selection, music cue guidance, and delivery expectations. Hyperframes owns the concrete composition structure, exact animation timing, animation mechanics, runtime choices, linting rules, and render workflow.
 
 **Gate:** `npx hyperframes check` passes with zero errors inside `<output-dir>/composition/` (the single browser gate before render — see hyperframes-cli for what it audits).
 
@@ -135,7 +135,7 @@ Validate, preview, render to `<output-dir>/brag.mp4`, pick the best poster frame
 
 ## Tone system
 
-Seven tone presets ship with `/brag`. Each changes scripting energy, pacing, typography personality, and transition style. Presets are defaults, not limits.
+Seven tone presets ship with `/skill:brag`. Each changes scripting energy, pacing, typography personality, and transition style. Presets are defaults, not limits.
 
 Full definitions: [references/tones.md](references/tones.md)
 

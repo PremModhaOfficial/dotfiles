@@ -1,6 +1,6 @@
 ---
 name: ds-pr
-description: "Files a short, clear pull request for the current branch: stage the leftover work, push, and write the body a reviewer reads in ten seconds. Use when asked to open, file or create a PR, or /ds-pr."
+description: "Files a short, clear pull request for the current branch: stage the leftover work, push, and write the body a reviewer reads in ten seconds. Use when asked to open, file or create a PR, or /skill:ds-pr."
 metadata:
   credits:
     skill: show-me

@@ -1,6 +1,6 @@
 ---
 name: ds-ledger
-description: "Keep a one-row-per-decision ledger for long or unattended runs, or audit the decision points of a setup, config, deploy or migration. Use when: /ds-ledger, multi-phase, autonomous work, such a task, even when the user never asks, they report something missed."
+description: "Keep a one-row-per-decision ledger for long or unattended runs, or audit the decision points of a setup, config, deploy or migration. Use when: /skill:ds-ledger, multi-phase, autonomous work, such a task, even when the user never asks, they report something missed."
 ---
 
 # ds-ledger

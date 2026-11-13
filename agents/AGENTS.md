@@ -26,11 +26,14 @@ only the layout and the traps that cost a session time.
   and `hc read`. One-shot `pi -p`, `claude -p`, `codex exec` through hc/herdr
   is blocked by `/home/prm/.pi/agent/extensions/herdr-interactive-only.ts`.
   Restated because a hook enforces it, not memory.
-- Never edit `/home/prm/.agents/skills/`, `/home/prm/.agents/LEDGER.md`,
-  `/home/prm/.pi/agent/{npm,git,sessions}` or
-  `/home/prm/.commandcode/{sessions,projects,history.jsonl}`: app-managed or
-  app state. Skill fixes go to `/home/prm/dotfiles/skills-overlay/` and are
-  re-applied by `/home/prm/.jcode/bin/update-all.sh`.
+- Never edit `/home/prm/.agents/LEDGER.md`, `/home/prm/.pi/agent/{npm,git,sessions}`
+  or `/home/prm/.commandcode/{sessions,projects,history.jsonl}`, and never edit
+  `/home/prm/.jcode`: app-managed or app state. Which skills are editable, stated
+  once here: every skill dir named in `~/.jcode/state/upstream-sources` (35 today)
+  is sync-owned and changes only through `/home/prm/dotfiles/skills-overlay/<skill>.sh`,
+  every other skill under `/home/prm/.agents/skills/` is committed dotfiles source and
+  is edited at `/home/prm/dotfiles/agents/.agents/skills/<skill>/` (same file,
+  through the repo path) and committed, never in place.
 - Everything else: `/home/prm/.agents/AGENTS.md`.
 
 ## Facts that cost a day to learn

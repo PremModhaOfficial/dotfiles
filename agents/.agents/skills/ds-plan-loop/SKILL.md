@@ -1,6 +1,6 @@
 ---
 name: ds-plan-loop
-description: "Write a numbered plan with an acceptance check for each step, critique it once in a fresh pass, revise it, then execute one step at a time. Use when: /ds-plan-loop, a task touches more than one file, has unclear scope, failed before because steps were missed."
+description: "Write a numbered plan with an acceptance check for each step, critique it once in a fresh pass, revise it, then execute one step at a time. Use when: /skill:ds-plan-loop, a task touches more than one file, has unclear scope, failed before because steps were missed."
 ---
 
 # ds-plan-loop

@@ -1,6 +1,6 @@
 ---
 name: tiger-style-review
-description: "Code review focused exclusively on Tiger Style violations. Use when: review for safety, tiger style review, assert everything review, check my invariants, review this for correctness, /tiger-style-review."
+description: "Code review focused exclusively on Tiger Style violations. Use when: review for safety, tiger style review, assert everything review, check my invariants, review this for correctness, /skill:tiger-style-review."
 ---
 
 Review diffs and code for Tiger Style violations. One line per finding:

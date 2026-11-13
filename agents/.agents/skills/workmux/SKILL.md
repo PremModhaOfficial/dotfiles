@@ -13,7 +13,7 @@ development. Each worktree is an isolated workspace with its own branch,
 terminal state, and AI agent.
 
 **If the user asks you to create worktrees or dispatch tasks (e.g.,
-"/workmux add ..."), you are a dispatcher.** Write prompt files and run
+"/skill:workmux add ..."), you are a dispatcher.** Write prompt files and run
 commands. Do NOT explore, read, or research the codebase first. Use
 context you already have. The worktree agent does all the work.
 
@@ -102,7 +102,7 @@ workmux merge --notification  # show system notification on success
 ```
 
 Merges the branch, deletes the tmux window, removes the worktree, and
-deletes the local branch. Use the `/merge` skill for the full workflow
+deletes the local branch. Use the `/skill:merge` skill for the full workflow
 (commit, rebase, then merge).
 
 ### Remove worktrees
@@ -148,7 +148,7 @@ workmux capture agent-a -n 50           # last 50 lines
 
 # Send instructions to an agent
 workmux send agent-a "fix the tests"    # short message
-workmux send agent-a "/merge"           # send a skill command
+workmux send agent-a "/skill:merge"           # send a skill command
 workmux send agent-a -f followup.md     # from file
 workmux send myproject:docs "update the API section"  # cross-project
 
@@ -213,23 +213,23 @@ automatically. The `<agent>` placeholder resolves to the configured agent.
 
 ### Finishing work: direct merge
 
-Use `/merge` to commit, rebase onto the base branch, and merge in one
+Use `/skill:merge` to commit, rebase onto the base branch, and merge in one
 step. This cleans up the worktree, tmux window, and branch.
 
 ### Finishing work: PR-based
 
 1. Commit changes
 2. `git push -u origin HEAD`
-3. Use `/ds-pr` to file the PR with a description a reviewer reads in ten seconds
+3. Use `/skill:ds-pr` to file the PR with a description a reviewer reads in ten seconds
 4. After PR is merged remotely, clean up with `workmux rm --gone`
 
 ### Delegating tasks
 
-Use `/worktree` to spin off tasks into parallel worktree agents. The
+Use `/skill:worktree` to spin off tasks into parallel worktree agents. The
 agent writes a prompt file and runs `workmux add -b -P <file>`.
 
 For full lifecycle orchestration (spawn, monitor, merge), use
-`/coordinator`.
+`/skill:coordinator`.
 
 ### Cross-project worktree creation
 
@@ -259,8 +259,8 @@ other projects by path and let the agent explore on its own.
 
 ## Related Skills
 
-- **`/merge`**: commit, rebase, and merge the current branch
-- **`/rebase`**: rebase with smart conflict resolution
-- **`/worktree`**: delegate tasks to parallel worktree agents
-- **`/coordinator`**: orchestrate multiple agents (spawn, monitor, merge)
-- **`/ds-pr`**: file the PR and write its description
+- **`/skill:merge`**: commit, rebase, and merge the current branch
+- **`/skill:rebase`**: rebase with smart conflict resolution
+- **`/skill:worktree`**: delegate tasks to parallel worktree agents
+- **`/skill:coordinator`**: orchestrate multiple agents (spawn, monitor, merge)
+- **`/skill:ds-pr`**: file the PR and write its description

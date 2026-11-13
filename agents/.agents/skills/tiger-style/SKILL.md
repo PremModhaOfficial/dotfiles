@@ -1,6 +1,6 @@
 ---
 name: tiger-style
-description: "Safety-first coding mode inspired by TigerBeetle's Tiger Style. Use when: tiger mode, assert everything, safety first, zero technical debt, bound everything, NASA rules, /tiger-style, correctness, determinism, defensive coding is the priority."
+description: "Safety-first coding mode inspired by TigerBeetle's Tiger Style. Use when: tiger mode, assert everything, safety first, zero technical debt, bound everything, NASA rules, /skill:tiger-style, correctness, determinism, defensive coding is the priority."
 argument-hint: "[lite|full|strict]"
 ---
 
@@ -19,7 +19,7 @@ the priority.
 
 ACTIVE EVERY RESPONSE. No drift back to loose coding. Still active if unsure.
 Off only: "stop tiger-style" / "normal mode". Default: **full**.
-Switch: `/tiger-style lite|full|strict`.
+Switch: `/skill:tiger-style lite|full|strict`.
 
 ## Precedence
 

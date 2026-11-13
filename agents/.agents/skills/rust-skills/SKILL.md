@@ -1,6 +1,6 @@
 ---
 name: rust-skills
-description: "Comprehensive Rust coding guidelines with 265 rules across 26 categories. Use when: /rust-skills, writing, reviewing, refactoring Rust code, API."
+description: "Comprehensive Rust coding guidelines with 265 rules across 26 categories. Use when: /skill:rust-skills, writing, reviewing, refactoring Rust code, API."
 license: MIT
 metadata:
   author: leonardomso

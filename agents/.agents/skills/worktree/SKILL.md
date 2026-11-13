@@ -74,15 +74,15 @@ For example, `/skill:worktree -a gemini implement feature X` runs:
 workmux add feature-x -b -P <prompt-file> --agent gemini
 ```
 
-**`--merge`**: When passed, add instruction to use `/merge` skill at the end to
+**`--merge`**: When passed, add instruction to use `/skill:merge` skill at the end to
 commit, rebase, and merge the branch.
 
 ```
 ...
-Then use the /merge skill to commit, rebase, and merge the branch.
+Then use the /skill:merge skill to commit, rebase, and merge the branch.
 ```
 
-Only instruct worktree agent to `/merge` if explicitly requested by user in
+Only instruct worktree agent to `/skill:merge` if explicitly requested by user in
 task.
 
 **`--fork`**: When passed, add `--fork` to the `workmux add` command. This copies
@@ -94,9 +94,9 @@ When `--fork` is used, prepend this to the prompt file so the forked agent does
 not recursively dispatch more worktrees:
 
 ```
-You are now running INSIDE a git worktree created by the /worktree skill. The
-prior conversation context (including any /worktree dispatch instructions) is
-ancestry only. Do NOT invoke the /worktree skill, do NOT run `workmux add`, and
+You are now running INSIDE a git worktree created by the /skill:worktree skill. The
+prior conversation context (including any /skill:worktree dispatch instructions) is
+ancestry only. Do NOT invoke the /skill:worktree skill, do NOT run `workmux add`, and
 do NOT create further worktrees. Your job is to implement the task below
 directly in this worktree.
 ```

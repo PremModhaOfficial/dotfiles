@@ -1,6 +1,6 @@
 ---
 name: ds-design-audit
-description: "Reviews an existing UI with scores based on evidence, then fixes the highest-impact problems. Use when a page or app screen looks generic, cluttered, or unfinished, or before you ship UI work. Run as /ds-design-audit."
+description: "Reviews an existing UI with scores based on evidence, then fixes the highest-impact problems. Use when a page or app screen looks generic, cluttered, or unfinished, or before you ship UI work. Run as /skill:ds-design-audit."
 ---
 
 Score a UI from what is on the screen, fix the worst problems, and show that the fixes work.
@@ -34,4 +34,4 @@ Score a UI from what is on the screen, fix the worst problems, and show that the
 - Do not give a score without evidence. If you could not see an area, mark it "not checked" and give the reason.
 - Do not change factual copy, prices, claims, or feature behavior without asking.
 - If the brief requires a style that this skill would flag, it is not a fault.
-- If the UI needs a full rebuild, recommend /ds-design. Do not rebuild it in this skill.
+- If the UI needs a full rebuild, recommend /skill:ds-design. Do not rebuild it in this skill.

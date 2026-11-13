@@ -62,7 +62,8 @@ Never for a bug fix, which is EGM's own rule.
 ## Before you stop
 
 If the user corrected you twice, a check failed twice, or a rule below proved wrong, run
-`ds-lessons`. If it yields a durable rule, append one line to the rules file:
+`ds-lessons`. If it yields a durable rule, append one line to the rules file
+(`~/dotfiles/agents/.agents/skills/flow/rules.md`, then commit the dotfiles repo):
 
 ```
 - 2026-11-13 | rule text here
@@ -74,10 +75,19 @@ carry the lesson, it goes there instead and no rule is written.
 
 ## Rules file
 
+`flow` is not a synced skill, so the file that runs is the git-tracked dotfiles file:
+write it through the repo path and commit, never as an uncommitted in-place edit. Which
+skills are editable and which are sync-owned is stated once, in the bullet
+`Which skills are editable, stated once here` in `/home/prm/AGENTS.md` — not restated here.
+To check the tree you are in:
+`cut -f1 ~/.jcode/state/upstream-sources | grep -qx flow` exits 1, which is "not
+sync-owned, edit the dotfiles file".
+
 Read it when it has rows; skip it until then:
 
 ```bash
-R=~/.agents/skills/flow/rules.md; [ "$(grep -c '^- ' "$R")" -gt 0 ] && cat "$R"
+R=~/dotfiles/agents/.agents/skills/flow/rules.md   # same file as ~/.agents/skills/flow/rules.md
+[ "$(grep -c '^- ' "$R")" -gt 0 ] && cat "$R"
 ```
 
 Run the self-check after editing it:

@@ -1,6 +1,6 @@
 ---
 name: ds-principles
-description: "Compact engineering principles for design, debugging, verification, and delegation, each with a trigger. Use when choosing structure or types, sizing a diff, debugging, writing tests, or when the user types /ds-principles."
+description: "Compact engineering principles for design, debugging, verification, and delegation, each with a trigger. Use when choosing structure or types, sizing a diff, debugging, writing tests, or when the user types /skill:ds-principles."
 ---
 
 # Engineering principles

@@ -11,41 +11,33 @@
 # Idempotent. Touches only $SKILL_DIR/SKILL.md, then $SKILL_DIR/.overlay-applied.
 set -uo pipefail
 
+# patch() is shared: jcode/overlay-lib.sh and resolved from this script's
+# directory before any cd, so a relative invocation still finds it. A missing
+# anchor is a non-zero exit with no marker, never a silent pass, and a lib that
+# cannot be found fails here instead of falling through to the system `patch`.
+LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../jcode/overlay-lib.sh"
+[ -f "$LIB" ] || { echo "OVERLAY-WARN: ${0##*/}: missing $LIB" >&2; exit 3; }
+. "$LIB"
+
 SD="${SKILL_DIR:-$PWD}"
 MARK_NAME=".overlay-applied"
 warn() { echo "OVERLAY-WARN: paperclip: $*"; }
 
-REAL=$(cd "$SD" 2>/dev/null && pwd -P) || { warn "cannot resolve $SD"; exit 0; }
+REAL=$(cd "$SD" 2>/dev/null && pwd -P) || { warn "cannot resolve $SD"; exit 3; }
 case "$REAL" in
   */skills/paperclip) : ;;
-  *) warn "refusing: $REAL is not a paperclip skill dir"; exit 0 ;;
+  *) warn "refusing: $REAL is not a paperclip skill dir"; exit 3 ;;
 esac
 F="$REAL/SKILL.md"
 MARK="$REAL/$MARK_NAME"
-[ -f "$F" ] || { warn "no SKILL.md in $REAL"; exit 0; }
+[ -f "$F" ] || { warn "no SKILL.md in $REAL"; exit 3; }
 ( : > "$REAL/.overlay-probe" ) 2>/dev/null && rm -f "$REAL/.overlay-probe" ||
-  { warn "not writable: $REAL"; exit 0; }
-cd "$REAL" || { warn "cannot cd $REAL"; exit 0; }
+  { warn "not writable: $REAL"; exit 3; }
+cd "$REAL" || { warn "cannot cd $REAL"; exit 3; }
 
-tmp=$(mktemp -d) || { warn "mktemp failed"; exit 0; }
+tmp=$(mktemp -d) || { warn "mktemp failed"; exit 3; }
 trap 'rm -rf "$tmp"' EXIT
 
-# patch <oldfile> <newfile>: one literal replacement, skipped when already applied
-patch() {
-  python3 - "$F" "$1" "$2" <<'PY'
-import sys
-f, o, n = sys.argv[1:4]
-p = open(f, encoding="utf-8").read()
-old = open(o, encoding="utf-8").read()
-new = open(n, encoding="utf-8").read()
-if new in p:
-    print("skip  already applied: " + new.splitlines()[0][:70]); sys.exit(0)
-if old not in p:
-    print("OVERLAY-WARN: paperclip: anchor not found: " + old.splitlines()[0][:70]); sys.exit(0)
-open(f, "w", encoding="utf-8").write(p.replace(old, new, 1))
-print("apply ok: " + new.splitlines()[0][:70])
-PY
-}
 
 cat > "$tmp/old" <<'OLD'
 Use `scripts/paperclip-issue-update.sh` (it checks the HTTP status, retries connection-level failures, and confirms the echoed `status`); if you must hand-roll curl, capture `-w '%{http_code}'` and check the response echoes your update. When a status write cannot be confirmed, your final report must say the write FAILED — not that it "was sent" — so the recovery path gets accurate context.

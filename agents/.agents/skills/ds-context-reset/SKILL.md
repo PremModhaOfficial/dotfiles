@@ -1,6 +1,6 @@
 ---
 name: ds-context-reset
-description: "Keep a PROGRESS.md for long tasks and move to a fresh session or subagent that reads only it when context gets long or stale. Use when a task spans many steps or sessions, or the model repeats itself. /ds-context-reset."
+description: "Keep a PROGRESS.md for long tasks and move to a fresh session or subagent that reads only it when context gets long or stale. Use when a task spans many steps or sessions, or the model repeats itself. /skill:ds-context-reset."
 ---
 
 # ds-context-reset

@@ -11,6 +11,14 @@
 # Contract: see apply_overlays() in ~/dotfiles/jcode/update-all.sh.
 set -uo pipefail
 
+# patch() is shared: jcode/overlay-lib.sh and resolved from this script's
+# directory before any cd, so a relative invocation still finds it. A missing
+# anchor is a non-zero exit with no marker, never a silent pass, and a lib that
+# cannot be found fails here instead of falling through to the system `patch`.
+LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../jcode/overlay-lib.sh"
+[ -f "$LIB" ] || { echo "OVERLAY-WARN: ${0##*/}: missing $LIB" >&2; exit 3; }
+. "$LIB"
+
 fix_ref() { # fix_ref <repo-relative-path>: ../../<path> -> upstream URL
   local p esc
   p="$1"
@@ -28,30 +36,12 @@ F="$SD/SKILL.md"
 MARK="$SD/.overlay-applied"
 warn() { echo "OVERLAY-WARN: caveman-review: $*"; }
 
-[ -f "$F" ] || { warn "no SKILL.md in $SD"; exit 0; }
-cd "$SD" || { warn "cannot cd $SD"; exit 0; }
+[ -f "$F" ] || { warn "no SKILL.md in $SD"; exit 3; }
+cd "$SD" || { warn "cannot cd $SD"; exit 3; }
 
-tmp=$(mktemp -d) || { warn "mktemp failed"; exit 0; }
+tmp=$(mktemp -d) || { warn "mktemp failed"; exit 3; }
 trap 'rm -rf "$tmp"' EXIT
 
-# patch <oldfile> <newfile>: one literal replacement, skipped when already applied.
-# The heredocs carry a trailing newline; strip it so a patch can end a file that
-# has none (the note below is appended at EOF, where our copy has no newline).
-patch() {
-  python3 - "$F" "$1" "$2" <<'PY'
-import sys
-f, o, n = sys.argv[1:4]
-p = open(f, encoding="utf-8").read()
-old = open(o, encoding="utf-8").read().rstrip("\n")
-new = open(n, encoding="utf-8").read().rstrip("\n")
-if new in p:
-    print("skip  already applied: " + new.splitlines()[0][:70]); sys.exit(0)
-if old not in p:
-    print("OVERLAY-WARN: caveman-review: anchor not found: " + old.splitlines()[0][:70]); sys.exit(0)
-open(f, "w", encoding="utf-8").write(p.replace(old, new, 1))
-print("apply ok: " + new.splitlines()[0][:70])
-PY
-}
 
 cat > "$tmp/old" <<'OLD'
 Reviews only — does not write the code fix, does not approve/request-changes, does not run linters. Output the comment(s) ready to paste into the PR. "stop caveman-review" or "normal mode": revert to verbose review style.

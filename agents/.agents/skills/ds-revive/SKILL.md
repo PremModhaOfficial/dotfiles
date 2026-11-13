@@ -1,6 +1,6 @@
 ---
 name: ds-revive
-description: "Brings an old PR up to date by checking if its idea still fits the current code, then rebasing, reworking or recommending it be closed. Use when asked to rebase, refresh, update or revive a stale PR, or /ds-revive."
+description: "Brings an old PR up to date by checking if its idea still fits the current code, then rebasing, reworking or recommending it be closed. Use when asked to rebase, refresh, update or revive a stale PR, or /skill:ds-revive."
 ---
 
 Update the idea, not only the branch. A clean rebase does not prove the PR still belongs.

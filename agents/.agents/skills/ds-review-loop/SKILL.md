@@ -1,6 +1,6 @@
 ---
 name: ds-review-loop
-description: "Runs an author and a fresh-context reviewer in a loop on the current change until both agree it is correct, for at most four rounds. Use before or after filing a PR, when the user says review loop, get it reviewed, or /ds-review-loop."
+description: "Runs an author and a fresh-context reviewer in a loop on the current change until both agree it is correct, for at most four rounds. Use before or after filing a PR, when the user says review loop, get it reviewed, or /skill:ds-review-loop."
 ---
 
 Make a change more correct by letting one fresh reviewer push back until you both agree.

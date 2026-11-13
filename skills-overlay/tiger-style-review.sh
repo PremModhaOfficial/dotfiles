@@ -9,35 +9,25 @@
 # Touches only $SKILL_DIR/SKILL.md, then $SKILL_DIR/.overlay-applied.
 set -uo pipefail
 
+# patch() is shared: jcode/overlay-lib.sh and resolved from this script's
+# directory before any cd, so a relative invocation still finds it. A missing
+# anchor is a non-zero exit with no marker, never a silent pass, and a lib that
+# cannot be found fails here instead of falling through to the system `patch`.
+LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../jcode/overlay-lib.sh"
+[ -f "$LIB" ] || { echo "OVERLAY-WARN: ${0##*/}: missing $LIB" >&2; exit 3; }
+. "$LIB"
+
 SD="${SKILL_DIR:-$PWD}"
 F="$SD/SKILL.md"
 MARK="$SD/.overlay-applied"
 warn() { echo "OVERLAY-WARN: tiger-style-review: $*"; }
 
-[ -f "$F" ] || { warn "no SKILL.md in $SD"; exit 0; }
-cd "$SD" || { warn "cannot cd $SD"; exit 0; }
+[ -f "$F" ] || { warn "no SKILL.md in $SD"; exit 3; }
+cd "$SD" || { warn "cannot cd $SD"; exit 3; }
 
-tmp=$(mktemp -d) || { warn "mktemp failed"; exit 0; }
+tmp=$(mktemp -d) || { warn "mktemp failed"; exit 3; }
 trap 'rm -rf "$tmp"' EXIT
 
-# patch <oldfile> <newfile>: one literal replacement, skipped when already applied.
-# The heredocs carry a trailing newline; strip it so an interior anchor matches
-# without eating the newline that follows it.
-patch() {
-  python3 - "$F" "$1" "$2" <<'PY'
-import sys
-f, o, n = sys.argv[1:4]
-p = open(f, encoding="utf-8").read()
-old = open(o, encoding="utf-8").read().rstrip("\n")
-new = open(n, encoding="utf-8").read().rstrip("\n")
-if new in p:
-    print("skip  already applied: " + new.splitlines()[0][:70]); sys.exit(0)
-if old not in p:
-    print("OVERLAY-WARN: tiger-style-review: anchor not found: " + old.splitlines()[0][:70]); sys.exit(0)
-open(f, "w", encoding="utf-8").write(p.replace(old, new, 1))
-print("apply ok: " + new.splitlines()[0][:70])
-PY
-}
 
 cat > "$tmp/old" <<'OLD'
 ✅ `L152: naming: to (ms? bytes?). Rename to timeout_ms or size_bytes.`
@@ -57,14 +47,15 @@ When severities are mixed, prefix the tag:
 - `❓ q:` a genuine question, not a suggestion.
 
 Drop: "I noticed that", "it seems like", "you might want to consider",
-"this is just a suggestion but..." (use `nit:` instead), hope-to-help hedging
-(use `q:` when unsure), praise on every comment (say it once at the top), and
-any restatement of what the line already does.
+"this is just a suggestion but..." (use `nit:` instead), hedging ("perhaps",
+"maybe", "I think"; use `q:` when unsure), praise on every comment (say it once
+at the top), and any restatement of what the line already does.
 
 Worked before-and-after:
 
 ❌ "I noticed that on line 42 you're not checking if the user object is null
-before accessing the email property. This could potentially cause a crash..."
+before accessing the email property. This could potentially cause a crash if the
+user is not found in the database. You might want to add a null check here."
 ✅ `L42: 🔴 bug: user can be null after .find(). Add guard before .email.`
 
 ❌ "It looks like this function is doing a lot of things and might benefit from
@@ -85,7 +76,7 @@ then terse resumes for the rest.
 
 ## Scoring
 NEW
-patch "$tmp/old" "$tmp/new"
+patch "$tmp/old" "$tmp/new" "## Comment voice"
 
 cat > "$tmp/old" <<'OLD'
 If there is nothing to fix, say `Solid. Ship.` and stop.
@@ -102,13 +93,15 @@ If there is nothing to fix, say `Solid. Ship.` and stop.
 whole change for correctness, scale and bloat. This one is only the safety and
 invariant tags above.
 
-`caveman-review` is the other terse review: same one-line shape, the four
-severity prefixes and no Tiger Style tag taxonomy. Use it when the ask is
-comment voice rather than safety; use this one when the ask is invariants.
+`caveman-review` is the standalone terse review: same one-line shape, the four
+severity prefixes, no Tiger Style tag taxonomy. It owns comment voice with no
+safety pass; `## Comment voice` above is that same contract applied to these
+tags, which is why this file carries it rather than deferring. Use this one
+whenever the ask involves invariants.
 
 ## Boundaries
 NEW
-patch "$tmp/old" "$tmp/new"
+patch "$tmp/old" "$tmp/new" "## Not this one"
 
 cat > "$tmp/old" <<'OLD'
 apply the fixes, only lists them.

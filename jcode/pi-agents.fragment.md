@@ -7,8 +7,8 @@
 # the shared file cannot silently leave pi with a stale rule.
 #
 # This file holds only what pi must obey and the shared file cannot deliver: the six
-# tool-form imperatives and the one override line. Everything else in the generated
-# file is the shared file as-is.
+# tool-form imperatives, the exact command for checking on an hc agent, and the one
+# override line. Everything else in the generated file is the shared file as-is.
 
 @header
 # Global instructions
@@ -21,19 +21,22 @@ Why this block is duplicated: pi has no `@` import for context files, so a point
 - If told to start anyway: state the score and the reading you guessed, then go.
 
 @replace start long work backgrounded or monitored
-- Never block a shell command: start long work in the background with `bash` (`nohup <cmd> > <log> 2>&1 &`), record `$!` and the log path, then return; never sit in an unbounded call waiting on it.
+- Never block a shell command: long work gets its own terminal — `hc run --bg --name <n> '<cmd>'` — so `hc wait <n>` is legal later; if it truly must be `bash`, use `nohup <cmd> > <log> 2>&1 &`, record `$!` and the log path, then return. Never sit in an unbounded call waiting on it.
 
 @replace Never block on an agent: launch it detached, then wait on its event
-- Never block on an agent: launch it detached (`hc run --bg`), then wait on its event.
+- Never block on an agent: launch it detached (`hc run --bg --name <n> pi`), then wait on its event (`hc wait <n>`).
 
 @replace Wait with the harness's own wait call
-- Wait with `hc wait <name>` (the one blocking call allowed, because `bash-guard` bounds it), one event at a time, never a poll loop or a timer. Each `bash` call is capped at 600s, so a longer wait is several `hc wait` calls or a background log plus a peek.
+- Wait with `hc wait <name>` (the one blocking call allowed, one event at a time, never a poll loop or a timer). Its cap is 180s by default, not the 600s `bash-guard` puts on a `bash` call: a 180s return means still running, so a longer wait is another `hc wait` next turn. For a job with no terminal (`nohup`), the legal wait is `timeout 170 tail -q -f --pid=$PID <log>` — it blocks on the process and returns at the cap, which is not polling.
 
 @replace Peek at the job's log
-- Peek with `bash` (`tail -n 20 <log>`), then report one line: finished, running, next.
+- Peek once, then report one line: finished, running, next. An `hc` terminal: `hc read <name> --lines 20`. A `nohup` job: `bash` with `tail -n 20 <log>`.
 
 @replace Synchronous work: the harness's own subagent tool
 - pi has no in-process subagent tool: delegate with `intercom` (another pi session) or `hc` (below), never inline; several launches in one message run concurrently.
 
 @replace Detached work: the harness's detached spawn
-- Detached work: `hc run --bg` (below), then one event-wait, never a poll loop.
+- Detached work: `hc run --bg --name <n> '<cmd>'`, then one event-wait, never a poll loop.
+
+@after Check on it rather than assuming
+- The commands: `hc read <n> --lines 20` for its output, `hc get <n>` for one terminal, `hc ls` for the live list (raw JSON; `hc list` is not a subcommand). `hc wait <n>` prints `{"ended":true,"exit_code":0,…}` — assert those fields instead of guessing from the screen.

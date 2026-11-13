@@ -190,12 +190,12 @@ The command runs in a new split pane. Exit code is propagated (exits 124 on time
 
 ### Merge & Cleanup
 
-Tell the agent to merge its own branch via `/merge`. This lets the agent handle
+Tell the agent to merge its own branch via `/skill:merge`. This lets the agent handle
 rebasing and conflict resolution.
 
 ```bash
 # Tell agent to commit, rebase, and merge
-workmux send agent-a "/merge"
+workmux send agent-a "/skill:merge"
 
 # Remove a worktree without merging
 workmux remove agent-a
@@ -254,19 +254,19 @@ workmux wait auth-module api-tests docs-update --any --timeout 7200
 # 5. Identify the finished agent, review its output, and merge it immediately
 workmux status auth-module api-tests docs-update
 workmux capture auth-module -n 50
-workmux send auth-module "/merge"
+workmux send auth-module "/skill:merge"
 workmux wait auth-module --timeout 120
 
 # 6. Repeat with the remaining agents so completed work does not wait idle
 workmux wait api-tests docs-update --any --timeout 7200
 workmux status api-tests docs-update
 workmux capture docs-update -n 50
-workmux send docs-update "/merge"
+workmux send docs-update "/skill:merge"
 workmux wait docs-update --timeout 120
 
 workmux wait api-tests --timeout 7200
 workmux capture api-tests -n 50
-workmux send api-tests "/merge"
+workmux send api-tests "/skill:merge"
 workmux wait api-tests --timeout 120
 ```
 
@@ -291,7 +291,7 @@ remaining handles. Keep finished handles out of subsequent wait commands.
    finishes, identify it with `workmux status`, capture and review its output,
    and merge it before waiting again on the remaining handles.
 6. **Capture and review output** before merging. Do not blindly merge.
-7. **Merge one at a time** by sending `/merge` to each agent sequentially. Wait
+7. **Merge one at a time** by sending `/skill:merge` to each agent sequentially. Wait
    for each merge to complete before starting the next to avoid conflicts.
 8. **Use `--timeout`** to avoid waiting forever. Handle timeout exits
    gracefully.

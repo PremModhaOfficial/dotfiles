@@ -1,6 +1,6 @@
 ---
 name: ds-ship
-description: "Takes a change all the way from code to a merged pull request without supervision: build it, prove it, review it, file the PR, watch it and merge it. Use when the user says ship it, send it all the way, merge when green, or /ds-ship."
+description: "Takes a change all the way from code to a merged pull request without supervision: build it, prove it, review it, file the PR, watch it and merge it. Use when the user says ship it, send it all the way, merge when green, or /skill:ds-ship."
 ---
 
 Own the work from its current state to a merged PR while nobody is watching.

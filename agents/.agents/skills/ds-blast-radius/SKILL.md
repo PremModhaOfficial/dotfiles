@@ -1,6 +1,6 @@
 ---
 name: ds-blast-radius
-description: "Find what a change could break outside its own diff, then prove the key safety fact by running real code. Use before shipping a risky or untrusted change, for 'what could this break', 'blast radius of X', or /ds-blast-radius."
+description: "Find what a change could break outside its own diff, then prove the key safety fact by running real code. Use before shipping a risky or untrusted change, for 'what could this break', 'blast radius of X', or /skill:ds-blast-radius."
 ---
 
 # ds-blast-radius

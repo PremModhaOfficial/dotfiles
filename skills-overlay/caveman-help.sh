@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# caveman-help — two fixes a re-sync would otherwise wipe:
+# caveman-help — three fixes a re-sync would otherwise wipe:
 #   1. README links up to the repo root (../../), which is outside the install.
 #      Rewrite them to their upstream URLs; sed only matches the relative form,
 #      so a second run changes nothing.
@@ -7,10 +7,23 @@
 #      safety-tagged PR comments, which is tiger-style-review's job. Our copy
 #      lists both with their real triggers; re-apply it or the next sync of
 #      JuliusBrussee/caveman drops the row.
+#   3. "Configure Default Mode" prescribes CAVEMAN_DEFAULT_MODE and
+#      ~/.config/caveman/config.json, and nothing on this host reads either
+#      (no caveman hook in ~/.claude/settings.json, no reader in the
+#      installed @caveman-ai/cli). Replaced with how the mode is really
+#      chosen, so the card stops prescribing a no-op.
 # Idempotent: the sed is grep-guarded, a patch is skipped when its new text is
 # already present. Touches only README.md, SKILL.md, then .overlay-applied.
 # Contract: see apply_overlays() in ~/dotfiles/jcode/update-all.sh.
 set -uo pipefail
+
+# patch() is shared: jcode/overlay-lib.sh and resolved from this script's
+# directory before any cd, so a relative invocation still finds it. A missing
+# anchor is a non-zero exit with no marker, never a silent pass, and a lib that
+# cannot be found fails here instead of falling through to the system `patch`.
+LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../jcode/overlay-lib.sh"
+[ -f "$LIB" ] || { echo "OVERLAY-WARN: ${0##*/}: missing $LIB" >&2; exit 3; }
+. "$LIB"
 
 fix_ref() { # fix_ref <repo-relative-path>: ../../<path> -> upstream URL
   local p esc
@@ -29,30 +42,12 @@ F="$SD/SKILL.md"
 MARK="$SD/.overlay-applied"
 warn() { echo "OVERLAY-WARN: caveman-help: $*"; }
 
-[ -f "$F" ] || { warn "no SKILL.md in $SD"; exit 0; }
-cd "$SD" || { warn "cannot cd $SD"; exit 0; }
+[ -f "$F" ] || { warn "no SKILL.md in $SD"; exit 3; }
+cd "$SD" || { warn "cannot cd $SD"; exit 3; }
 
-tmp=$(mktemp -d) || { warn "mktemp failed"; exit 0; }
+tmp=$(mktemp -d) || { warn "mktemp failed"; exit 3; }
 trap 'rm -rf "$tmp"' EXIT
 
-# patch <oldfile> <newfile>: one literal replacement, skipped when already applied.
-# The heredocs carry a trailing newline; strip it so a patch can end a file that
-# has none, and so an interior anchor matches without eating the next newline.
-patch() {
-  python3 - "$F" "$1" "$2" <<'PY'
-import sys
-f, o, n = sys.argv[1:4]
-p = open(f, encoding="utf-8").read()
-old = open(o, encoding="utf-8").read().rstrip("\n")
-new = open(n, encoding="utf-8").read().rstrip("\n")
-if new in p:
-    print("skip  already applied: " + new.splitlines()[0][:70]); sys.exit(0)
-if old not in p:
-    print("OVERLAY-WARN: caveman-help: anchor not found: " + old.splitlines()[0][:70]); sys.exit(0)
-open(f, "w", encoding="utf-8").write(p.replace(old, new, 1))
-print("apply ok: " + new.splitlines()[0][:70])
-PY
-}
 
 cat > "$tmp/old" <<'OLD'
 | **caveman-review** | `/caveman-review` | One-line PR comments: `L42: bug: user null. Add guard.` |
@@ -62,6 +57,38 @@ cat > "$tmp/new" <<'NEW'
 | **caveman-review** | `/caveman-review` | Terse review of any diff: `L42: 🔴 bug: user can be null after .find(). Add guard before .email.` |
 NEW
 patch "$tmp/old" "$tmp/new"
+
+cat > "$tmp/old" <<'OLD'
+## Configure Default Mode
+
+Default mode = `caveman`. Change it:
+
+**Environment variable** (highest priority):
+```bash
+export CAVEMAN_DEFAULT_MODE=ultracave
+```
+
+**Config file** (`~/.config/caveman/config.json`):
+```json
+{ "defaultMode": "ultracave" }
+```
+
+For opt-in activation in Claude Code, set `defaultMode` to `manual`. Sessions start off; `/skill:caveman` or `talk like caveman` activates caveman. `off` also disables bare-command activation. `manual` is a startup policy, not a mode. OpenCode still starts in caveman mode because its installer also supplies static activation rules.
+
+Set `"off"` to suppress automatic and bare-command activation. Use `"manual"` when bare `/skill:caveman` should activate.
+
+Resolution: env var > repo config > user config > `caveman`. Legacy values `lite`, `full`, `ultra`, `wenyan*` still resolve.
+OLD
+cat > "$tmp/new" <<'NEW'
+## Choosing the mode
+
+No mode is stored and nothing reads a setting, so the mode is whichever skill is loaded: `/skill:caveman`, `/skill:ultracave` (alias `/skill:caveman ultra`) or `/skill:megacave` (alias `/skill:caveman wenyan`), or just say "talk like caveman". It holds for the session; "stop caveman" or "normal mode" ends it, and a new session starts in no mode.
+
+Upstream does carry a `defaultMode` resolver — `CAVEMAN_DEFAULT_MODE`, then repo `.caveman/config.json`, then user `~/.config/caveman/config.json`, default `caveman` — in `src/hooks/caveman-config.js`. Only its Claude Code hook scripts and its OpenCode plugin read it, and neither is installed here: `~/.claude/settings.json` has no caveman hook, there is no OpenCode caveman plugin, and the installed `@caveman-ai/cli` bundle contains no reader. Exporting that variable or writing that file changes nothing on this host; say so rather than implying a default moved. `lite`, `full`, `ultra`, `wenyan*` are legacy aliases of the modes above.
+NEW
+# The card claimed a configurable default that nothing on this host reads;
+# a missing anchor is drift, so re-read upstream instead of trusting the text.
+patch "$tmp/old" "$tmp/new" "## Choosing the mode"
 
 touch "$MARK"
 echo "overlay done: $SD"

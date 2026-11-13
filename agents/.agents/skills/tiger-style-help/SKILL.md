@@ -2,7 +2,7 @@
 name: tiger-style-help
 description: >
   Quick-reference card for all tiger-style modes, skills, and commands.
-  One-shot display, not a persistent mode. Trigger: /tiger-style-help,
+  One-shot display, not a persistent mode. Trigger: /skill:tiger-style-help,
   "tiger style help", "what tiger commands", "how do I use tiger-style".
 ---
 
@@ -15,9 +15,9 @@ write flag files, or persist anything.
 
 | Level | Trigger | What change |
 |-------|---------|-------------|
-| **Lite** | `/tiger-style lite` | Build what's asked, flag missing assertions and unbounded resources in one line. |
-| **Full** | `/tiger-style` | All pillars enforced: assertions, bounds, explicit control flow, performance sketches. Default. |
-| **Strict** | `/tiger-style strict` | NASA-grade. Paired assertions, every resource bounded, every branch has an else, zero warnings. |
+| **Lite** | `/skill:tiger-style lite` | Build what's asked, flag missing assertions and unbounded resources in one line. |
+| **Full** | `/skill:tiger-style` | All pillars enforced: assertions, bounds, explicit control flow, performance sketches. Default. |
+| **Strict** | `/skill:tiger-style strict` | NASA-grade. Paired assertions, every resource bounded, every branch has an else, zero warnings. |
 
 Level sticks until changed or session end.
 
@@ -39,11 +39,11 @@ Before writing any code, run through these seven steps. Stop at the first one th
 
 | Skill | Trigger | What it does |
 |-------|---------|--------------|
-| **tiger-style** | `/tiger-style` | Safety-first coding mode itself. Assert everything, bound everything. |
-| **tiger-style-review** | `/tiger-style-review` | Safety review: `L23: assert: index used unchecked. assert(index < len) before access.` |
-| **tiger-style-audit** | `/tiger-style-audit` | Whole-repo safety audit, ranked by what bites first. |
-| **tiger-style-commit** | `/tiger-style-commit` | Commit messages that say why, not just what. |
-| **tiger-style-help** | `/tiger-style-help` | This card. |
+| **tiger-style** | `/skill:tiger-style` | Safety-first coding mode itself. Assert everything, bound everything. |
+| **tiger-style-review** | `/skill:tiger-style-review` | Safety review: `L23: assert: index used unchecked. assert(index < len) before access.` |
+| **tiger-style-audit** | `/skill:tiger-style-audit` | Whole-repo safety audit, ranked by what bites first. |
+| **tiger-style-commit** | `/skill:tiger-style-commit` | Commit messages that say why, not just what. |
+| **tiger-style-help** | `/skill:tiger-style-help` | This card. |
 
 ## The Pillars (30-second version)
 
@@ -58,10 +58,10 @@ Before writing any code, run through these seven steps. Stop at the first one th
 
 ## Deactivate
 
-Say "stop tiger-style" or "normal mode". Resume anytime with `/tiger-style`.
+Say "stop tiger-style" or "normal mode". Resume anytime with `/skill:tiger-style`.
 
 There is no `off` level — the skill's levels are lite, full and strict only — so
-`/tiger-style off` is not a trigger. Deactivate with the phrases above.
+`/skill:tiger-style off` is not a trigger. Deactivate with the phrases above.
 
 ## Configure Default Mode
 
@@ -70,8 +70,8 @@ Default mode = `full`, auto-active every session.
 **Pass the level as an argument** — this is the only mechanism a plain skill
 install reads:
 ```
-/tiger-style lite
-/tiger-style strict
+/skill:tiger-style lite
+/skill:tiger-style strict
 ```
 
 **Environment variable and config file** are read only when the Tiger Style
@@ -90,8 +90,8 @@ Config file (`~/.config/tiger-style/config.json`, Windows:
 ```
 
 With the hooks installed, `"off"` in that file turns auto-activation off at
-session start, and you activate manually with `/tiger-style` when wanted. That
-is a config value for the hooks, not a `/tiger-style off` trigger.
+session start, and you activate manually with `/skill:tiger-style` when wanted. That
+is a config value for the hooks, not a `/skill:tiger-style off` trigger.
 
 Resolution (hooks only): env var > config file > `full`.
 

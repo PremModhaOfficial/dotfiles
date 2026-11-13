@@ -1,6 +1,6 @@
 ---
 name: ds-ready
-description: "Runs the full ds-ship workflow but stops with the pull request ready for a human to merge, and never merges. Use when the user says get it ready, make it mergeable, stop before merge, or /ds-ready."
+description: "Runs the full ds-ship workflow but stops with the pull request ready for a human to merge, and never merges. Use when the user says get it ready, make it mergeable, stop before merge, or /skill:ds-ready."
 ---
 
 Do all of `ds-ship` except the merge. Hand the user an open PR that passes the merge gate.

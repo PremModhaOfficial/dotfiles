@@ -3,7 +3,7 @@ name: caveman-compress
 description: >
   Compress a memory file such as CLAUDE.md or a todo list into caveman format
   to save input tokens, keeping a readable backup. Sends the file's text to the
-  configured model provider. Trigger: /caveman-compress.
+  configured model provider. Trigger: /skill:caveman-compress.
 ---
 
 # Caveman Compress
@@ -16,7 +16,7 @@ Compress natural language files (CLAUDE.md, todos, preferences) into caveman-spe
 
 ## Trigger
 
-`/caveman-compress <filepath>` or when user asks to compress a memory file.
+`/skill:caveman-compress <filepath>` or when user asks to compress a memory file.
 
 **Requires an explicit filepath.** If the user pastes raw text instead of naming a file, do NOT improvise an inline compression — ask them for the filepath to compress, or offer to save the pasted text to a file first. Writing your own reasoning/commentary about the request into the compressed output (e.g. "User passed text directly, not a filepath...") is the exact failure this guards against — never let that leak into a saved file.
 

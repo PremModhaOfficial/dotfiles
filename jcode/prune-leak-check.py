@@ -10,13 +10,16 @@ Exit 0: no new leak. Exit 1: leak found. Exit 2: a session file was unreadable.
 
 Usage:
   prune-leak-check.py                 # only lines written after the baseline
+  prune-leak-check.py <file>...       # named sessions, baselined too
   prune-leak-check.py --all           # every line of every session
-  prune-leak-check.py <file>...       # named sessions, no baseline
-  prune-leak-check.py --selftest      # prove the check fires
+  prune-leak-check.py --rebaseline    # treat everything written so far as history
+  prune-leak-check.py --selftest      # prove the checks fire
 
 The baseline records the line count of every existing session on first run, so
 sessions that predate the check (including this checker's own source, which
-mentions the marker) do not fail it. Only appended lines are judged.
+mentions the marker) do not fail it. Only appended lines are judged. The very
+first run scans everything anyway: a baseline written before the first scan
+would bless any leak that already existed.
 """
 
 import glob
@@ -32,24 +35,31 @@ BASELINE = os.path.expanduser("~/.pi/agent/prune-leak-baseline.json")
 MARKER_RE = re.compile(r'<purged-(?:errored-)?args size=\\?"\d+\\?"')
 
 
-def load_baseline(create):
+def count_lines(path):
     try:
-        with open(BASELINE, encoding="utf8") as handle:
-            return json.load(handle)
-    except (OSError, json.JSONDecodeError):
-        if not create:
-            return {}
+        with open(path, encoding="utf8", errors="ignore") as handle:
+            return sum(1 for _ in handle)
+    except OSError:
+        return None
+
+
+def load_baseline(reset=False):
+    """Return (counts, created). created means no usable baseline existed yet."""
+    if not reset:
+        try:
+            with open(BASELINE, encoding="utf8") as handle:
+                return json.load(handle), False
+        except (OSError, json.JSONDecodeError):
+            pass
     counts = {}
     for path in glob.glob(os.path.join(SESSIONS, "*", "*.jsonl")):
-        try:
-            with open(path, encoding="utf8", errors="ignore") as handle:
-                counts[path] = sum(1 for _ in handle)
-        except OSError:
-            continue
+        lines = count_lines(path)
+        if lines is not None:
+            counts[path] = lines
     with open(BASELINE, "w", encoding="utf8") as handle:
         json.dump(counts, handle, indent=1)
     print(f"baseline written: {BASELINE} ({len(counts)} sessions)", file=sys.stderr)
-    return counts
+    return counts, True
 
 
 def tool_calls(record):
@@ -85,38 +95,46 @@ def scan(path, skip_lines=0):
                 if hit is None:
                     continue
                 at = hit.start()
-                leaks.append((path, number, name, hit.group(0), arguments[max(0, at - 40) : at + 80]))
+                leaks.append(
+                    (path, number, name, hit.group(0), arguments[max(0, at - 40) : at + 80])
+                )
     return leaks
 
 
 def selftest():
     import tempfile
 
-    def record(text):
+    def call(name, **arguments):
         return json.dumps(
             {
                 "type": "message",
                 "message": {
                     "role": "assistant",
-                    "content": [{"type": "toolCall", "name": "edit", "arguments": {"newText": text}}],
+                    "content": [{"type": "toolCall", "name": name, "arguments": arguments}],
                 },
             }
         )
 
-    # split so this file never contains a contiguous marker of its own
-    tag = "<purged-" + 'args size="12" ref="abc"/>'
+    # Split so this file never contains a contiguous marker of its own.
+    plain = "<purged-" + 'args size="12" ref="abc"/>'
+    errored = "<purged-" + 'errored-args size="34"/>'
     with tempfile.TemporaryDirectory() as tmp:
         leaky = os.path.join(tmp, "leaky.jsonl")
         clean = os.path.join(tmp, "clean.jsonl")
         with open(leaky, "w", encoding="utf8") as handle:
-            handle.write(record("keep") + "\n")
-            handle.write(record("x " + tag + " y") + "\n")
+            handle.write(call("edit", newText="keep") + "\n")
+            handle.write(call("edit", newText="x " + plain + " y") + "\n")
+            handle.write(call("bash", command="echo " + errored) + "\n")
         with open(clean, "w", encoding="utf8") as handle:
-            handle.write(record("keep") + "\n")
+            handle.write(call("edit", newText="keep") + "\n")
             handle.write(json.dumps({"type": "session"}) + "\n")
-        assert len(scan(leaky)) == 1, "selftest: leak not detected"
+
+        found = scan(leaky)
+        assert len(found) == 2, f"selftest: expected 2 leaks, got {len(found)}"
+        assert any("errored-args" in leak[3] for leak in found), "selftest: errored variant missed"
         assert not scan(clean), "selftest: false positive"
-        assert not scan(leaky, skip_lines=2), "selftest: baseline not honoured"
+        assert len(scan(leaky, skip_lines=2)) == 1, "selftest: baseline not honoured"
+        assert not scan(leaky, skip_lines=3), "selftest: skip past the end failed"
     print("selftest ok")
     return 0
 
@@ -124,14 +142,20 @@ def selftest():
 def main(argv):
     if "--selftest" in argv:
         return selftest()
+    if "--rebaseline" in argv:
+        load_baseline(reset=True)
+        return 0
+
     named = [a for a in argv[1:] if not a.startswith("-")]
     everything = "--all" in argv
-    counts = {} if (named or everything) else load_baseline(create=True)
+    counts, created = ({}, False) if everything else load_baseline()
     targets = named or glob.glob(os.path.join(SESSIONS, "*", "*.jsonl"))
     total = 0
     unreadable = 0
     for target in targets:
-        found = scan(target, skip_lines=0 if named or everything else counts.get(target, 0))
+        # Named files are baselined too; the first run and --all judge every line.
+        skip = 0 if (everything or created) else counts.get(target, 0)
+        found = scan(target, skip_lines=skip)
         if found is None:
             unreadable += 1
             continue

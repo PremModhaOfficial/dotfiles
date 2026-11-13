@@ -1,6 +1,6 @@
 ---
 name: ds-tdd
-description: "Fix a bug by first writing a focused test that fails for the right reason, then making the smallest change that makes it pass. Use when the user asks for TDD or a regression test, when a bug has a cheap local test target, or for /ds-tdd."
+description: "Fix a bug by first writing a focused test that fails for the right reason, then making the smallest change that makes it pass. Use when the user asks for TDD or a regression test, when a bug has a cheap local test target, or for /skill:ds-tdd."
 ---
 
 # ds-tdd
@@ -20,7 +20,7 @@ Make the bug executable before touching production code, so the fix is proven, n
 ## Stop when
 
 - The new test failed before the fix and passes after it, both shown with output, and the surrounding suite passes.
-- Or after three fix attempts the test still fails. Stop, report what you learned and run /ds-unstick.
+- Or after three fix attempts the test still fails. Stop, report what you learned and run /skill:ds-unstick.
 
 ## Rules
 

@@ -1,6 +1,6 @@
 ---
 name: ds-help
-description: "Pick the right deepseek-stack skill for a task and explain how the pack fits together. Use when the user asks which skill to use, what the pack contains, or types /ds-help."
+description: "Pick the right deepseek-stack skill for a task and explain how the pack fits together. Use when the user asks which skill to use, what the pack contains, or types /skill:ds-help."
 ---
 
 # ds-help

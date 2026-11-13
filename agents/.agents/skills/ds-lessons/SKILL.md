@@ -1,6 +1,6 @@
 ---
 name: ds-lessons
-description: "Use when: /ds-lessons, a user correction, the same fix comes up twice, at the end of a long session, a retro."
+description: "Use when: /skill:ds-lessons, a user correction, the same fix comes up twice, at the end of a long session, a retro."
 ---
 
 # ds-lessons
@@ -23,7 +23,7 @@ An instruction an agent can skip is a wish. Make repeated mistakes fail loudly i
    3. Lint or CI check: the error message names the right file, type or function to use. If the bad pattern is already common, fail only on new additions.
    4. Test: checks behavior, not internals.
    5. Docs or agent rules: only for judgment calls that cannot be checked. Add a short example of the failure.
-4. Present these candidates to the user, in order of severity. Then stop unless the user asks for the fixes. `/ds-lessons` reports; it does not edit the repo unasked.
+4. Present these candidates to the user, in order of severity. Then stop unless the user asks for the fixes. `/skill:ds-lessons` reports; it does not edit the repo unasked.
 5. Fix the classes the user picks, one commit each.
 6. Prove each new check. Re-introduce a real past mistake, run the check, and show it fails. Then remove it and show it passes.
 7. Keep a table in the agent instruction file: rule, and what enforces it. If a rule already existed but nothing enforced it, treat it as a repeat and enforce it now.

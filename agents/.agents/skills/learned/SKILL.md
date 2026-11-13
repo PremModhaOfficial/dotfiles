@@ -43,7 +43,7 @@ Baseline is RED (fmt/clippy/parity); tests must stay green. Record counts before
 - Watch only `agent_status`; never read pane text except on an anomaly. Use zero-LLM shell monitors for status.
 
 ## Triage
-- matt `/triage`: category (bug|enhancement) + state (needs-triage|needs-info|ready-for-agent|ready-for-human|wontfix). Check `DECISIONS.md` and issue #29's parked list; only hand out `ready-for-agent` tickets.
+- matt `/skill:triage`: category (bug|enhancement) + state (needs-triage|needs-info|ready-for-agent|ready-for-human|wontfix). Check `DECISIONS.md` and issue #29's parked list; only hand out `ready-for-agent` tickets.
 
 ## Whiteboard (local, no Desktop needed)
 - `whiteboard --state-dir /home/prm/.dev api session_list`

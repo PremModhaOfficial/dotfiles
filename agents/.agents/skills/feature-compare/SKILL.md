@@ -15,7 +15,7 @@ For each product, pick sources in priority order:
 - **Closed-source / no repo** → official docs (WebSearch + WebFetch, latest version/changelog).
 - If the user didn't give a repo or docs URL, find it with WebSearch. If DeepWiki has no index for a repo, fall back to docs and say so in the footer.
 
-Show a compact plan table (product | repo/docs | source order) and ask the user to confirm or correct in one message. Proceed on confirmation. DeepWiki is deferred: load only `mcp__DeepWiki__ask_wiki_question` via ToolSearch (`select:`). Use ask only, never `read_wiki_structure` / `read_wiki_contents`: they dump large pages into context, while ask returns a direct, code-backed answer for far fewer tokens.
+Show a compact plan table (product | repo/docs | source order) and ask the user to confirm or correct in one message. Proceed on confirmation. DeepWiki is deferred: call only `mcp__deepwiki__ask_wiki_question` (lowercase — that is the server key in `~/.pi/agent/mcp.json`, and pi exposes it as a plain tool). Use ask only, never `read_wiki_structure` / `read_wiki_contents`: they dump large pages into context, while ask returns a direct, code-backed answer for far fewer tokens.
 
 ## Phase 1: Feature extraction → union U
 

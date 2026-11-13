@@ -1,6 +1,6 @@
 ---
 name: ds-jury
-description: "Gets independent reviews of a change from two or three different models or providers and loops on fixes until they agree. Use when the user says jury, panel review, second opinions, ask other models, or /ds-jury."
+description: "Gets independent reviews of a change from two or three different models or providers and loops on fixes until they agree. Use when the user says jury, panel review, second opinions, ask other models, or /skill:ds-jury."
 ---
 
 Get two or three independent reviewers to judge the same change, then fix until they agree.

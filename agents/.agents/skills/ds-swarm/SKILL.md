@@ -1,6 +1,6 @@
 ---
 name: ds-swarm
-description: "Fan out N parallel workers on slices of a job or on a race, collect every result, and return one evidence-backed report. Use when: /ds-swarm, wide coverage, audits, races between approaches, exploration, swarm this, split this across workers."
+description: "Fan out N parallel workers on slices of a job or on a race, collect every result, and return one evidence-backed report. Use when: /skill:ds-swarm, wide coverage, audits, races between approaches, exploration, swarm this, split this across workers."
 ---
 
 # ds-swarm

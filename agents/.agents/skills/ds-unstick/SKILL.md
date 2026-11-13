@@ -1,6 +1,6 @@
 ---
 name: ds-unstick
-description: "Break out of a repeating failure. Use when: /ds-unstick, the same error, wrong behavior comes back after two fix attempts, you notice you are retrying small variations."
+description: "Break out of a repeating failure. Use when: /skill:ds-unstick, the same error, wrong behavior comes back after two fix attempts, you notice you are retrying small variations."
 ---
 
 # ds-unstick

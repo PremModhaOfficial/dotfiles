@@ -1,6 +1,6 @@
 ---
 name: ds-verify-loop
-description: "Run edit, real check, read the actual error, fix the root cause, rerun, until the check passes or the cap is hit. Use when you change code that has tests, a type checker, a build, or a runnable app, or before you claim any fix works. Invoke as /ds-verify-loop."
+description: "Run edit, real check, read the actual error, fix the root cause, rerun, until the check passes or the cap is hit. Use when you change code that has tests, a type checker, a build, or a runnable app, or before you claim any fix works. Invoke as /skill:ds-verify-loop."
 ---
 
 # ds-verify-loop

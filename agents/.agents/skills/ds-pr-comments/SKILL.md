@@ -1,6 +1,6 @@
 ---
 name: ds-pr-comments
-description: "Formats and posts GitHub comments written by an agent on the user's behalf, with clear attribution and no leaked secrets. Use whenever you post a PR comment, review reply or dismissal reason, or on /ds-pr-comments."
+description: "Formats and posts GitHub comments written by an agent on the user's behalf, with clear attribution and no leaked secrets. Use whenever you post a PR comment, review reply or dismissal reason, or on /skill:ds-pr-comments."
 ---
 
 Make every agent-written comment easy to spot, short and safe to publish.

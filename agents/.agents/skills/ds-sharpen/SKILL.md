@@ -1,6 +1,6 @@
 ---
 name: ds-sharpen
-description: "Restate the user's goal, make the task deeper rather than bigger. Use when: /ds-sharpen, starting vague, high-stakes work, for 'sharpen this', what am I really asking, stress test this plan."
+description: "Restate the user's goal, make the task deeper rather than bigger. Use when: /skill:ds-sharpen, starting vague, high-stakes work, for 'sharpen this', what am I really asking, stress test this plan."
 ---
 
 # ds-sharpen
