@@ -1,0 +1,63 @@
+# 0002 fix: compaction role forgery (content cannot impersonate a role header)
+# Applied by ~/dotfiles/jcode/apply-pi-patches.sh after every pi upgrade.
+#
+# Two copies exist in the install and both must change: the unbundled module
+# (imported by dist/core/*) and the minified chunk the pi CLI actually runs.
+# target: dist/core/compaction/utils.js
+# pristine-sha256: 68409c9ac824176e86be7a3a922dbc77dae77da8b612039c235eac7de6c6931d
+# target: dist/bundle/chunks/chunk-VEJDBY3O.js
+# pristine-sha256: effbbd5d6247983dc11c7ae5796eb24bda88f9ebf78c707d3f92ca73cbb8b51e
+
+--- a/dist/core/compaction/utils.js
++++ b/dist/core/compaction/utils.js
+@@ -91,6 +91,10 @@
+     const truncatedChars = text.length - maxChars;
+     return `${sliceHead(text, maxChars)}\n\n[... ${truncatedChars} more characters truncated]`;
+ }
++// Content that looks like a role header would otherwise survive compaction as a real turn.
++function escapeRoleHeaders(text) {
++    return text.replace(/^\[(Assistant tool calls|Assistant|Tool result|User)\]/gm, "\\$&");
++}
+ /**
+  * Serialize LLM messages to text for summarization.
+  * This prevents the model from treating it as a conversation to continue.
+@@ -111,7 +115,7 @@
+         if (msg.role === "user") {
+             const content = contentText(msg.content, "");
+             if (content)
+-                parts.push(`[User]: ${content}`);
++                parts.push(`[User]: ${escapeRoleHeaders(content)}`);
+         }
+         else if (msg.role === "assistant") {
+             const toolCalls = [];
+@@ -125,16 +129,16 @@
+                 }
+             }
+             if (msg.content.some((block) => block.type === "text")) {
+-                parts.push(`[Assistant]: ${contentText(msg.content)}`);
++                parts.push(`[Assistant]: ${escapeRoleHeaders(contentText(msg.content))}`);
+             }
+             if (toolCalls.length > 0) {
+-                parts.push(`[Assistant tool calls]: ${toolCalls.join("; ")}`);
++                parts.push(`[Assistant tool calls]: ${escapeRoleHeaders(toolCalls.join("; "))}`);
+             }
+         }
+         else if (msg.role === "toolResult") {
+             const content = contentText(msg.content, "");
+             if (content) {
+-                parts.push(`[Tool result]: ${truncateForSummary(content, TOOL_RESULT_MAX_CHARS)}`);
++                parts.push(`[Tool result]: ${escapeRoleHeaders(truncateForSummary(content, TOOL_RESULT_MAX_CHARS))}`);
+             }
+         }
+     }
+--- a/dist/bundle/chunks/chunk-VEJDBY3O.js
++++ b/dist/bundle/chunks/chunk-VEJDBY3O.js
+@@ -541,7 +541,7 @@
+ 
+ `)}`}var TOOL_RESULT_MAX_CHARS=2e3;function truncateForSummary(text,maxChars){if(text.length<=maxChars)return text;let truncatedChars=text.length-maxChars;return`${sliceHead(text,maxChars)}
+ 
+-[... ${truncatedChars} more characters truncated]`}function serializeConversation(messages){let parts=[];for(let msg of messages)if(msg.role==="user"){let content=contentText(msg.content,"");content&&parts.push(`[User]: ${content}`)}else if(msg.role==="assistant"){let toolCalls=[];for(let block of msg.content)if(block.type==="toolCall"){let args=block.arguments,argsStr=Object.entries(args).map(([k,v])=>`${k}=${JSON.stringify(v)}`).join(", ");toolCalls.push(`${block.name}(${argsStr})`)}msg.content.some(block=>block.type==="text")&&parts.push(`[Assistant]: ${contentText(msg.content)}`),toolCalls.length>0&&parts.push(`[Assistant tool calls]: ${toolCalls.join("; ")}`)}else if(msg.role==="toolResult"){let content=contentText(msg.content,"");content&&parts.push(`[Tool result]: ${truncateForSummary(content,TOOL_RESULT_MAX_CHARS)}`)}return parts.join(`
++[... ${truncatedChars} more characters truncated]`}function escapeRoleHeaders(text){return text.replace(/^\[(Assistant tool calls|Assistant|Tool result|User)\]/gm,"\\$&")}function serializeConversation(messages){let parts=[];for(let msg of messages)if(msg.role==="user"){let content=contentText(msg.content,"");content&&parts.push(`[User]: ${escapeRoleHeaders(content)}`)}else if(msg.role==="assistant"){let toolCalls=[];for(let block of msg.content)if(block.type==="toolCall"){let args=block.arguments,argsStr=Object.entries(args).map(([k,v])=>`${k}=${JSON.stringify(v)}`).join(", ");toolCalls.push(`${block.name}(${argsStr})`)}msg.content.some(block=>block.type==="text")&&parts.push(`[Assistant]: ${escapeRoleHeaders(contentText(msg.content))}`),toolCalls.length>0&&parts.push(`[Assistant tool calls]: ${escapeRoleHeaders(toolCalls.join("; "))}`)}else if(msg.role==="toolResult"){let content=contentText(msg.content,"");content&&parts.push(`[Tool result]: ${escapeRoleHeaders(truncateForSummary(content,TOOL_RESULT_MAX_CHARS))}`)}return parts.join(`
+ 
+ `)}var SUMMARIZATION_SYSTEM_PROMPT=`You are a context summarization assistant. Your task is to read a conversation between a user and an AI assistant, then produce a structured summary following the exact format specified.
+ 

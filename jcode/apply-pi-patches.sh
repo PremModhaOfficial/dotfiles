@@ -21,12 +21,21 @@
 #     ~/dotfiles/jcode/apply-pi-patches.sh             # apply what is missing
 #     ~/dotfiles/jcode/apply-pi-patches.sh --dry-run   # report, write nothing
 #     ~/dotfiles/jcode/apply-pi-patches.sh --revert    # restore pristine bytes
+#
+#   Exit: 0 applied/no-op, 1 error, 3 no pi install found (a skip, not a
+#   failure: a machine without pi has nothing to patch and update-all.sh
+#   reports that instead of failing the run).
 # ============================================================================
 
 set -uo pipefail
 
-PI_ROOT="${PI_ROOT:-$HOME/.npm-global/lib/node_modules/@earendil-works/pi-coding-agent}"
-PATCH_DIR="$HOME/dotfiles/pi-patches"
+# Sourced, not copied: the candidate list (npm root -g plus the common prefixes)
+# lives in pi-root.sh so the escape test and this script cannot disagree.
+# shellcheck source=pi-root.sh
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/pi-root.sh"
+# The patches belong to this repo, wherever it is cloned; ~/dotfiles is only the
+# conventional location.
+PATCH_DIR="${PATCH_DIR:-$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)/pi-patches}"
 
 DRY=0
 REVERT=0
@@ -42,6 +51,14 @@ for arg in "$@"; do
   esac
 done
 
+if [ -z "${PI_ROOT:-}" ]; then
+  if ! PI_ROOT=$(resolve_pi_root); then
+    echo "apply-pi-patches: SKIP: no pi install found; tried:" >&2
+    pi_root_candidates | sed 's/^/  /' >&2
+    echo "apply-pi-patches: install pi, or export PI_ROOT=<package root>" >&2
+    exit 3
+  fi
+fi
 [ -d "$PI_ROOT" ] || fail "no pi install at $PI_ROOT (set PI_ROOT to override)"
 [ -d "$PATCH_DIR" ] || fail "no patch dir at $PATCH_DIR"
 command -v git >/dev/null || fail "git not found (git apply does the patching)"

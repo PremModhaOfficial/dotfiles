@@ -23,7 +23,14 @@
 
 set -uo pipefail
 
-PI_ROOT="${PI_ROOT:-$HOME/.npm-global/lib/node_modules/@earendil-works/pi-coding-agent}"
+# Same resolver as apply-pi-patches.sh: a hardcoded npm-global path made this
+# test fail (and the patch step red) on any machine whose pi came from nvm,
+# pnpm, /usr/local or a distro package.
+# shellcheck source=pi-root.sh
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/pi-root.sh"
+if [ -z "${PI_ROOT:-}" ]; then
+  PI_ROOT=$(resolve_pi_root) || { echo "SKIP: no pi install found; nothing to test" >&2; exit 3; }
+fi
 UTILS="$PI_ROOT/dist/core/compaction/utils.js"
 CHUNK="$PI_ROOT/dist/bundle/chunks/chunk-VEJDBY3O.js"
 

@@ -70,13 +70,42 @@ UPDATER_SRC="$HOME/.jcode/updater-src"          # git clones we own for skill sy
 LOG_DIR="$HOME/.jcode/logs"
 LOG="$LOG_DIR/update-all.log"
 MANIFEST="$SKILLS_DIR/README.md"
-DOTFILES="$HOME/dotfiles"
+# The repo root is where THIS script lives, not a hardcoded ~/dotfiles: cloned to
+# ~/src/dotfiles the config phase used to log "skip: no dotfiles repo" and return
+# 0, a green run that installed nothing. ~/dotfiles stays the fallback for the
+# installed ~/.jcode/bin/update-all.sh copy if it were ever a real file.
+DOTFILES=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." 2>/dev/null && pwd)
+[ -n "$DOTFILES" ] && [ -d "$DOTFILES/.git" ] || DOTFILES="$HOME/dotfiles"
 GATE_BRANCH="local/turn-end-gate"
 JCODE_FORK="https://github.com/PremModhaOfficial/jcode.git"
 JCODE_UPSTREAM="https://github.com/1jehuang/jcode.git"
 UPDATER="${BASH_SOURCE[0]}"
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG"; }
+# Every pipeline whose first stage decides whether the run is green goes through
+# this, and it reads PIPESTATUS itself with pipefail deliberately off, so the
+# answer does not depend on which shell option a caller happened to inherit.
+# `cmd | tee || rc=1` reports tee's status and swallows the failure: that is how
+# a refused transform once ended `update-all finished (exit=0)`.
+# Pipelines that are only formatting (log's own echo, the checklist/manifest
+# tables, `grep ... || echo "(none)"`, `wc | tr`, the stale-run pruning
+# `find | sort | tail | xargs rm`) are not wrappers: their last stage is either
+# the decision or nothing can fail meaningfully in stage 0.
+run_logged() {
+  local rc had_pipefail=0 had_errexit=0
+  shopt -qo pipefail && had_pipefail=1
+  case $- in *e*) had_errexit=1 ;; esac
+  # Both options are cleared for the pipeline itself, then restored: with
+  # errexit on, a failing stage 0 would kill the shell before PIPESTATUS could
+  # be read, and the step's own error line would never print.
+  set +o pipefail
+  set +e
+  "$@" 2>&1 | tee -a "$LOG"
+  rc=${PIPESTATUS[0]}
+  [ "$had_pipefail" = 0 ] || set -o pipefail
+  [ "$had_errexit" = 0 ] || set -e
+  return "$rc"
+}
 fail() { log "ERROR: $*"; checklist_add fail "$*"; exit 1; }
 
 DRY=0; PARALLEL=0; DO_JCODE=1; DO_SKILLS=1; DO_TOOLS=1; DO_CONFIG=1; DO_MANIFEST=1; DO_PI=1; DO_PATCHES=1
@@ -86,10 +115,13 @@ for arg in "$@"; do
     --dry-run) DRY=1 ;;
     --parallel) PARALLEL=1 ;;
     --context) show_context; return 2 ;;
-    --jcode-only) DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0 ;;
-    --skills-only) DO_JCODE=0; DO_TOOLS=0; DO_CONFIG=0 ;;
-    --tools-only) DO_JCODE=0; DO_SKILLS=0; DO_CONFIG=0 ;;
-    --config-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_MANIFEST=0 ;;
+    --jcode-only) DO_SKILLS=0; DO_TOOLS=0; DO_CONFIG=0; DO_PI=0; DO_PATCHES=0 ;;
+    --skills-only) DO_JCODE=0; DO_TOOLS=0; DO_CONFIG=0; DO_PI=0; DO_PATCHES=0 ;;
+    --tools-only) DO_JCODE=0; DO_SKILLS=0; DO_CONFIG=0; DO_PI=0; DO_PATCHES=0 ;;
+    # --config-only used to leave DO_PI/DO_PATCHES on, so the one repair command
+    # for a failed cold run re-ran the two phases that failed for the same reason
+    # (finding 8). Every selector now turns off the phases it does not name.
+    --config-only) DO_JCODE=0; DO_SKILLS=0; DO_TOOLS=0; DO_MANIFEST=0; DO_PI=0; DO_PATCHES=0 ;;
     # Manifest reads installed skills, not sources, so it is safe to run alone
     # after a partial run. It is its own flag so a core-phase failure can still
     # be repaired with one cheap command instead of a whole full run.
@@ -141,8 +173,135 @@ checklist_write() {
       echo "| $i | $label | $mark |"
     done < "$CHECKLIST_TMP"
     echo ""
+    # The run must say what it did NOT do. A skipped step used to appear only as a
+    # table row (or, before this, not even that when a phase returned 0 early), so
+    # "zero configs installed, exit 0" was indistinguishable from a full sync.
+    echo "### Not done in this run"
+    if grep -qE '^(skip|fail)' "$CHECKLIST_TMP"; then
+      awk -F'\t' '$1=="skip"||$1=="fail"{print "- " $1 ": " $2}' "$CHECKLIST_TMP"
+    else
+      echo "- nothing skipped or failed"
+    fi
+    echo ""
   } >> "$CHECKLIST"
-  log "OK: checklist appended to $CHECKLIST"
+  log "OK: checklist appended to $CHECKLIST ($ok/$total ok, $failc failed, $skipped skipped)"
+  if grep -qE '^(skip|fail)' "$CHECKLIST_TMP"; then
+    log "not done this run:"
+    awk -F'\t' '$1=="skip"||$1=="fail"{print "  " $1 ": " $2}' "$CHECKLIST_TMP" | tee -a "$LOG"
+  fi
+}
+
+# --- 0. prerequisites -------------------------------------------------------
+# Everything the phases below assume is checked once, by name, at the start. A
+# fresh machine used to learn about a missing tool through eight unrelated phase
+# failures, one of which (PyYAML) only surfaced as a traceback from inside a
+# Python step and took the configs down with it.
+preflight() {
+  log "=== prerequisites ==="
+  local missing=() t
+  for t in git bash python3 flock sha256sum cmp cp; do
+    command -v "$t" >/dev/null 2>&1 || missing+=("$t")
+  done
+  if [ "${#missing[@]}" -gt 0 ]; then
+    log "ERROR: missing required tools: ${missing[*]}"
+    log "ERROR: install them and re-run; no phase was started"
+    checklist_add fail "prerequisites (missing: ${missing[*]})"
+    return 1
+  fi
+  log "OK: git, bash, python3, flock, sha256sum, cmp, cp present"
+  checklist_add done "prerequisites (base tools)"
+
+  # PyYAML is a hard import in skills-cap-check.py and the only soft one in
+  # skills-cap.py. The user site dir is per-HOME, so it is simply absent on a new
+  # machine and the cap step dies with a traceback. Install it once here, and
+  # never continue without it: the cap is the difference between a 40 KB and a
+  # 34 KB prompt on every turn.
+  if python3 -c 'import yaml' 2>/dev/null; then
+    log "OK: PyYAML present ($(python3 -c 'import yaml; print(yaml.__file__)' 2>/dev/null))"
+    checklist_add done "prerequisites (PyYAML)"
+  elif [ "$DRY" = 1 ]; then
+    log "DRY: PyYAML missing; would run: python3 -m pip install --user pyyaml"
+    checklist_add skip "prerequisites (PyYAML missing, dry-run)"
+  elif python3 -m pip install --user pyyaml >/dev/null 2>&1 && python3 -c 'import yaml' 2>/dev/null; then
+    log "OK: installed PyYAML (python3 -m pip install --user pyyaml)"
+    checklist_add done "prerequisites (PyYAML installed)"
+  else
+    # A distro Python with PEP 668 (Arch, Debian 12+) refuses --user without
+    # --break-system-packages, so the plain command above is not enough to quote.
+    log "ERROR: PyYAML missing (skills-cap-check.py imports it); install it, then re-run:"
+    log "ERROR:   python3 -m pip install --user --break-system-packages pyyaml"
+    log "ERROR:   or your distro package (pacman -S python-pyyaml / apt install python3-yaml)"
+    log "ERROR: no phase was started; nothing was installed or changed"
+    checklist_add fail "prerequisites (PyYAML missing: python3 -m pip install --user --break-system-packages pyyaml)"
+    return 1
+  fi
+  return 0
+}
+
+# --- 0b. symlink fleet ------------------------------------------------------
+# ~/.agents is the tree every skill, the manifest and gen-pi-agents.py read, and
+# nothing in this repo ever created it. It was hand-made with `ln -s` on one
+# machine, so a fresh machine installed 35 of 130 skills into a real directory,
+# never generated ~/.pi/agent/AGENTS.md, and lost the other 95 with no error.
+# Created here, before any phase reads it; every phase below checks it.
+link_into_repo() { # link_into_repo <link> <target>
+  local link="$1" target="$2" want
+  # Relative only for a link that sits directly in $HOME: a relative link is
+  # resolved against the link's own dir, so "dotfiles/..." placed in
+  # ~/.jcode/bin/ points at ~/.jcode/bin/dotfiles/... and dangles. A link that
+  # lives under $HOME keeps its target relative so a moved home dir survives.
+  if [ "$(dirname "$link")" = "$HOME" ] && [ "${target#"$HOME"/}" != "$target" ]; then
+    want="${target#"$HOME"/}"
+  else
+    want="$target"
+  fi
+  if [ -L "$link" ] && [ "$(readlink "$link")" = "$want" ]; then
+    log "OK:  link $link -> $want (in place)"
+    return 0
+  fi
+  if [ -e "$link" ] && [ ! -L "$link" ]; then
+    # Never rm a real directory or file: it may hold the only copy of something.
+    log "ERROR: $link exists and is not a symlink; refusing to replace it"
+    log "ERROR: move it aside (mv $link $link.bak) and re-run so the repo copy is used"
+    return 1
+  fi
+  if [ "$DRY" = 1 ]; then log "DRY: ln -sfn $want $link"; return 0; fi
+  ln -sfn "$want" "$link" || { log "ERROR: could not link $link -> $want"; return 1; }
+  log "OK:  link $link -> $want"
+}
+
+bootstrap_links() {
+  log "=== symlink fleet (~/.agents is read by every later phase) ==="
+  local rc=0
+  if [ "$DRY" = 1 ]; then
+    log "DRY: link fleet would be created under $HOME"
+  else
+    mkdir -p "$HOME/.jcode/bin" || rc=1
+  fi
+  link_into_repo "$HOME/.agents"                 "$DOTFILES/agents/.agents" || rc=1
+  link_into_repo "$HOME/AGENTS.md"               "$DOTFILES/agents/AGENTS.md" || rc=1
+  link_into_repo "$HOME/skills"                  "$DOTFILES/agents/.agents/skills" || rc=1
+  link_into_repo "$HOME/.skill-lock.json"        "$DOTFILES/agents/.agents/.skill-lock.json" || rc=1
+  link_into_repo "$HOME/.jcode/bin/update-all.sh" "$DOTFILES/jcode/update-all.sh" || rc=1
+  if [ "$rc" = 0 ]; then
+    checklist_add done "symlink fleet (~/.agents, ~/AGENTS.md, ~/skills, ~/.skill-lock.json, ~/.jcode/bin/update-all.sh)"
+  else
+    checklist_add fail "symlink fleet (see ERROR lines above)"
+  fi
+  return "$rc"
+}
+
+# One guard for every phase that reads $SKILLS_DIR. Without it a missing fleet
+# looks like a normal empty run: sync_dir mkdir -p'd a real ~/.agents/skills and
+# reported 35 successful copies while 95 skills never existed.
+require_links() { # require_links <phase>
+  local phase="$1"
+  if [ -d "$SKILLS_DIR" ]; then return 0; fi
+  log "ERROR: $phase needs $SKILLS_DIR, which is missing"
+  log "ERROR: ~/.agents is a symlink into $DOTFILES/agents/.agents; the bootstrap step creates it"
+  log "ERROR: re-run: bash $DOTFILES/jcode/update-all.sh"
+  checklist_add fail "$phase (missing ~/.agents; symlink fleet not created)"
+  return 1
 }
 
 run() { # run <label> <cmd...>
@@ -203,8 +362,20 @@ update_jcode() {
     checklist_add skip "core (dry-run, no git/cargo executed)"
     return 0
   fi
-  command -v cargo >/dev/null || fail "cargo not found"
-  [ -d "$JCODE_SRC/.git" ] || fail "no jcode source at $JCODE_SRC (run: jcode self-dev --setup)"
+  # ~/.jcode/source/jcode is created by `jcode self-dev --setup`, which is a
+  # jcode feature this repo does not provide. Failing here was correct-looking and
+  # wrong: the config phase used to be gated behind it, so a fresh machine
+  # installed ZERO configs because core could never pass. Report the missing
+  # prerequisite and let the independent phases run.
+  local why=""
+  command -v cargo >/dev/null 2>&1 || why="cargo not installed"
+  [ -d "$JCODE_SRC/.git" ] || why="${why:+$why; }no jcode source at $JCODE_SRC (run: jcode self-dev --setup)"
+  if [ -n "$why" ]; then
+    log "SKIP: jcode core — $why"
+    log "SKIP: core covers only the fork rebase/build/push; skills, pi rules and configs still run"
+    checklist_add skip "core ($why)"
+    return 0
+  fi
   [ -z "$(git -C "$JCODE_SRC" status --porcelain)" ] || fail "core is dirty; preserve changes and resolve manually before updating"
 
   # Ensure remotes: origin = our fork (maintains our changes), upstream = jcode.
@@ -273,7 +444,11 @@ skill_sources() {
     eval "pull_$name() { pull_skill '$name' '${sources[$name]}'; }"
   done
   local plib="$HOME/.a5c/process-library/babysitter-repo"
-  if [ -d "$plib/.git" ]; then jobs+=(pull_process_library); fi
+  if [ -d "$plib/.git" ]; then
+    jobs+=(pull_process_library)
+  else
+    log "SKIP: babysitter process library — no clone at $plib"
+  fi
   run_jobs "${jobs[@]}"
 }
 
@@ -328,6 +503,7 @@ sync_dir() { # sync_dir <src> <dst>
 
 sync_skills() {
   log "=== skill sync ==="
+  require_links "skill sync" || return 1
   # ponytail family (ponytail + audits)
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail"        "$SKILLS_DIR/ponytail"
   sync_dir "$UPDATER_SRC/ponytail/skills/ponytail-audit"  "$SKILLS_DIR/ponytail-audit"
@@ -430,6 +606,15 @@ EOF
 run_overlay() { # run_overlay <script> <base-dir>
   local f="$1" base="$2" skill
   skill=$(basename "$f" .sh)
+  if [ ! -d "$base" ]; then
+    # The host itself is not installed (e.g. no ~/.pi/agent/skills on a machine
+    # without pi). That is a known skip, not a warning: a WARN here is what made
+    # "0 warnings" impossible on a fresh machine, and hiding it entirely is what
+    # this round exists to stop.
+    log "SKIP: overlay $skill — host skills dir $base does not exist (host not installed)"
+    checklist_add skip "overlay $skill (no host skills dir $base)"
+    return 0
+  fi
   if [ ! -d "$base/$skill" ]; then
     # Warn, not fail: killing the run because one overlay targets a skill this
     # host does not have helps nobody. The audit turns a genuinely unapplied
@@ -497,7 +682,9 @@ apply_skill_activation() {
     return 0
   fi
   local rc=0
-  python3 "$DOTFILES/jcode/skills-activation.py" 2>&1 | tee -a "$LOG" || rc=1
+  # The wrapper returns the transform's own status (exit 1 refusal, exit 2 below
+  # the floor), never tee's; see run_logged.
+  run_logged python3 "$DOTFILES/jcode/skills-activation.py" || rc=1
   if [ "$rc" = 0 ]; then
     checklist_add done "skill activation form"
   else
@@ -515,8 +702,8 @@ apply_skill_cap() {
     return 0
   fi
   local rc=0
-  python3 "$DOTFILES/jcode/skills-cap.py" 2>&1 | tee -a "$LOG" || rc=1
-  python3 "$DOTFILES/jcode/skills-cap-check.py" 2>&1 | tee -a "$LOG" || rc=1
+  run_logged python3 "$DOTFILES/jcode/skills-cap.py" || rc=1
+  run_logged python3 "$DOTFILES/jcode/skills-cap-check.py" || rc=1
   if [ "$rc" = 0 ]; then
     checklist_add done "skill catalogue cap"
   else
@@ -541,7 +728,8 @@ generate_pi_agents() {
     checklist_add skip "pi rules file (dry-run)"
     return 0
   fi
-  if python3 "$DOTFILES/jcode/gen-pi-agents.py" 2>&1 | tee -a "$LOG"; then
+  require_links "pi rules file" || return 1
+  if run_logged python3 "$DOTFILES/jcode/gen-pi-agents.py"; then
     checklist_add done "pi rules file (~/.pi/agent/AGENTS.md)"
   else
     # Fatal on purpose: the shared rules changed and pi is now running stale text,
@@ -564,10 +752,25 @@ apply_pi_patches() {
     checklist_add skip "pi patches (dry-run)"
     return 0
   fi
-  if bash "$DOTFILES/jcode/apply-pi-patches.sh" 2>&1 | tee -a "$LOG"; then
+  local rc=0
+  run_logged bash "$DOTFILES/jcode/apply-pi-patches.sh" || rc=$?
+  if [ "$rc" = 3 ]; then
+    # A machine without pi has nothing to patch. Report the skip with the paths the
+    # resolver tried (pi-root.sh printed them): a skip is honest, a failure here
+    # would paint a run red for a prerequisite the user has not installed yet.
+    log "SKIP: pi patches — no pi install found (paths above; install pi or export PI_ROOT)"
+    checklist_add skip "pi patches (no pi install found)"
+    return 0
+  fi
+  if [ "$rc" = 0 ]; then
     # Applied is not the same as working: run the escape test, so an upgrade that
     # keeps the patch applying but changes the flattening sites still goes red.
-    if bash "$DOTFILES/jcode/compaction-escape.test.sh" 2>&1 | tee -a "$LOG" | tail -1 | grep -q '^PASS'; then
+    local trc=0
+    run_logged bash "$DOTFILES/jcode/compaction-escape.test.sh" || trc=$?
+    if [ "$trc" = 3 ]; then
+      log "SKIP: compaction escape test — no pi install found"
+      checklist_add skip "pi patches (escape test skipped: no pi install)"
+    elif [ "$trc" = 0 ] && tail -1 "$LOG" | grep -q '^PASS'; then
       checklist_add done "pi patches (re-applied, escape test passed)"
     else
       log "ERROR: compaction escape test failed after applying the patch"
@@ -590,31 +793,43 @@ update_tools() {
 # optimize, evidence-review, manage). Installing it by hand once is how those
 # skills ended up documented-but-dead on this machine, so the updater owns it.
 update_caveman_cli() {
-  if command -v npm >/dev/null 2>&1; then
-    run "caveman cli (npm global)" npm i -g @caveman-ai/cli@latest
-    # Ships the six Go binaries (proxy, engine, mcp, browse, shrink, cavemem).
-    # Idempotent: the signed installer skips components already at version.
-    run "caveman binaries (signed installer)" caveman setup --install
+  if ! command -v npm >/dev/null 2>&1; then
+    log "SKIP: caveman cli — npm not installed"
+    checklist_add skip "caveman cli (npm not installed)"
+    return 0
   fi
+  run "caveman cli (npm global)" npm i -g @caveman-ai/cli@latest
+  # Ships the six Go binaries (proxy, engine, mcp, browse, shrink, cavemem).
+  # Idempotent: the signed installer skips components already at version.
+  run "caveman binaries (signed installer)" caveman setup --install
 }
 update_herdr_tools() {
-  if command -v mise >/dev/null; then
-    run "mise herdr latest" mise install herdr@latest
-    run "mise use herdr@latest" mise use -g herdr@latest
+  if ! command -v mise >/dev/null 2>&1; then
+    log "SKIP: herdr tools — mise not installed"
+    checklist_add skip "herdr tools (mise not installed)"
+    return 0
   fi
+  run "mise herdr latest" mise install herdr@latest
+  run "mise use herdr@latest" mise use -g herdr@latest
 }
 verify_babysitter_sdk() {
-  if command -v node >/dev/null; then
-    # The babysitter CLI is consumed via `npm exec --package @a5c-ai/babysitter-sdk@latest`
-    # at runtime (documented fallback; no global install). This step VERIFIES the
-    # latest SDK resolves — it does not install anything.
-    run "babysitter SDK verify (npx always-latest)" node -e "require('child_process').execSync('npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version', {stdio:'inherit'})"
+  if ! command -v node >/dev/null 2>&1; then
+    log "SKIP: babysitter SDK verify — node not installed"
+    checklist_add skip "babysitter SDK verify (node not installed)"
+    return 0
   fi
+  # The babysitter CLI is consumed via `npm exec --package @a5c-ai/babysitter-sdk@latest`
+  # at runtime (documented fallback; no global install). This step VERIFIES the
+  # latest SDK resolves — it does not install anything.
+  run "babysitter SDK verify (npx always-latest)" node -e "require('child_process').execSync('npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version', {stdio:'inherit'})"
 }
 update_gopls() {
-  if command -v go >/dev/null; then
-    run "gopls latest" go install golang.org/x/tools/gopls@latest
+  if ! command -v go >/dev/null 2>&1; then
+    log "SKIP: gopls — go not installed"
+    checklist_add skip "gopls (go not installed)"
+    return 0
   fi
+  run "gopls latest" go install golang.org/x/tools/gopls@latest
 }
 
 # install_if_different installs src -> dst.
@@ -631,6 +846,9 @@ update_gopls() {
 install_if_different() { # install_if_different <src> <dst>
   local src="$1" dst="$2"
   if [ "$DRY" = 1 ]; then log "DRY: install $src -> $dst"; return 0; fi
+  # The destination dir was never created, so on a fresh machine both hook
+  # installs (and anything else whose parent did not exist yet) failed on cp.
+  mkdir -p "$(dirname "$dst")" || { log "ERROR: cannot create $(dirname "$dst")"; checklist_add fail "install $dst (no parent dir)"; return 1; }
   local rs ds
   rs=$(readlink -f "$src" 2>/dev/null || echo "$src")
   ds=$(readlink -f "$dst" 2>/dev/null || echo "$dst")
@@ -689,7 +907,15 @@ sync_configs() {
     checklist_add skip "configs (dry-run, no writes or git executed)"
     return 0
   fi
-  [ -d "$DOTFILES/.git" ] || { log "skip: no dotfiles repo at $DOTFILES"; return; }
+  # A missing repo used to log "skip: no dotfiles repo" and return 0: a green run
+  # that installed nothing (finding 6). DOTFILES is now derived from this script's
+  # own path, so this only fires on a genuinely broken checkout, and it is loud.
+  [ -d "$DOTFILES/.git" ] || {
+    log "ERROR: no dotfiles repo at $DOTFILES; configs were NOT installed"
+    log "ERROR: run this script from the clone: bash <clone>/jcode/update-all.sh"
+    checklist_add fail "configs (no dotfiles repo at $DOTFILES)"
+    return 1
+  }
 
   # Keep dotfiles itself up to date with any remote changes (other machines).
   # Pull the actual checked-out branch, not `origin HEAD`
@@ -724,6 +950,9 @@ sync_configs() {
     install_live_jcode_config
   fi
   if [ -d "$DOTFILES/jcode/.jcode/hooks" ]; then
+    # install_if_different now creates the parent, but say it here too: this is
+    # the step a fresh machine silently lost both hooks to.
+    mkdir -p "$HOME/.jcode/hooks"
     for hook in "$DOTFILES/jcode/.jcode/hooks/"*.sh; do
       [ -f "$hook" ] || continue
       install_if_different "$hook" "$HOME/.jcode/hooks/$(basename "$hook")"
@@ -849,6 +1078,7 @@ self_review() {
 audit_skills() {
   log "=== skills audit ==="
   if [ "$DRY" = 1 ]; then log "DRY: bash $DOTFILES/jcode/skills-audit.sh"; return 0; fi
+  require_links "skills audit" || return 1
   local out rc=0 line
   out=$(bash "$DOTFILES/jcode/skills-audit.sh" 2>&1) || rc=$?
   while IFS= read -r line; do log "$line"; done <<< "$out"
@@ -864,6 +1094,7 @@ audit_skills() {
 write_manifest() {
   log "=== skill manifest ==="
   if [ "$DRY" = 1 ]; then log "DRY: manifest -> $MANIFEST"; return 0; fi
+  require_links "manifest" || return 1
   local out="$MANIFEST"
   local tmp="$out.tmp"
   {
@@ -948,24 +1179,38 @@ main() {
   mkdir -p "$UPDATER_SRC"
   checklist_init
   log "update-all started (dry_run=$DRY parallel=$PARALLEL); private run: $RUN_DIR"
+  # Prerequisites and the symlink fleet come first and are named: a fresh machine
+  # used to discover them as eight unrelated phase failures, and the fleet used to
+  # not exist at all.
+  local pre_rc=0
   local -a phases=()
-  [ "$DO_JCODE" = 0 ] || phases+=(update_core_phase)
-  [ "$DO_SKILLS" = 0 ] || phases+=(update_skills)
-  [ "$DO_PI" = 0 ] || phases+=(generate_pi_agents)
-  [ "$DO_PATCHES" = 0 ] || phases+=(apply_pi_patches)
-  [ "$DO_TOOLS" = 0 ] || phases+=(update_tools)
-  run_jobs "${phases[@]}"
-  rc=$?
-  # Do not install/publish a mixed partial update after an independent failure.
-  if [ "$rc" = 0 ]; then
+  preflight || pre_rc=1
+  [ "$pre_rc" != 0 ] || bootstrap_links || pre_rc=1
+  if [ "$pre_rc" = 0 ]; then
+    [ "$DO_JCODE" = 0 ] || phases+=(update_core_phase)
+    [ "$DO_SKILLS" = 0 ] || phases+=(update_skills)
+    [ "$DO_PI" = 0 ] || phases+=(generate_pi_agents)
+    [ "$DO_PATCHES" = 0 ] || phases+=(apply_pi_patches)
+    [ "$DO_TOOLS" = 0 ] || phases+=(update_tools)
+    if [ "${#phases[@]}" -gt 0 ]; then
+      run_jobs "${phases[@]}"
+      rc=$?
+    fi
+    # Configs and the manifest are INDEPENDENT of core (finding 1): every file they
+    # install exists in the repo, and the old `if [ rc = 0 ]` gate meant a fresh
+    # machine — where core can never pass without `jcode self-dev --setup` —
+    # installed ZERO configs and reported "skip configs/manifest (earlier phase
+    # failed)". They always run now, and each step fails on its own precondition.
     phases=()
     [ "$DO_CONFIG" = 0 ] || phases+=(sync_configs)
     [ "$DO_MANIFEST" = 0 ] || phases+=(write_manifest audit_skills)
-    PARALLEL=0
-    run_jobs "${phases[@]}"
-    rc=$?
+    if [ "${#phases[@]}" -gt 0 ]; then
+      PARALLEL=0
+      run_jobs "${phases[@]}" || rc=1
+    fi
   else
-    checklist_add skip "configs/manifest (earlier phase failed)"
+    checklist_add skip "all phases (prerequisites or symlink fleet failed: see ERROR lines)"
+    rc=1
   fi
   if grep -q '^fail' "$CHECKLIST_TMP"; then rc=1; fi
   # A dry run must not touch durable state. Writing CHECKLIST.md or clobbering

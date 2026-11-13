@@ -91,3 +91,17 @@ dms/.config/DankMaterialShell/plugins/wallpaperDiscovery
 # machine state, never tracked
 .opencode/goals/state.json*
 agents/.agents/skills/*/.overlay-applied
+
+# Generated Python bytecode. 15 .pyc files were tracked, and the interpreter
+# rewrites them on every run, so the tree was permanently dirty: the config
+# phase's user-edit guard then skipped the dotfiles pull AND push on every run
+# (it reported PRESERVED/WARN, so the sync was one-way and stale from run one).
+__pycache__/
+*.pyc
+
+# The skill manifest is generated output (write_manifest rewrites it with a run
+# timestamp on every sync). Tracked, it made the tree dirty after every single
+# run — the same trap as the .pyc above, one level up. The config phase already
+# filters it out of the user-edit guard, but git status was never clean, which is
+# what made "is this tree dirty?" untrustworthy. Generated => ignored.
+agents/.agents/skills/README.md
