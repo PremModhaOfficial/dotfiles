@@ -3,6 +3,10 @@ A home directory, not a repository. The rules every session follows live in
 `/home/prm/.agents/AGENTS.md` — read them there, not repeated here. Below is
 only the layout and the traps that cost a session time.
 
+## Before any work
+
+- Ambiguity gate: `~/.agents/references/memory-clarify.md` is the spec; attended, ask above 3; unattended (nobody can reply), never stall — state one visible line `Reading: X, because Y` before any tool call, take the cheapest falsifying step, continue, re-score on evidence.
+
 ## Who owns what
 
 - `/home/prm/.agents` → `/home/prm/dotfiles/agents/.agents` (symlink), canonical

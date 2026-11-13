@@ -1,13 +1,12 @@
 # Memory
 
 ## HARD RULE: clarify until ambiguity <= 3
-- Score each prompt 0-10 before starting.
-- Act at 3 or lower; if higher, do not start.
-- Up to 4 questions that move the score, in one message, then re-score.
-- Announce the score and what you weigh before asking.
-- Questions must be about what alters the work, never about taste.
-- Never fill a gap by quiet assumption.
-- Full scale, refusal path and retry detail: `~/.agents/references/memory-clarify.md`.
+- Score each prompt 0-10 first; it picks the step, not a stop.
+- Unattended = nobody can reply here: `hc ls` shows my `$HC_TERMINAL_ID` has a parent, or a task file, or a scheduled/background run; cannot tell = unattended. Never stall: take the cheapest falsifying step, continue; open questions go in the report.
+- Attended, above 3: ask up to 4 score-moving questions in one message, never taste, then re-score.
+- Any command, read or test that resolves ambiguity re-scores first, attended or not; continue if it drops.
+- First visible line, before any tool call: `Reading: X, because Y` (output, not reasoning); never a quiet assumption, reversible in one command.
+- Spec: `~/.agents/references/memory-clarify.md`
 
 ## HARD RULE: harness-agnostic home
 - Always prefer `~/.agents` over harness dirs for skills, agents, memory, config; keep canonical shared files there.

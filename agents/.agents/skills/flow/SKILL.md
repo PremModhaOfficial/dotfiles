@@ -9,7 +9,7 @@ Order and exits. The skills keep their own rules; this only says which one runs 
 
 ## Before you start
 
-- **Ambiguity gate.** The rule, its scale and its question budget have one home: ~/.agents/references/memory-clarify.md. Read it before acting. This skill adds only the order: the gate runs before Locate, and the escape hatch below skips Plan, never the gate.
+- **Ambiguity gate.** The rule, its scale, its question budget and the visible `Reading: X, because Y` line have one home: ~/.agents/references/memory-clarify.md. Read it before acting. This skill adds only the order: the gate runs before Locate, and the escape hatch below skips Plan, never the gate.
 - **Precedence when they disagree:** checked code > rules learned below > this table.
 - **Escape hatch.** Run Locate first. If its file:line list names one file and the change is a small edit, skip Plan: go to the build skill and its check. No line counting.
 
