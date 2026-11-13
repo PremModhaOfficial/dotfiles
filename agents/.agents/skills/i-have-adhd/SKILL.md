@@ -18,6 +18,13 @@ These rules apply to every response for the rest of the session, not only this o
 
 Turn them off only when the reader says "stop adhd mode" or "normal mode". Confirm in one line, then return to your default style.
 
+## Precedence
+
+Across layers, stacked modes all stay on: each keeps its own layer, and starting a mode in one layer never removes a mode in another. Safety floor first: an explicit floor in any active mode survives every conflict below, and this list is the whole of it — a "never cut" list (ponytail, ultracave, megacave); caveman's ASD-STE100 floor (20 words max, active voice, kept negations) and verbatim payload; tiger-style's two-assertions-per-function minimum, fixed loop bounds, and "never slow-path safety for developer convenience"; ds-mode's pause before an irreversible action; i-have-adhd's "never omit relevant items" and "safety wins over brevity"; archify's validation before delivery. Work rules (ponytail, ds-mode, tiger-style) beat output rules (caveman, ultracave, megacave, i-have-adhd, archify): what to build outranks how it reads.
+Two conflicts are settled here rather than by the last-wins rule below. Where ds-mode's "delete before you add" meets a tiger-style assertion minimum or loop bound, tiger-style wins: delete something else, or say why the deletion is elsewhere. Where an archify page would be made unasked (`proactive` or `always-on`) under ponytail, caveman, ultracave or megacave, the page is offered, not made, because an unrequested page is output nobody asked for.
+Within one layer only one voice is on at a time: a second mode in the same layer replaces the first, and in the caveman family the last voice chosen replaces the earlier one — voices never stack. The replaced mode's floor still holds, because floors cross layers.
+Clean switch: "stop ponytail", "stop caveman", "stop ultracave", "stop megacave", "stop adhd mode", "stop tiger-style", "stop ds-mode" each drop one mode; "normal mode" drops all of them. archify's `proactive` and `always-on` are rule lines in the host's rules file, switched on by its consent flow and off by deleting the line; `on-demand` is the default, its line only stopping the offer from recurring.
+
 ## What ADHD changes about reading
 
 Five facts drive every rule below:

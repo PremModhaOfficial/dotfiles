@@ -1,6 +1,6 @@
 ---
 name: feature-compare
-description: Build a feature-parity table across N products of any kind (tools, frameworks, libraries, apps, services, platforms), grounded in each product's best-available source of truth (DeepWiki for open-source repos, official docs otherwise). Use whenever the user asks to compare, diff, benchmark feature sets, or "who supports what" across two or more products, even if they only say "compare X, Y, Z" or "does X have what Y has". Output is the parity table only, plus a one-line sources footer.
+description: "Build a feature-parity table across two or more products of any kind, from DeepWiki for open-source repos and official docs otherwise. Use when asked to compare, diff or benchmark feature sets, or \"who supports what\"."
 ---
 
 # feature-compare

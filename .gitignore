@@ -87,3 +87,7 @@ dms/.config/DankMaterialShell/plugins/dankKDEConnect
 dms/.config/DankMaterialShell/plugins/dankLauncherKeys
 dms/.config/DankMaterialShell/plugins/wallpaperDiscovery
 # agent-mesh removed (kept in git history only)
+
+# machine state, never tracked
+.opencode/goals/state.json*
+agents/.agents/skills/*/.overlay-applied

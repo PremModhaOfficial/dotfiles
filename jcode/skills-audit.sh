@@ -113,6 +113,22 @@ for f in "$HOME"/dotfiles/skills-overlay/host/*.sh; do
   [ -f "$HOST_SKILLS_DIR/$s/.overlay-applied" ] || bad "overlay not applied (host): $s"
 done
 
+# 6b. overlay block pin: the marker only says the overlay ran once, so a hand
+#     edit inside a pinned block (the Precedence one) keeps the marker and the
+#     audit used to pass it. The overlay's own heredoc block is the pin, compared
+#     here against the installed copy, so the md5 lives in no third place.
+blockmd5() { awk '/^## Precedence$/{f=1} f&&/^Clean switch:/{print;print "";exit} f' "$1" | md5sum | cut -d' ' -f1; }
+for f in "$HOME"/dotfiles/skills-overlay/*.sh "$HOME"/dotfiles/skills-overlay/host/*.sh; do
+  [ -f "$f" ] || continue
+  grep -qx '## Precedence' "$f" || continue
+  want=$(blockmd5 "$f")
+  s=$(basename "$f" .sh)
+  g="$SKILLS_DIR/$s/SKILL.md"
+  [ -f "$g" ] || g="$HOST_SKILLS_DIR/$s/SKILL.md"
+  got=$(blockmd5 "$g")
+  [ "$got" = "$want" ] || bad "overlay block drift: $g: block md5 $got != pinned $want (from $f)"
+done
+
 # 7. dead relative links: a skill that points at a file the install does not
 #    carry is unfollowable where it runs. External URLs are out of scope.
 #    Allowlisted below are three links that sit inside documentation examples

@@ -1,0 +1,20 @@
+agents:
+  root:
+    description: Free orchestrator. opencode harness, so it needs no model key.
+    instruction: |
+      You are a coding orchestrator working through tasks step by step.
+      Explore the codebase before editing. Make focused changes, then verify them.
+    harness:
+      type: opencode
+      model: opencode/space-bunny-free # REQUIRED for opencode, must be provider/model
+      # agent: <opencode-agent-profile>   # forwarded as --agent
+      # thinking: true                     # forwarded as --thinking
+
+  reviewer:
+    description: Free reviewer. Same opencode harness, narrower role.
+    instruction: |
+      You review code changes for correctness and regressions.
+      Read the diff, then report concrete problems with file and line.
+    harness:
+      type: opencode
+      model: opencode/space-bunny-free

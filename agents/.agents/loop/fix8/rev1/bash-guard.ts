@@ -1,0 +1,1 @@
+/home/prm/.pi/agent/extensions/bash-guard.ts

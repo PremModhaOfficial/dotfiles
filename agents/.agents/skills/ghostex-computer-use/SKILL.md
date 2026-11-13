@@ -10,6 +10,8 @@ description: >-
 disable-model-invocation: true
 ---
 
+> **Availability gate:** the driver half works here — `cua-driver` is installed (0.35.4). The Ghostex runtime at `/opt/ghostex` is not, so the Ghostex-only cross-references in this skill (for example `$ghostex-embedded-browser-use`, Ghostex's built-in panes) are unavailable until you install Ghostex Desktop, which unpacks `gxserver` into `/opt/ghostex`.
+
 # ghostex-computer-use
 
 Use this skill when a task needs native macOS app automation through Ghostex
