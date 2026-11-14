@@ -52,6 +52,20 @@ and spawns, plain Pi owns neither. Name the mechanism you actually used in the r
 never present a same-context review as a goldfish review. The same ladder runs
 `caveman-explore` and the EGM reviewers.
 
+## Dispatch state
+
+Before reporting progress or acting on another agent's report, print the state instead of
+trusting a ledger or a thread that went quiet. Probe, do not remember:
+
+```bash
+bash ~/.agents/skills/flow/scripts/state.sh          # worktrees, open PRs, conflicts
+bash ~/.agents/skills/flow/scripts/state.sh --selftest
+```
+
+Read-only, never fetches. Exits 1 when open PR heads conflict, so it works as a gate before
+ordering merges. A finished thread that messaged nobody is invisible to memory and visible
+here.
+
 ## EGM, where it pays
 
 `egm-brainstorm` when the idea is not yet requirements · `egm-draft` then `egm-review` for
