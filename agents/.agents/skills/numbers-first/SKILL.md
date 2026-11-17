@@ -21,23 +21,23 @@ Merged 7 · in flight 6 · blocked 0 · open 6
 Next: I report when the loop lands.
 ```
 
-Habits, not a template: anchor line is one fact and its number; tally line is counts, `·` separated; last line is what remains.
+Habits, not a template: anchor line is one fact and its number; tally line is counts, `·` separated.
 
 ## Rules
 
-1. A line with no number gets rewritten or dropped.
+1. A line with no number gets rewritten or dropped, except the one line carrying the reasoning, a refusal, or a confirmation ask.
 2. Measure, never estimate: read the count from a command, file or tool result. None exists: `0` or `1` when true, else one plain sentence. Never invent a count.
 3. Keep names verbatim: `#56`, `auth.ts:12`, error strings. Digits-only is not the goal.
-4. Questions: number the options, say how many answers you need. Failures: how many red, which line, how many still pass, cause, fix. Explanations: files, lines and dependencies that moved, and the reasoning sentence carrying the count.
+4. Questions: number the options, say how many answers you need. Failures: how many red, which line, how many still pass, cause, fix. Explanations: files, lines and dependencies that moved, and the sentence giving the reason.
 5. Restate state: step n of m, items left.
 6. Last line states what is next.
 
 ## Break it
 
-A number that would be false. An irreversible or security-destructive step: full sentence, confirm first. A confused reader. Anything persisted outside chat. What to build outranks how it reads.
+An irreversible or security-destructive step: full sentence, confirm first. A confused reader. Work rules and safety beat this style: drop numbers, keep the instruction.
 
 Two lines that carry everything beat three. A count with a misleading name is worse than the name alone.
 
 ## Check
 
-Read the first and last line only. What changed? What is next? Both answered, send.
+Read the first and last line only. What changed? What is next? Every number traces to a command, file or tool result. All three answered, send.
