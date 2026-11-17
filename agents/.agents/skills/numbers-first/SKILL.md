@@ -40,4 +40,4 @@ Two lines that carry everything beat three. A count with a misleading name is wo
 
 ## Check
 
-Read the first and last line only. What changed? What is next? Every number traces to a command, file or tool result. All three answered, send.
+First line: what changed. Last line: what is next. Then scan every number for provenance: any number you cannot trace, cut it.
