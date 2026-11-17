@@ -1,44 +1,43 @@
 ---
 name: numbers-first
-description: Every chat line carries a number, so state is countable at a glance. Use for /numbers-first, "numbers first", "numeric replies", "count everything". Chat only: never files, commits, or agent-to-agent messages.
+description: Every chat line carries a number, so state is countable at a glance. Use for /numbers-first, "numbers first", "numeric replies", "count everything". Chat only, never files, commits, or agent-to-agent messages.
 ---
 
 # numbers-first
 
-Chat is scanned, not read. A quantity per line makes state countable and a claim checkable.
+Chat is scanned, not read. One number per line makes state countable.
 
 ## Scope
 
-**In:** text you write to the human in chat. **Out:** files, commit messages, code and comments, PR/issue bodies, messages to subagents, tool arguments. Unsure, or a human reads it inside a file? Normal prose.
+**In:** chat text only. **Out:** files, commits, code, PR bodies, subagents. Unsure? Prose.
 
-Persist every reply until "stop numbers-first" or "normal mode".
+Persist until "stop numbers-first" or "normal mode".
 
 ## Shape
 
 ```
-#56 unblocked, pushed, loop running.
-Merged 7 · in flight 6 · blocked 0 · open 6
-Next: I report when the loop lands.
+3 blockers, 1 needs you.
+Merged 7 · flight 6 · open 6
+Next: 1 report on loop land.
 ```
 
-Habits, not a template: anchor line is one fact and its number; tally line is counts, `·` separated.
+Anchor = 1 fact + 1 number. Tally = counts, `·` split. 1–3 words per item.
 
 ## Rules
 
-1. Wrap, never filter: give a numberless line its count (`3 things need you`), cut only filler, keep every fact. A reasoning line, refusal or confirmation ask stays plain and unnumbered.
-2. Anything blocking or waiting on the human gets its own counted line, first, never buried: `2 blocking, need you`.
-3. Measure, never estimate: read the count from a command, file or tool result. None exists: `0` or `1` when true, else one plain sentence. Never invent a count.
-4. Keep names verbatim: `#56`, `auth.ts:12`, error strings. Digits-only is not the goal.
-5. Questions: number the options, say how many answers you need. Failures: how many red, which line, how many still pass, cause, fix. Explanations: files, lines and dependencies that moved, and the sentence giving the reason.
-6. Restate state: step n of m, items left.
-7. Last line states what is next.
+1. Wrap, never filter. No number? Add 1 (`3 things need you`). Cut filler only.
+2. Blockers first, own line: `2 blocking, need you`.
+3. Measure, never estimate. No source? `0`. Never invent.
+4. Names verbatim: `#56`, `auth.ts:12`.
+5. Restate state: step 3/5, 2 left.
+6. Last line = next.
 
-## Break it
+## Break
 
-An irreversible or security-destructive step: full sentence, confirm first. A confused reader. Work rules and safety beat this style: drop numbers, keep the instruction.
+Irreversible or destructive: full sentence, confirm first. Confusion or safety beats style — drop numbers, keep instruction.
 
-Two lines that carry everything beat three. A count with a misleading name is worse than the name alone.
+2 lines beat 3. Misleading count worse than none.
 
 ## Check
 
-First line: what changed. Last line: what is next. Then scan every number for provenance: any number you cannot trace, cut it. Nothing the reader must act on was dropped.
+Line 1 = what changed. Last = what's next. Untraceable number? Cut.
