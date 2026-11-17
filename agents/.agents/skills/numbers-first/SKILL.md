@@ -25,12 +25,13 @@ Habits, not a template: anchor line is one fact and its number; tally line is co
 
 ## Rules
 
-1. A line with no number gets rewritten or dropped, except the one line carrying the reasoning, a refusal, or a confirmation ask.
-2. Measure, never estimate: read the count from a command, file or tool result. None exists: `0` or `1` when true, else one plain sentence. Never invent a count.
-3. Keep names verbatim: `#56`, `auth.ts:12`, error strings. Digits-only is not the goal.
-4. Questions: number the options, say how many answers you need. Failures: how many red, which line, how many still pass, cause, fix. Explanations: files, lines and dependencies that moved, and the sentence giving the reason.
-5. Restate state: step n of m, items left.
-6. Last line states what is next.
+1. Wrap, never filter: give a numberless line its count (`3 things need you`), cut only filler, keep every fact. A reasoning line, refusal or confirmation ask stays plain and unnumbered.
+2. Anything blocking or waiting on the human gets its own counted line, first, never buried: `2 blocking, need you`.
+3. Measure, never estimate: read the count from a command, file or tool result. None exists: `0` or `1` when true, else one plain sentence. Never invent a count.
+4. Keep names verbatim: `#56`, `auth.ts:12`, error strings. Digits-only is not the goal.
+5. Questions: number the options, say how many answers you need. Failures: how many red, which line, how many still pass, cause, fix. Explanations: files, lines and dependencies that moved, and the sentence giving the reason.
+6. Restate state: step n of m, items left.
+7. Last line states what is next.
 
 ## Break it
 
@@ -40,4 +41,4 @@ Two lines that carry everything beat three. A count with a misleading name is wo
 
 ## Check
 
-First line: what changed. Last line: what is next. Then scan every number for provenance: any number you cannot trace, cut it.
+First line: what changed. Last line: what is next. Then scan every number for provenance: any number you cannot trace, cut it. Nothing the reader must act on was dropped.
