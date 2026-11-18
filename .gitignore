@@ -105,3 +105,6 @@ __pycache__/
 # filters it out of the user-edit guard, but git status was never clean, which is
 # what made "is this tree dirty?" untrustworthy. Generated => ignored.
 agents/.agents/skills/README.md
+
+# loop-run scratch: backups made during a skills cycle, never worth a 300M push
+agents/.agents/loop/**/*.tar.gz
